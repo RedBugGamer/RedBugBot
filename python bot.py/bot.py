@@ -337,7 +337,8 @@ async def on_message(message):
     elif message.content.startswith("T!"):
         await message.reply(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
     if message.content.startswith("T!"):
-        await message.delete()
+        if not message.startswith("T!purge"):
+            await message.delete()
 
 #run the bot
 client.run(TOKEN)
