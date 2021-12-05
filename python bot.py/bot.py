@@ -330,7 +330,7 @@ async def on_message(message):
         await message.channel.send("⠀",view=Schiffetot())
     elif message.content == "T!sourcecode":
         #gibt github repo link
-        await message.channel.send(embed=discord.Embed(description="[Source](https://github.com/RedBugGamer/RedBugBot/tree/master/python%20bot.py)[code](http://bitly.com/98K8eH)"),)
+        await message.channel.send(embed=discord.Embed(description="[Sourcecode](https://github.com/RedBugGamer/RedBugBot/tree/master/python%20bot.py)"),)
         
     
 
