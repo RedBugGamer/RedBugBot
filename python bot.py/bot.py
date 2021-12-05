@@ -292,7 +292,7 @@ async def on_message(message):
             await message.reply(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
     elif message.content.startswith("T!purge "):
         if message.author.id == 772386889817784340:
-           await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
+           await message.channel.purge(limit=int(message.content.replace("T!purge ",""))+1)
 
         else:
             await message.reply(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
