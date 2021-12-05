@@ -320,7 +320,11 @@ async def on_message(message):
     elif message.content == "T!schiffetot":
         #macht schiffeversenken W.I.P.
         await message.channel.send("⠀",view=Schiffetot())
-    
+    elif message.content.startswith("T!prison"):
+        for i in message.guild.cached_message:
+            print(i.content)
+    elif message.content == "T!ping":
+        await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
         
     
 

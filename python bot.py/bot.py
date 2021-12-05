@@ -173,13 +173,6 @@ class stopstatus(discord.ui.View):
                 async def Stopstatus(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
                     global running
                     running = False
-class repobutton(discord.ui.View):
-    def __init__(self):
-        super().__init__()
-        self.value = None
-    @nextcord.ui.button(label="Github repo",style=nextcord.ButtonStyle.link,)
-    async def repobutton(seld,button:nextcord.ui.Button,interaction : nextcord.Interaction):
-        return
 def getstatuscolor(currentrequest,sendtimestamp):
     
     if currentrequest == "Online":
@@ -207,7 +200,6 @@ Help.add_field(name="`T!startserver`",value="startet den Server",inline=False)
 Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers alle 20 sekunden zurück",inline=False)
 Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=False)
 Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=False)
-Help.add_field(name="`T!sourcecode`",value="Ist halt mein sourcecode",inline=False)
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
@@ -328,17 +320,18 @@ async def on_message(message):
     elif message.content == "T!schiffetot":
         #macht schiffeversenken W.I.P.
         await message.channel.send("⠀",view=Schiffetot())
-    elif message.content == "T!sourcecode":
-        #gibt github repo link
-        await message.channel.send(embed=discord.Embed(description="[Sourcecode](https://github.com/RedBugGamer/RedBugBot/tree/master/python%20bot.py)"),)
+    elif message.content.startswith("T!prison"):
+        for i in message.guild.cached_message:
+            print(i.content)
+    elif message.content == "T!ping":
+        await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
         
     
 
     elif message.content.startswith("T!"):
         await message.reply(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
     if message.content.startswith("T!"):
-        if not message.content.startswith("T!purge"):
-            await message.delete()
+        await message.delete()
 
 #run the bot
 client.run(TOKEN)
