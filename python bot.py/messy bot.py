@@ -26,7 +26,8 @@ from discord.ext import commands
 import discord
 from discord.ext import commands
 from tinydb import *
-from mouse import press,Key
+from mouse import press
+from pynput.keyboard import Key
 
 #load .env filw
 load_dotenv()

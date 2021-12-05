@@ -26,7 +26,8 @@ from discord.ext import commands
 import discord
 from discord.ext import commands
 from tinydb import *
-from mouse import press,Key
+from mouse import press
+from pynput.keyboard import Key
 
 #load .env filw
 load_dotenv()
@@ -172,6 +173,13 @@ class stopstatus(discord.ui.View):
                 async def Stopstatus(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
                     global running
                     running = False
+class repobutton(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+    @nextcord.ui.button(label="Github repo",style=nextcord.ButtonStyle.link,)
+    async def repobutton(seld,button:nextcord.ui.Button,interaction : nextcord.Interaction):
+        return
 def getstatuscolor(currentrequest,sendtimestamp):
     
     if currentrequest == "Online":
@@ -199,6 +207,7 @@ Help.add_field(name="`T!startserver`",value="startet den Server",inline=False)
 Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers alle 20 sekunden zurück",inline=False)
 Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=False)
 Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=False)
+Help.add_field(name="`T!sourcecode`",value="Ist halt mein sourcecode",inline=False)
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
@@ -319,7 +328,9 @@ async def on_message(message):
     elif message.content == "T!schiffetot":
         #macht schiffeversenken W.I.P.
         await message.channel.send("⠀",view=Schiffetot())
-    
+    elif message.content == "T!sourcecode":
+        #gibt github repo link
+        await message.channel.send(embed=discord.Embed(description="[Source](https://github.com/RedBugGamer/RedBugBot/tree/master/python%20bot.py)[code](http://bitly.com/98K8eH)"),)
         
     
 
