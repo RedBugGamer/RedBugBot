@@ -313,8 +313,7 @@ async def on_message(message):
         await message.reply(embed=discord.Embed(description="Meine [Website](https://RedBugBot-in-python.redbuggamer.repl.co)"))
     elif message.content == "T!tictactoe":
         await message.channel.send("⠀",view=TicTacToe())
-    elif message.content == "T!schiffetot":
-        await message.channel.send("⠀",view=Schiffetot())
+    
     
         
     
