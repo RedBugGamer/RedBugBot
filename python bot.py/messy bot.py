@@ -1,3 +1,4 @@
+# imports
 import asyncio
 from datetime import datetime
 from discord import colour
@@ -15,11 +16,8 @@ from discord.colour import Color, Colour
 from exaroton import Exaroton
 import tinydb
 from dotenv import load_dotenv
-load_dotenv()
-exa = Exaroton(os.environ["exaroton"])
 import discord
 from discord.enums import TeamMembershipState
-
 import time
 import macro
 import random
@@ -29,16 +27,18 @@ import discord
 from discord.ext import commands
 from tinydb import *
 
+#load .env filw
+load_dotenv()
 
-# Defines a custom button that contains the logic of the game.
-# The ['TicTacToe'] bit is for type hinting purposes to tell your IDE or linter
-# what the type of `self.view` is. It is not required.
+#define important variables
+exa = Exaroton(os.environ["exaroton"])
+TOKEN = os.environ["token"]
+client = discord.Client()
+
+#Button menus
 class TicTacToeButton(discord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
-        # A label is required, but we don't need one so a zero-width space is used
-        # The row parameter tells the View which row to place the button under.
-        # A View can only contain up to 5 rows -- each row can only have 5 buttons.
-        # Since a Tic Tac Toe grid is 3x3 that means we have 3 rows and 3 columns.
+        
         super().__init__(style=discord.ButtonStyle.secondary, label='\u200b', row=y)
         self.x = x
         self.y = y
@@ -149,7 +149,6 @@ class Schiffefeld(discord.ui.View):
     async def Spielfeld1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
         while True:
             await interaction.response.send_message("Dein spielfeld XD2",ephemeral=True)
-running = True
 class Schiffetot():
     def __init__(self):
         super().__init__()
@@ -181,7 +180,8 @@ def getstatuscolor(currentrequest,sendtimestamp):
         return discord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x3498db,timestamp=sendtimestamp)
     else:
         return discord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
-TOKEN = os.environ["token"]
+
+#Help menu
 Help = discord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.now())
 Help.add_field(name = "`Prefix`",value="Mein prefix ist `T!`",inline=False)
 Help.add_field(name = "`T!help`",value="Der Command hilft dir",inline=False)
@@ -193,7 +193,7 @@ Help.add_field(name="`T!startserver`",value="startet den Server",inline=False)
 Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers alle 20 sekunden zurück",inline=False)
 Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=False)
 Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=False)
-client = discord.Client()
+
 mycolors={
     1:0x1abc9c,
     2:0x11806a,
