@@ -1,26 +1,18 @@
 import asyncio
 from datetime import datetime
-from glob import glob
-from logging import disable
 from discord import colour
 from discord.ui.item import Item
-import mouse
 import nextcord
 from nextcord.client import Client
 from nextcord.ui import view
 from discord import guild
-
-from pynput.keyboard import Key, Controller as KeyboardController
-#from pynput.mouse import Button, Controller as MouseController
 import time
 from random import randrange
 from discord.ui import Button,View
-from gc import DEBUG_SAVEALL
 import os
 from nextcord import *
 from discord.colour import Color, Colour
 from exaroton import Exaroton
-from mouse import press
 import tinydb
 from dotenv import load_dotenv
 load_dotenv()
