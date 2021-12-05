@@ -301,7 +301,7 @@ async def on_message(message):
         await message.channel.send(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
 
     elif message.content == "T!startserver":
-        #startet modprojekt server
+        #startet modprojekt Server
         exa.start(id=id)
         await message.reply(embed=discord.Embed(description="Server gestartet"))
     elif message.content == "T!status":
