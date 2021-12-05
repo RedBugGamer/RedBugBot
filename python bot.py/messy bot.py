@@ -34,6 +34,11 @@ load_dotenv()
 exa = Exaroton(os.environ["exaroton"])
 TOKEN = os.environ["token"]
 client = discord.Client()
+awaitpoll = False
+id = "H6WIxtAqtR1pMJJb"
+dice = False
+running = False
+status=False
 
 #Button menus
 class TicTacToeButton(discord.ui.Button['TicTacToe']):
@@ -194,50 +199,45 @@ Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers al
 Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=False)
 Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=False)
 
-mycolors={
-    1:0x1abc9c,
-    2:0x11806a,
-    3:0x2ecc71, 
-    4:0x1f8b4c,
-    5:0x3498db,
-    6:0x206694,
-    7:0x9b59b6,
-    8:0x71368a,
-}
+#Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
 
+#on ready/Change bot activitie
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
     while True:
         await client.change_presence(activity=discord.Game(activitys[randrange(0,len(activitys))]),status=discord.Status.online)
         await asyncio.sleep(random.randrange(15,60))
-awaitpoll = False
-id = "H6WIxtAqtR1pMJJb"
-dice = False
-running = False
-status=False
+
+#commands/ingame chat
 @client.event
 async def on_message(message):
+    #make global variables
     global awaitpoll
     global dice
     global status
     global running
+    #Ingame discord chat
     if message.channel.id == 898635630966353950 and not message.content.startswith("T!"):
         exa.command(id="H6WIxtAqtR1pMJJb",command=f'tellraw @a "<{message.author}> {message.content}"')
+    
+    #await message from self
     if message.author == client.user:
         if awaitpoll:
+            #macht poll
             awaitpoll = False
             await message.add_reaction("👍")
             await message.add_reaction("👎")
         elif dice:
+            #macht würfel
             dice = False
             for i in range(4):
                 await asyncio.sleep(0.75)
                 await message.edit(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
             await message.edit(embed=discord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
         elif status:
-            
+            #bearbeitet die nachricht für status
             status=False
             running = True
             await asyncio.sleep(1)
@@ -247,20 +247,23 @@ async def on_message(message):
             await message.edit(embed=discord.Embed(description="Disabled"))
         return  
     elif message.content == "T!help":
+        #zeigt help menu
         await message.reply(embed = Help)
         
     elif message.content.startswith("T!say"):
-        
+        #sagt string
          await message.channel.send(message.content.replace("T!say",""))
          
     elif message.content.startswith("T!poll"):
-        
+        #macht einen poll
         awaitpoll = True
         if message.author.avatar == None:
+            #check avatar exists
             await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author))
         else:
             await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
     elif message.content.startswith("T!controll "):
+        #control computer
         if message.author.id == 772386889817784340:
             if message.content.replace("T!controll ","") == "hotspot":
                 macro.hotspot()
@@ -281,31 +284,39 @@ async def on_message(message):
                 await message.channel.send(embed=discord.Embed(description="Aktuelle instanz gestartet"))
             
         else:
+            #keine perms
             await message.reply(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
     elif message.content.startswith("T!purge "):
+        #botowner only lösch command
         if message.author.id == 772386889817784340:
            await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
         else:
             await message.reply(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
+
     elif message.content == "T!dice":
+        #würfelt
         dice=True
         await message.channel.send(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
 
     elif message.content == "T!startserver":
-        exa.start(id="H6WIxtAqtR1pMJJb")
+        #startet modprojekt server
+        exa.start(id=id)
         await message.reply(embed=discord.Embed(description="Server gestartet"))
     elif message.content == "T!status":
-        
+        #gibt den botstatus alle 15 sec zurück
         status=True
         running = True
         await message.reply(view=stopstatus(),embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
         
     elif message.content == "T!web":
+        #link zur website W.I.P.
         await message.reply(embed=discord.Embed(description="Meine [Website](https://RedBugBot-in-python.redbuggamer.repl.co)"))
     elif message.content == "T!tictactoe":
+        #startet tictactoe
         await message.channel.send("⠀",view=TicTacToe())
     elif message.content == "T!schiffetot":
+        #macht schiffeversenken W.I.P.
         await message.channel.send("⠀",view=Schiffetot())
     
         
@@ -316,5 +327,5 @@ async def on_message(message):
     if message.content.startswith("T!"):
         await message.delete()
 
-
+#run the bot
 client.run(TOKEN)
