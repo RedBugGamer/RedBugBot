@@ -275,7 +275,7 @@ async def on_message(message):
                 macro.shutdown()
             elif message.content.replace("T!controll ","").startswith("message"):
                 await message.reply(embed=discord.Embed(description="Du hast `"+message.content.replace("T!controll","").replace(" message ","")+"` gesendet"))
-                macro.message(message.content.replace("T!controll","").replace(" message",""),15)
+                macro.message(message.content.replace("T!controll","").replace(" message ",""),15)
             elif message.content.replace("T!controll ","") == "restart":
                 await message.reply(embed=discord.Embed(description="Neustarten"))
                 macro.restart()

@@ -288,6 +288,7 @@ async def on_message(message):
         else:
             #keine perms
             await message.reply(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
+    
     elif message.content.startswith("T!purge "):
         #botowner only lösch command
         if message.author.id == 772386889817784340:
@@ -324,7 +325,9 @@ async def on_message(message):
         for i in message.guild.cached_message:
             print(i.content)
     elif message.content == "T!ping":
+        #macht botping
         await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
+    
         
     
 
