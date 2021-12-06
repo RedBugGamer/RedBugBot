@@ -328,10 +328,6 @@ async def on_message(message):
     elif message.content == "T!ping":
         #macht botping
         await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
-    
-        
-    
-
     elif message.content.startswith("T!"):
         await message.reply(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
     if message.content.startswith("T!"):
