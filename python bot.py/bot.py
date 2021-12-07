@@ -201,6 +201,7 @@ Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers al
 Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=False)
 Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=False)
 Help.add_field(name="`T!ping`",value="Gibt den botping",inline=False)
+Help.add_field(name="`T!send`",value="Sendet eine nachricht in den channel",inline=False)
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
