@@ -202,10 +202,12 @@ Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=Fal
 Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=False)
 Help.add_field(name="`T!ping`",value="Gibt den botping",inline=False)
 Help.add_field(name="`T!send`",value="Sendet eine nachricht in den channel",inline=False)
+Help.add_field(name="`T!purge`",value="Löscht x nachrichten",inline=False)
+Help.add_field(name="`T!block`",value="Blockiert User x vom bot use",inline=False)
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
-
+blockedusers = []
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
@@ -225,116 +227,145 @@ async def on_message(message):
     #Ingame discord chat
     if message.channel.id == 898635630966353950 and not message.content.startswith("T!"):
         exa.command(id="H6WIxtAqtR1pMJJb",command=f'tellraw @a "<{message.author}> {message.content}"')
-    
+    # block users
+    if not message.author in blockedusers:
     #await message from self
-    if message.author == client.user:
-        if awaitpoll:
-            #macht poll
-            awaitpoll = False
-            await message.add_reaction("👍")
-            await message.add_reaction("👎")
-        elif dice:
-            #macht würfel
-            dice = False
-            for i in range(4):
-                await asyncio.sleep(0.75)
-                await message.edit(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
-            await message.edit(embed=discord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
-        elif status:
-            #bearbeitet die nachricht für status
-            status=False
-            running = True
-            await asyncio.sleep(1)
-            while running:
-                await asyncio.sleep(15)
-                await message.edit(embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
-            await message.edit(embed=discord.Embed(description="Disabled"))
-        return  
-    elif message.content == "T!help":
-        #zeigt help menu
-        await message.reply(embed = Help)
-        
-    elif message.content.startswith("T!say"):
-        #sagt string
-         await message.channel.send(message.content.replace("T!say",""))
-         
-    elif message.content.startswith("T!poll"):
-        #macht einen poll
-        awaitpoll = True
-        if message.author.avatar == None:
-            #check avatar exists
-            await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author))
-        else:
-            await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
-    elif message.content.startswith("T!controll "):
-        #control computer
-        if message.author.id == 772386889817784340:
-            if message.content.replace("T!controll ","") == "hotspot":
-                macro.hotspot()
-                await message.reply(embed=discord.Embed(description="Hotspot eingeschalten"))
-            elif message.content.replace("T!controll ","") == "shutdown":
-                await message.reply(embed=discord.Embed(description="Ausschalten"))
-                macro.shutdown()
-            elif message.content.replace("T!controll ","").startswith("message"):
-                await message.reply(embed=discord.Embed(description="Du hast `"+message.content.replace("T!controll","").replace(" message ","")+"` gesendet"))
-                macro.message(message.content.replace("T!controll","").replace(" message",""),15)
-            elif message.content.replace("T!controll ","") == "restart":
-                await message.reply(embed=discord.Embed(description="Neustarten"))
-                macro.restart()
-            elif message.content.replace("T!controll ","") == "gamer":
-                macro.win_r("C:/Users/RedBugGamer/AppData/Roaming/MultiMC/Multimc.exe")
-                time.sleep(2)
-                macro.press(Key.enter)
-                await message.channel.send(embed=discord.Embed(description="Aktuelle instanz gestartet"))
+        if message.author == client.user:
+            if awaitpoll:
+                #macht poll
+                awaitpoll = False
+                await message.add_reaction("👍")
+                await message.add_reaction("👎")
+            elif dice:
+                #macht würfel
+                dice = False
+                for i in range(4):
+                    await asyncio.sleep(0.75)
+                    await message.edit(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
+                await message.edit(embed=discord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
+            elif status:
+                #bearbeitet die nachricht für status
+                status=False
+                running = True
+                await asyncio.sleep(1)
+                while running:
+                    await asyncio.sleep(15)
+                    await message.edit(embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
+                await message.edit(embed=discord.Embed(description="Disabled"))
+            return  
+        if message.content.startswith("T!") and not message.content.startswith("T!purge"):
+            await message.delete()
+        if message.content == "T!help":
+            #zeigt help menu
+            await message.channel.send(embed = Help)
             
-        else:
-            #keine perms
-            await message.reply(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
-    
-    elif message.content.startswith("T!purge "):
-        #botowner only lösch command
-        if message.author.id == 772386889817784340:
-           await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
-
-        else:
-            await message.reply(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
-
-    elif message.content == "T!dice":
-        #würfelt
-        dice=True
-        await message.channel.send(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
-
-    elif message.content == "T!startserver":
-        #startet modprojekt Server
-        exa.start(id=id)
-        await message.reply(embed=discord.Embed(description="Server gestartet"))
-    elif message.content == "T!status":
-        #gibt den botstatus alle 15 sec zurück
-        status=True
-        running = True
-        await message.reply(view=stopstatus(),embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
+        elif message.content.startswith("T!say"):
+            #sagt string
+            await message.channel.send(message.content.replace("T!say",""))
+            
+        elif message.content.startswith("T!poll"):
+            #macht einen poll
+            awaitpoll = True
+            if message.author.avatar == None:
+                #check avatar exists
+                await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author))
+            else:
+                await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
+        elif message.content.startswith("T!controll "):
+            #control computer
+            if message.author.id == 772386889817784340:
+                if message.content.replace("T!controll ","") == "hotspot":
+                    macro.hotspot()
+                    await message.channel.send(embed=discord.Embed(description="Hotspot eingeschalten"))
+                elif message.content.replace("T!controll ","") == "shutdown":
+                    await message.channel.send(embed=discord.Embed(description="Ausschalten"))
+                    macro.shutdown()
+                elif message.content.replace("T!controll ","").startswith("message"):
+                    await message.channel.send(embed=discord.Embed(description="Du hast `"+message.content.replace("T!controll","").replace(" message ","")+"` gesendet"))
+                    macro.message(message.content.replace("T!controll","").replace(" message",""),15)
+                elif message.content.replace("T!controll ","") == "restart":
+                    await message.channel.send(embed=discord.Embed(description="Neustarten"))
+                    macro.restart()
+                elif message.content.replace("T!controll ","") == "gamer":
+                    macro.win_r("C:/Users/RedBugGamer/AppData/Roaming/MultiMC/Multimc.exe")
+                    time.sleep(2)
+                    macro.press(Key.enter)
+                    await message.channel.send(embed=discord.Embed(description="Aktuelle instanz gestartet"))
+                
+            else:
+                #keine perms
+                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
         
-    elif message.content == "T!web":
-        #link zur website W.I.P.
-        await message.reply(embed=discord.Embed(description="Meine [Website](https://RedBugBot-in-python.redbuggamer.repl.co)"))
-    elif message.content == "T!tictactoe":
-        #startet tictactoe
-        await message.channel.send("⠀",view=TicTacToe())
-    elif message.content == "T!schiffetot":
-        #macht schiffeversenken W.I.P.
-        await message.channel.send("⠀",view=Schiffetot())
-    elif message.content.startswith("T!prison"):
-        for i in message.guild.cached_message:
-            print(i.content)
-    elif message.content == "T!ping":
-        #macht botping
-        await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
-    elif message.content.startswith("T!send "):
-        await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
+        elif message.content.startswith("T!purge "):
+            #botowner only lösch command
+            if message.author.id == 772386889817784340:
+                await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
+
+            else:
+                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
+
+        elif message.content == "T!dice":
+            #würfelt
+            dice=True
+            await message.channel.send(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
+
+        elif message.content == "T!startserver":
+            #startet modprojekt Server
+            exa.start(id=id)
+            await message.channel.send(embed=discord.Embed(description="Server gestartet"))
+        elif message.content == "T!status":
+            #gibt den botstatus alle 15 sec zurück
+            status=True
+            running = True
+            await message.channel.send(view=stopstatus(),embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
+            
+        elif message.content == "T!web":
+            #link zur website W.I.P.
+            await message.channel.send(embed=discord.Embed(description="Meine [Website](https://RedBugBot-in-python.redbuggamer.repl.co)"))
+        elif message.content == "T!tictactoe":
+            #startet tictactoe
+            await message.channel.send("⠀",view=TicTacToe())
+        elif message.content == "T!schiffetot":
+            #macht schiffeversenken W.I.P.
+            await message.channel.send("⠀",view=Schiffetot())
+        elif message.content == "T!ping":
+            #macht botping
+            await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
+        elif message.content.startswith("T!send "):
+            #sendet was in den channel
+            await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
+        elif message.content.startswith("T!embed "):
+            arguments = message.content[8:len(message.content)].split(" | ")
+            if (len(arguments) %2) == 0:
+                await message.channel.send(embed=discord.Embed(description="ERROR Du benötigst mehr input",colour=0xe74c3c))
+            else:
+                customembed = discord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}",icon_url=message.author.avatar.url)
+                active = False
+                for i in range(int(len(arguments))):
+                    if active:
+                        customembed.add_field(inline=False,name=arguments[i],value=arguments[i+1])
+                        active=False
+                    else:
+                        active=True
+                await message.channel.send(embed=customembed)
+        elif message.content.startswith("T!block"):
+            if message.author.id == 772386889817784340:
+                print(blockedusers)
+                if message.mentions[0] in blockedusers:
+                    blockedusers.remove(message.mentions[0])
+                    
+                    await message.channel.send(embed=discord.Embed(description=f"<@{message.mentions[0].id}> darf mich wieder benutzen",color=0x2ecc71))
+                else:
+                    blockedusers.append(message.mentions[0])
+                    await message.channel.send(embed=discord.Embed(description=f"<@{message.mentions[0].id}> wurde blockiert",color=0xe74c3c))
+            else:
+                await message.channel.send(embed=discord.Embed(description="Acces denied",color=0xe74c3c))
+
+        elif message.content.startswith("T!"):
+            await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
+        
     elif message.content.startswith("T!"):
-        await message.reply(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
-    if message.content.startswith("T!"):
-        await message.delete()
+        await message.channel.send(embed=discord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
 
 #run the bot
 client.run(TOKEN)
