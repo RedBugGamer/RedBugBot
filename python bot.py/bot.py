@@ -28,6 +28,7 @@ from discord.ext import commands
 from tinydb import *
 from mouse import press
 from pynput.keyboard import Key
+from evalprot import makeeval
 
 #load .env filw
 load_dotenv()
@@ -190,20 +191,20 @@ def getstatuscolor(currentrequest,sendtimestamp):
 
 #Help menu
 Help = discord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.now())
-Help.add_field(name = "`Prefix`",value="Mein prefix ist `T!`",inline=False)
-Help.add_field(name = "`T!help`",value="Der Command hilft dir",inline=False)
+Help.add_field(name = "`Prefix`",value="Mein prefix ist `T!`",inline=True)
+Help.add_field(name = "`T!help`",value="Der Command hilft dir",inline=True)
 Help.add_field(name="`T!controll`",value="Ist ein Botowner only command")
-Help.add_field(name="`T!say`",value="Sagt etwas",inline=False)
-Help.add_field(name="`T!poll`",value="Macht einen vote",inline=False)
-Help.add_field(name="`T!dice`",value="Würfelspiele 🎲",inline=False)
-Help.add_field(name="`T!startserver`",value="startet den Server",inline=False)
-Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers alle 20 sekunden zurück",inline=False)
-Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=False)
-Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=False)
-Help.add_field(name="`T!ping`",value="Gibt den botping",inline=False)
-Help.add_field(name="`T!send`",value="Sendet eine nachricht in den channel",inline=False)
-Help.add_field(name="`T!purge`",value="Löscht x nachrichten",inline=False)
-Help.add_field(name="`T!block`",value="Blockiert User x vom bot use",inline=False)
+Help.add_field(name="`T!say`",value="Sagt etwas",inline=True)
+Help.add_field(name="`T!poll`",value="Macht einen vote",inline=True)
+Help.add_field(name="`T!dice`",value="Würfelspiele 🎲",inline=True)
+Help.add_field(name="`T!startserver`",value="startet den Server",inline=True)
+Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers alle 20 sekunden zurück",inline=True)
+Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=True)
+Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=True)
+Help.add_field(name="`T!ping`",value="Gibt den botping",inline=True)
+Help.add_field(name="`T!send`",value="Sendet eine nachricht in den channel",inline=True)
+Help.add_field(name="`T!purge`",value="Löscht x nachrichten",inline=True)
+Help.add_field(name="`T!block`",value="Blockiert User x vom bot use",inline=True)
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
@@ -350,7 +351,6 @@ async def on_message(message):
                 await message.channel.send(embed=customembed)
         elif message.content.startswith("T!block"):
             if message.author.id == 772386889817784340:
-                print(blockedusers)
                 if message.mentions[0] in blockedusers:
                     blockedusers.remove(message.mentions[0])
                     
