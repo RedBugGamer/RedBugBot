@@ -43,6 +43,9 @@ dice = False
 running = False
 status=False
 
+morsealphabet = {
+    'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : '/'
+}
 #Button menus
 class TicTacToeButton(discord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
@@ -205,6 +208,10 @@ Help.add_field(name="`T!ping`",value="Gibt den botping",inline=True)
 Help.add_field(name="`T!send`",value="Sendet eine nachricht in den channel",inline=True)
 Help.add_field(name="`T!purge`",value="Löscht x nachrichten",inline=True)
 Help.add_field(name="`T!block`",value="Blockiert User x vom bot use",inline=True)
+Help.add_field(name="`T!eval`",value="Evaluiert code",inline=True)
+Help.add_field(name="`T!embed`",value="Macht ein embed mit description + evtl. `|` für felder",inline=True)
+Help.add_field(name="`T!morse`",value="Gibt morsecode zurück",inline=True)
+
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
@@ -212,6 +219,7 @@ blockedusers = []
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
+    Help.set_author(name=client.user,icon_url=client.user.avatar.url)
     print(f'{client.user} has connected to Discord!')
     while True:
         await client.change_presence(activity=discord.Game(activitys[randrange(0,len(activitys))]),status=discord.Status.online)
@@ -230,7 +238,7 @@ async def on_message(message):
         exa.command(id="H6WIxtAqtR1pMJJb",command=f'tellraw @a "<{message.author}> {message.content}"')
     # block users
     if not message.author in blockedusers:
-    #await message from self
+        #await message from self
         if message.author == client.user:
             if awaitpoll:
                 #macht poll
@@ -254,8 +262,6 @@ async def on_message(message):
                     await message.edit(embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
                 await message.edit(embed=discord.Embed(description="Disabled"))
             return  
-        if message.content.startswith("T!") and not message.content.startswith("T!purge"):
-            await message.delete()
         if message.content == "T!help":
             #zeigt help menu
             await message.channel.send(embed = Help)
@@ -361,11 +367,20 @@ async def on_message(message):
             else:
                 await message.channel.send(embed=discord.Embed(description="Acces denied",color=0xe74c3c))
 
+        elif message.content.startswith("T!eval"):
+            myeval = makeeval(message.content.replace("```py","").replace("```","").replace("print(","evalprint(")[6:len(message.content)])
+            await message.channel.send(embed=discord.Embed(description=f"Output: `{myeval}`"))
+        elif message.content.startswith("T!morse "):
+            morse = ""
+            morse = morse.join(" "+morsealphabet[i.lower()] for i in message.content.replace("T!morse ",""))
+            await message.channel.send(embed=discord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
         elif message.content.startswith("T!"):
             await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
         
     elif message.content.startswith("T!"):
         await message.channel.send(embed=discord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
+    if message.content.startswith("T!") and not message.content.startswith("T!purge"):
+            await message.delete()
 
 #run the bot
 client.run(TOKEN)

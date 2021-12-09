@@ -1,2 +1,4 @@
+def evalprint(string):
+    return string
 def makeeval(string):
-    print(eval(string))
+    return eval(string)
