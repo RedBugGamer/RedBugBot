@@ -29,6 +29,8 @@ from tinydb import *
 from mouse import press
 from pynput.keyboard import Key
 from evalprot import makeeval
+from tinydb import TinyDB, Query
+db = TinyDB('db.json')
 
 #load .env filw
 load_dotenv()
