@@ -7,3 +7,4 @@
 /unity
 /python bot.py/_pycache_
 python bot.py/__pycache__/evalprot.cpython-310.pyc
+db.json
