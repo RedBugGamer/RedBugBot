@@ -218,6 +218,8 @@ Help.add_field(name="`T!morse`",value="Gibt morsecode zurück",inline=True)
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
 blockedusers = []
+bindchannels = []
+bindservers = []
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
@@ -235,9 +237,6 @@ async def on_message(message):
     global dice
     global status
     global running
-    #Ingame discord chat
-    if message.channel.id == 898635630966353950 and not message.content.startswith("T!"):
-        exa.command(id="H6WIxtAqtR1pMJJb",command=f'tellraw @a "<{message.author}> {message.content}"')
     # block users
     if not message.author in blockedusers:
         #await message from self
@@ -311,7 +310,7 @@ async def on_message(message):
                 await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
             else:
-                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
+                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=nextcord.Color.red))
 
         elif message.content == "T!dice":
             #würfelt
@@ -342,7 +341,10 @@ async def on_message(message):
             await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
         elif message.content.startswith("T!send "):
             #sendet was in den channel
-            await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
+            if message.author.id == 772386889817784340:
+                await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
+            else:
+                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=nextcord.Color.red))
         elif message.content.startswith("T!embed "):
             arguments = message.content[8:len(message.content)].split(" | ")
             if (len(arguments) %2) == 0:
@@ -376,6 +378,8 @@ async def on_message(message):
             morse = ""
             morse = morse.join(" "+morsealphabet[i.lower()] for i in message.content.replace("T!morse ",""))
             await message.channel.send(embed=discord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
+        
+        
         elif message.content.startswith("T!"):
             await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
         
