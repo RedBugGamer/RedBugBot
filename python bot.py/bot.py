@@ -24,13 +24,11 @@ import random
 from typing import List, Mapping
 from discord.ext import commands
 import discord
-from discord.ext import commands
 from tinydb import *
 from mouse import press
 from pynput.keyboard import Key
 from evalprot import makeeval
-from tinydb import TinyDB, Query
-db = TinyDB('db.json')
+import pymongo
 
 #load .env filw
 load_dotenv()
@@ -44,7 +42,9 @@ id = "H6WIxtAqtR1pMJJb"
 dice = False
 running = False
 status=False
-
+myclient = pymongo.MongoClient("mongodb://localhost",port=27017)
+RedBugBot = myclient["RedBugBot"]
+linkedchannels = RedBugBot["linkedchannels"]
 morsealphabet = {
     'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''
 }
@@ -378,7 +378,7 @@ async def on_message(message):
             morse = ""
             morse = morse.join(" "+morsealphabet[i.lower()] for i in message.content.replace("T!morse ",""))
             await message.channel.send(embed=discord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
-        
+
         
         elif message.content.startswith("T!"):
             await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
