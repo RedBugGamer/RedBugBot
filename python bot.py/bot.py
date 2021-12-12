@@ -29,6 +29,7 @@ from mouse import press
 from pynput.keyboard import Key
 from evalprot import makeeval
 import pymongo
+from bson.objectid import ObjectId
 
 #load .env filw
 load_dotenv()
@@ -218,8 +219,6 @@ Help.add_field(name="`T!morse`",value="Gibt morsecode zurück",inline=True)
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
 blockedusers = []
-bindchannels = []
-bindservers = []
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
@@ -378,6 +377,16 @@ async def on_message(message):
             morse = ""
             morse = morse.join(" "+morsealphabet[i.lower()] for i in message.content.replace("T!morse ",""))
             await message.channel.send(embed=discord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
+        elif message.content.startswith("T!bind "):
+            if message.author.id == 772386889817784340 or message.author.adminstrator:
+                idbefore = linkedchannels.find({"_id": ObjectId("61b5d3560d296088f9c970f4")})
+                customid = message.content.replace("T!bind ","")
+                if message.content.replace("T!bind ","") == "unbind":
+                    linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):""}})
+                    await message.channel.send(embed=discord.Embed(description=f"Bindung `{idbefore}` gelöscht",color=0xe74c3c))
+                else:
+                    linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
+                    await message.channel.send(embed=discord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
 
         
         elif message.content.startswith("T!"):
