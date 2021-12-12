@@ -231,6 +231,9 @@ async def on_ready():
 #commands/ingame chat
 @client.event
 async def on_message(message):
+    if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}) and not message.content.startswith("T!"):
+        if linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)] != "":
+            exa.command(linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
     #make global variables
     global awaitpoll
     global dice
@@ -343,7 +346,7 @@ async def on_message(message):
             if message.author.id == 772386889817784340:
                 await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
             else:
-                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=nextcord.Color.red))
+                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
         elif message.content.startswith("T!embed "):
             arguments = message.content[8:len(message.content)].split(" | ")
             if (len(arguments) %2) == 0:
@@ -379,7 +382,7 @@ async def on_message(message):
             await message.channel.send(embed=discord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
         elif message.content.startswith("T!bind "):
             if message.author.id == 772386889817784340 or message.author.adminstrator:
-                idbefore = linkedchannels.find({"_id": ObjectId("61b5d3560d296088f9c970f4")})
+                idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})
                 customid = message.content.replace("T!bind ","")
                 if message.content.replace("T!bind ","") == "unbind":
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):""}})
@@ -387,7 +390,8 @@ async def on_message(message):
                 else:
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
                     await message.channel.send(embed=discord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
-
+            else:
+                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
         
         elif message.content.startswith("T!"):
             await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
