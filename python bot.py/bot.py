@@ -214,6 +214,7 @@ Help.add_field(name="`T!block`",value="Blockiert User x vom bot use",inline=True
 Help.add_field(name="`T!eval`",value="Evaluiert code",inline=True)
 Help.add_field(name="`T!embed`",value="Macht ein embed mit description + evtl. `|` für felder",inline=True)
 Help.add_field(name="`T!morse`",value="Gibt morsecode zurück",inline=True)
+Help.add_field(name="`T!bind`",value="bindet einen server zum channel",inline=True)
 
 
 #Bot activities
@@ -382,7 +383,7 @@ async def on_message(message):
             await message.channel.send(embed=discord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
         elif message.content.startswith("T!bind "):
             if message.author.id == 772386889817784340 or message.author.adminstrator:
-                idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})
+                idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
                 customid = message.content.replace("T!bind ","")
                 if message.content.replace("T!bind ","") == "unbind":
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):""}})
@@ -392,6 +393,9 @@ async def on_message(message):
                     await message.channel.send(embed=discord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
             else:
                 await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
+        elif message.content == "T!bind":
+            thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
+            await message.channel.send(embed=discord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
         
         elif message.content.startswith("T!"):
             await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
