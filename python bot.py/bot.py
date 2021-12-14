@@ -1,4 +1,7 @@
 # imports
+from PIL import Image
+import json
+import math
 import asyncio
 from datetime import datetime
 from discord import colour
@@ -8,6 +11,7 @@ from nextcord.client import Client
 from nextcord.ui import view
 from discord import guild
 import time
+import requests
 from random import randrange
 from discord.ui import Button,View
 import os
@@ -215,6 +219,7 @@ Help.add_field(name="`T!eval`",value="Evaluiert code",inline=True)
 Help.add_field(name="`T!embed`",value="Macht ein embed mit description + evtl. `|` für felder",inline=True)
 Help.add_field(name="`T!morse`",value="Gibt morsecode zurück",inline=True)
 Help.add_field(name="`T!bind`",value="bindet einen server zum channel",inline=True)
+Help.add_field(name="`T!stats`",value="Gibt ein paar Minecraft stats",inline=True)
 
 
 #Bot activities
@@ -396,6 +401,41 @@ async def on_message(message):
         elif message.content == "T!bind":
             thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
             await message.channel.send(embed=discord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
+
+        elif message.content.startswith("T!stats "):
+            playerembed = discord.Embed(color=0x206694)
+            player = message.content.replace("T!stats ","")
+            request = requests.get(url=f"https://api.slothpixel.me/api/players/{player}").json()
+            if "error" in request:
+                await message.channel.send(embed=discord.Embed(color=0xe74c3c,description="Der Player existiert nicht"))
+            else:
+                uuid = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{player}").json()["id"]
+                apikey = os.environ["apikey"]
+                lastlogin = math.floor(request["last_login"]/1000)
+                level = request["level"]
+                levelbarpercent= math.ceil((math.floor(level)-level)*-12)
+                levelbar=""
+                link=request["links"]["DISCORD"]
+                rank={"VIP":"VIP","VIP_PLUS":"VIP+","MVP":"MVP","MVP_PLUS":"MVP+","MVP_PLUS_PLUS":"MVP++"}
+                currrank = rank[request["rank"]]
+                for i in range(levelbarpercent):
+                    levelbar += "🟩"
+                for i in range(12-levelbarpercent):
+                    levelbar += "🔳"
+
+                playerembed.set_thumbnail(url=f"https://crafatar.com/renders/body/{uuid}?size=200&default=MHF_Steve&overlay")
+                playerembed.set_author(name=f"[{currrank}] {player}",icon_url=f"https://crafatar.com/avatars/{uuid}?size=200&default=MHF_Steve&overlay")
+                playerembed.add_field(inline=False,name="`uuid`",value=uuid)
+                playerembed.add_field(inline=False,name="`Last Login`",value=f"<t:{lastlogin}:F>")
+                playerembed.add_field(inline=False,name="`Version`",value=request["mc_version"])
+                if request["online"]:
+                    playerembed.add_field(inline=False,name="`Online`",value="🟩")
+                else:
+                    playerembed.add_field(inline=False,name="`Offline`",value="🔲")
+                playerembed.add_field(inline=False,name="`Discord`",value=f"{link}")
+                playerembed.add_field(inline=False,name=f"`Level {math.floor(level)}`",value=f"{levelbar}")
+                await message.channel.send(embed=playerembed)
+
         
         elif message.content.startswith("T!"):
             await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
