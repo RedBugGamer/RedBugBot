@@ -50,9 +50,7 @@ status=False
 myclient = pymongo.MongoClient("mongodb://localhost",port=27017)
 RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
-morsealphabet = {
-    'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''
-}
+morsealphabet = {'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''}
 #Button menus
 class TicTacToeButton(discord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
@@ -207,10 +205,8 @@ Help.add_field(name="`T!controll`",value="Ist ein Botowner only command")
 Help.add_field(name="`T!say`",value="Sagt etwas",inline=True)
 Help.add_field(name="`T!poll`",value="Macht einen vote",inline=True)
 Help.add_field(name="`T!dice`",value="Würfelspiele 🎲",inline=True)
-Help.add_field(name="`T!startserver`",value="startet den Server",inline=True)
-Help.add_field(name="`T!status`",value="Gibt den aktuellen status des servers alle 20 sekunden zurück",inline=True)
 Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=True)
-Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game `ohne` commands. Marco",inline=True)
+Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game.",inline=True)
 Help.add_field(name="`T!ping`",value="Gibt den botping",inline=True)
 Help.add_field(name="`T!send`",value="Sendet eine nachricht in den channel",inline=True)
 Help.add_field(name="`T!purge`",value="Löscht x nachrichten",inline=True)
@@ -325,15 +321,6 @@ async def on_message(message):
             dice=True
             await message.channel.send(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
 
-        elif message.content == "T!startserver":
-            #startet modprojekt Server
-            exa.start(id=id)
-            await message.channel.send(embed=discord.Embed(description="Server gestartet"))
-        elif message.content == "T!status":
-            #gibt den botstatus alle 15 sec zurück
-            status=True
-            running = True
-            await message.channel.send(view=stopstatus(),embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
             
         elif message.content == "T!web":
             #link zur website W.I.P.
