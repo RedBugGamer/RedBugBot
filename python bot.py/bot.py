@@ -196,26 +196,18 @@ def getstatuscolor(currentrequest,sendtimestamp):
         return discord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x3498db,timestamp=sendtimestamp)
     else:
         return discord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
-
+async def noperms(obj):
+    await obj.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
 #Help menu
 Help = discord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.now())
-Help.add_field(name = "`Prefix`",value="Mein prefix ist `T!`",inline=True)
-Help.add_field(name = "`T!help`",value="Der Command hilft dir",inline=True)
-Help.add_field(name="`T!controll`",value="Ist ein Botowner only command")
-Help.add_field(name="`T!say`",value="Sagt etwas",inline=True)
-Help.add_field(name="`T!poll`",value="Macht einen vote",inline=True)
-Help.add_field(name="`T!dice`",value="Würfelspiele 🎲",inline=True)
-Help.add_field(name="`T!web`",value="Gibt den link zu meiner Website",inline=True)
-Help.add_field(name="`T!tictactoe`",value="Macht ein TikTakToe game.",inline=True)
-Help.add_field(name="`T!ping`",value="Gibt den botping",inline=True)
-Help.add_field(name="`T!send`",value="Sendet eine nachricht in den channel",inline=True)
-Help.add_field(name="`T!purge`",value="Löscht x nachrichten",inline=True)
-Help.add_field(name="`T!block`",value="Blockiert User x vom bot use",inline=True)
-Help.add_field(name="`T!eval`",value="Evaluiert code",inline=True)
-Help.add_field(name="`T!embed`",value="Macht ein embed mit description + evtl. `|` für felder",inline=True)
-Help.add_field(name="`T!morse`",value="Gibt morsecode zurück",inline=True)
-Help.add_field(name="`T!bind`",value="bindet einen server zum channel",inline=True)
-Help.add_field(name="`T!stats`",value="Gibt ein paar Minecraft stats",inline=True)
+Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
+Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
+Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`",inline=False)
+Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`",inline=False)
+Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
+Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
+Help.add_field(name="Admin",value="`T!bind`",inline=False)
+
 
 
 #Bot activities
@@ -227,7 +219,7 @@ async def on_ready():
     Help.set_author(name=client.user,icon_url=client.user.avatar.url)
     print(f'{client.user} has connected to Discord!')
     while True:
-        await client.change_presence(activity=discord.Game(activitys[randrange(0,len(activitys))]),status=discord.Status.online)
+        await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
         await asyncio.sleep(random.randrange(15,60))
 
 #commands/ingame chat
@@ -257,24 +249,18 @@ async def on_message(message):
                     await asyncio.sleep(0.75)
                     await message.edit(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
                 await message.edit(embed=discord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
-            elif status:
-                #bearbeitet die nachricht für status
-                status=False
-                running = True
-                await asyncio.sleep(1)
-                while running:
-                    await asyncio.sleep(15)
-                    await message.edit(embed=getstatuscolor(exa.get_server(id=id).status,datetime.now()))
-                await message.edit(embed=discord.Embed(description="Disabled"))
             return  
         if message.content == "T!help":
             #zeigt help menu
             await message.channel.send(embed = Help)
             
         elif message.content.startswith("T!say"):
-            #sagt string
-            await message.channel.send(message.content.replace("T!say",""))
-            
+            if message.author.id == 772386889817784340:
+                #sagt string
+                await message.channel.send(message.content.replace("T!say",""))
+            else:
+                noperms(message)
+
         elif message.content.startswith("T!poll"):
             #macht einen poll
             awaitpoll = True
@@ -306,15 +292,15 @@ async def on_message(message):
                 
             else:
                 #keine perms
-                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu"))
+                noperms(message)
         
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
-            if message.author.id == 772386889817784340:
+            if message.author.id == 772386889817784340 or message.author.adminstrator:
                 await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
             else:
-                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=nextcord.Color.red))
+                noperms(message)
 
         elif message.content == "T!dice":
             #würfelt
@@ -339,7 +325,7 @@ async def on_message(message):
             if message.author.id == 772386889817784340:
                 await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
             else:
-                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
+                noperms(message)
         elif message.content.startswith("T!embed "):
             arguments = message.content[8:len(message.content)].split(" | ")
             if (len(arguments) %2) == 0:
@@ -384,7 +370,7 @@ async def on_message(message):
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
                     await message.channel.send(embed=discord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
             else:
-                await message.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
+                noperms(message)
         elif message.content == "T!bind":
             thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
             await message.channel.send(embed=discord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
@@ -403,7 +389,7 @@ async def on_message(message):
                 levelbarpercent= math.ceil((math.floor(level)-level)*-12)
                 levelbar=""
                 link=request["links"]["DISCORD"]
-                rank={"VIP":"VIP","VIP_PLUS":"VIP+","MVP":"MVP","MVP_PLUS":"MVP+","MVP_PLUS_PLUS":"MVP++"}
+                rank={"VIP":"[VIP]","VIP_PLUS":"[VIP+]","MVP":"[MVP]","MVP_PLUS":"[MVP+]","MVP_PLUS_PLUS":"[MVP++]",None:""}
                 currrank = rank[request["rank"]]
                 for i in range(levelbarpercent):
                     levelbar += "🟩"
@@ -411,7 +397,7 @@ async def on_message(message):
                     levelbar += "🔳"
 
                 playerembed.set_thumbnail(url=f"https://crafatar.com/renders/body/{uuid}?size=200&default=MHF_Steve&overlay")
-                playerembed.set_author(name=f"[{currrank}] {player}",icon_url=f"https://crafatar.com/avatars/{uuid}?size=200&default=MHF_Steve&overlay")
+                playerembed.set_author(name=f"{currrank} {player}",icon_url=f"https://crafatar.com/avatars/{uuid}?size=200&default=MHF_Steve&overlay")
                 playerembed.add_field(inline=False,name="`uuid`",value=uuid)
                 playerembed.add_field(inline=False,name="`Last Login`",value=f"<t:{lastlogin}:F>")
                 playerembed.add_field(inline=False,name="`Version`",value=request["mc_version"])
