@@ -1,4 +1,5 @@
 # imports
+from discord.ext import tasks, commands
 from PIL import Image
 import json
 import math
@@ -205,10 +206,12 @@ Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
 Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`",inline=False)
 Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`",inline=False)
 Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
-Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
+Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`,`T!eval`",inline=False)
 Help.add_field(name="Admin",value="`T!bind`",inline=False)
 
-
+@tasks.loop(seconds=30)
+async def statuschange():
+    await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
@@ -216,11 +219,10 @@ blockedusers = []
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
+    statuschange.start()
     Help.set_author(name=client.user,icon_url=client.user.avatar.url)
     print(f'{client.user} has connected to Discord!')
-    while True:
-        await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
-        await asyncio.sleep(random.randrange(15,60))
+    
 
 #commands/ingame chat
 @client.event
@@ -259,7 +261,7 @@ async def on_message(message):
                 #sagt string
                 await message.channel.send(message.content.replace("T!say",""))
             else:
-                noperms(message)
+                await noperms(message)
 
         elif message.content.startswith("T!poll"):
             #macht einen poll
@@ -292,7 +294,7 @@ async def on_message(message):
                 
             else:
                 #keine perms
-                noperms(message)
+                await noperms(message)
         
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
@@ -300,7 +302,7 @@ async def on_message(message):
                 await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
             else:
-                noperms(message)
+                await noperms(message)
 
         elif message.content == "T!dice":
             #würfelt
@@ -325,13 +327,16 @@ async def on_message(message):
             if message.author.id == 772386889817784340:
                 await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
             else:
-                noperms(message)
+                await noperms(message)
         elif message.content.startswith("T!embed "):
             arguments = message.content[8:len(message.content)].split(" | ")
             if (len(arguments) %2) == 0:
                 await message.channel.send(embed=discord.Embed(description="ERROR Du benötigst mehr input",colour=0xe74c3c))
             else:
-                customembed = discord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}",icon_url=message.author.avatar.url)
+                if message.author.avatar == None:
+                    customembed = discord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}")
+                else:
+                    customembed = discord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}",icon_url=message.author.avatar.url)
                 active = False
                 for i in range(int(len(arguments))):
                     if active:
@@ -370,7 +375,7 @@ async def on_message(message):
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
                     await message.channel.send(embed=discord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
             else:
-                noperms(message)
+                await noperms(message)
         elif message.content == "T!bind":
             thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
             await message.channel.send(embed=discord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
