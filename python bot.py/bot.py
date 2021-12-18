@@ -51,6 +51,7 @@ status=False
 myclient = pymongo.MongoClient("mongodb://localhost",port=27017)
 RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
+somedata=RedBugBot["somedata"]
 morsealphabet = {'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''}
 #Button menus
 class TicTacToeButton(discord.ui.Button['TicTacToe']):
@@ -209,13 +210,14 @@ Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
 Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`,`T!eval`",inline=False)
 Help.add_field(name="Admin",value="`T!bind`",inline=False)
 
-@tasks.loop(seconds=30)
+@tasks.loop(count=1)
 async def statuschange():
-    await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
+    while True:
+        await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
+        await asyncio.sleep(randrange(15,60))
 
 #Bot activities
-activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken"]
-blockedusers = []
+activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität"]
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
@@ -223,6 +225,9 @@ async def on_ready():
     Help.set_author(name=client.user,icon_url=client.user.avatar.url)
     print(f'{client.user} has connected to Discord!')
     
+@client.event
+async def on_disconnect():
+    print("disconnectet")
 
 #commands/ingame chat
 @client.event
@@ -236,7 +241,7 @@ async def on_message(message):
     global status
     global running
     # block users
-    if not message.author in blockedusers:
+    if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61ba06872043ad510f6bf52b")})["blockeduserid"]:
         #await message from self
         if message.author == client.user:
             if awaitpoll:
@@ -346,16 +351,20 @@ async def on_message(message):
                         active=True
                 await message.channel.send(embed=customembed)
         elif message.content.startswith("T!block"):
-            if message.author.id == 772386889817784340:
-                if message.mentions[0] in blockedusers:
-                    blockedusers.remove(message.mentions[0])
+            blockedusers = somedata.find_one({"_id":ObjectId("61ba06872043ad510f6bf52b")})["blockeduserid"]
+            if not message.author.id == 772386889817784340:
+                await message.channel.send(embed=discord.Embed(description="Acces denied",color=0xe74c3c))
+            elif message.mentions[0].id == 772386889817784340:
+                await message.channel.send(embed=discord.Embed(description="Block dich nicht selbst!",color=0xe74c3c))
+            elif message.author.id == 772386889817784340 and not message.mentions[0].id == 772386889817784340:
+                if str(message.mentions[0].id) in blockedusers:
+                    somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$pull":{"blockeduserid":str(message.mentions[0].id)}})
                     
                     await message.channel.send(embed=discord.Embed(description=f"<@{message.mentions[0].id}> darf mich wieder benutzen",color=0x2ecc71))
                 else:
-                    blockedusers.append(message.mentions[0])
+                    somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$push":{"blockeduserid":str(message.mentions[0].id)}})
                     await message.channel.send(embed=discord.Embed(description=f"<@{message.mentions[0].id}> wurde blockiert",color=0xe74c3c))
-            else:
-                await message.channel.send(embed=discord.Embed(description="Acces denied",color=0xe74c3c))
+            
 
         elif message.content.startswith("T!eval"):
             myeval = makeeval(message.content.replace("```py","").replace("```","").replace("print(","evalprint(")[6:len(message.content)])
