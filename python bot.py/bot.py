@@ -200,12 +200,30 @@ def getstatuscolor(currentrequest,sendtimestamp):
         return discord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
 async def noperms(obj):
     await obj.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
+regiseredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
+                    "ping":"Gibt meinen ping `Usage: T!ping`",
+                    "control":"Botowner only `Usage: T!control <action>`",
+                    "block":"Blockiert einen User sodass der den bot nicht nutzen kann `Usage: T!help <@ member>`",
+                    "send":"sendet etwas in kanal x `Usage: T!send <# channel> <message>`",
+                    "say":"sagt etwas als ich `Usage: T!say <message>`",
+                    "activität":"Setzt meine Bot Aktivität `Usage: T!activität <str>`",
+                    "dice":"Würfelt für dich `Usage: T!dice`",
+                    "tictactoe":"Startet ein TikTakToe game `Usage: T!tictactoe`",
+                    "google":"googelt was für dich `Usage: T!google/T!g/T!guckle`",
+                    "morse":"gibt die morsetext `Usage: T!morse <text>`",
+                    "embed":"Sendet eine Einbettung `Usage: T!embed <description>` um ein feld hinzuzufügen: ` | <name> | <value>`",
+                    "stats":"Gibt die Hypixel stats `Usage: T!stats <player>`",
+                    "poll":"Macht eine Umfrage `Usage: T!poll <Frage>`",
+                    "eval":"führt code aus `Usage: T!eval <code>`",
+                    "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`'
+                        }
+
 #Help menu
 Help = discord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.now())
 Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
 Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
-Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`",inline=False)
-Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`",inline=False)
+Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activität`",inline=False)
+Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
 Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
 Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`,`T!eval`",inline=False)
 Help.add_field(name="Admin",value="`T!bind`",inline=False)
@@ -217,7 +235,7 @@ async def statuschange():
         await asyncio.sleep(randrange(15,60))
 
 #Bot activities
-activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität"]
+activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen"]
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
@@ -260,6 +278,12 @@ async def on_message(message):
         if message.content == "T!help":
             #zeigt help menu
             await message.channel.send(embed = Help)
+        elif message.content.startswith("T!help "):
+            query= message.content[7:len(message.content)].replace("T!","")
+            if query in regiseredcommands:
+                await message.channel.send(embed=discord.Embed(title="T!"+query,description=regiseredcommands[query],color=0xe74c3c))
+            else:
+                await message.channel.send(embed=discord.Embed(title="T!"+query,description="Der Command existiert nicht",color=0xe74c3c))
             
         elif message.content.startswith("T!say"):
             if message.author.id == 772386889817784340:
@@ -334,7 +358,7 @@ async def on_message(message):
             else:
                 await noperms(message)
         elif message.content.startswith("T!embed "):
-            arguments = message.content[8:len(message.content)].split(" | ")
+            arguments = message.content[8:len(message.content)].split("|")
             if (len(arguments) %2) == 0:
                 await message.channel.send(embed=discord.Embed(description="ERROR Du benötigst mehr input",colour=0xe74c3c))
             else:
@@ -422,6 +446,18 @@ async def on_message(message):
                 playerembed.add_field(inline=False,name="`Discord`",value=f"{link}")
                 playerembed.add_field(inline=False,name=f"`Level {math.floor(level)}`",value=f"{levelbar}")
                 await message.channel.send(embed=playerembed)
+        elif message.content.startswith("T!activität "):
+            if message.author.id == 772386889817784340:
+                if message.content.replace("T!activität ","") == "reset":
+                    await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
+                else:
+                    await client.change_presence(activity=discord.Game(message.content.replace("T!activität ","")),status=discord.Status.online)
+            else:
+                await noperms(message)
+        elif message.content.startswith("T!guckle") or message.content.startswith("T!google") or message.content.startswith("T!g"):
+            myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","")
+            myurl = f"https://www.google.com/search?q={myquery}"
+            await message.channel.send(embed=discord.Embed(type="article",url=f"https://www.google.com/search?q={myquery}",description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
 
         
         elif message.content.startswith("T!"):
