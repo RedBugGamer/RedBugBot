@@ -1,6 +1,6 @@
 # imports
 from discord.ext import tasks, commands
-from PIL import Image
+from PIL import Image,ImageFont,ImageDraw
 import json
 import math
 import asyncio
@@ -249,7 +249,7 @@ async def on_disconnect():
 
 #commands/ingame chat
 @client.event
-async def on_message(message):
+async def on_message(message:discord.Message):
     if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}) and not message.content.startswith("T!"):
         if linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)] != "":
             exa.command(linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
@@ -293,6 +293,7 @@ async def on_message(message):
                 await noperms(message)
 
         elif message.content.startswith("T!poll"):
+            await message.channel.trigger_typing()
             #macht einen poll
             awaitpoll = True
             if message.author.avatar == None:
@@ -303,6 +304,7 @@ async def on_message(message):
         elif message.content.startswith("T!controll "):
             #control computer
             if message.author.id == 772386889817784340:
+                await message.channel.trigger_typing()
                 if message.content.replace("T!controll ","") == "hotspot":
                     macro.hotspot()
                     await message.channel.send(embed=discord.Embed(description="Hotspot eingeschalten"))
@@ -358,6 +360,7 @@ async def on_message(message):
             else:
                 await noperms(message)
         elif message.content.startswith("T!embed "):
+            await message.channel.trigger_typing()
             arguments = message.content[8:len(message.content)].split("|")
             if (len(arguments) %2) == 0:
                 await message.channel.send(embed=discord.Embed(description="ERROR Du benötigst mehr input",colour=0xe74c3c))
@@ -414,6 +417,7 @@ async def on_message(message):
             await message.channel.send(embed=discord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
 
         elif message.content.startswith("T!stats "):
+            await message.channel.trigger_typing()
             playerembed = discord.Embed(color=0x206694)
             player = message.content.replace("T!stats ","")
             request = requests.get(url=f"https://api.slothpixel.me/api/players/{player}").json()
@@ -467,6 +471,13 @@ async def on_message(message):
         await message.channel.send(embed=discord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
     if message.content.startswith("T!") and not message.content.startswith("T!purge"):
             await message.delete()
+
+@client.event
+async def on_member_join(member:discord.Member):
+    if member.dm_channel == None:
+        await member.create_dm
+    
+    await member.dm_channel.send(embed=discord.Embed(description="Willkommen auf "+member).set_image(member.guild.icon_url))
 
 #run the bot
 client.run(TOKEN)
