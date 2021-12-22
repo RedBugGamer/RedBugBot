@@ -179,14 +179,6 @@ class Schiffetot():
     async def Field1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
         await interaction.response.send_message("Dein spielfeld XD",ephemeral=True,view=Schiffefeld())
         await interaction.edit_original_message()
-class stopstatus(nextcord.ui.View):
-                def __init__(self):
-                    super().__init__()
-                    self.value = None
-                @nextcord.ui.button(label="Cancel",style=nextcord.ButtonStyle.danger)
-                async def Stopstatus(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
-                    global running
-                    running = False
 def getstatuscolor(currentrequest,sendtimestamp):
     
     if currentrequest == "Online":
@@ -201,9 +193,9 @@ def getstatuscolor(currentrequest,sendtimestamp):
         return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x3498db,timestamp=sendtimestamp)
     else:
         return nextcord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
-async def noperms(obj):
-    await obj.channel.send(embed=nextcord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
-regiseredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
+async def noperms(obj:nextcord.Message):
+    await obj.reply(embed=nextcord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
+registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
                     "ping":"Gibt meinen ping `Usage: T!ping`",
                     "control":"Botowner only `Usage: T!control <action>`",
                     "block":"Blockiert einen User sodass der den bot nicht nutzen kann `Usage: T!help <@ member>`",
@@ -236,10 +228,10 @@ Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
 async def statuschange():
     while True:
         await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
-        await asyncio.sleep(randrange(15,60))
+        await asyncio.sleep(240)
 
 #Bot activities
-activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen"]
+activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Dischordserver"]
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
@@ -284,8 +276,8 @@ async def on_message(message:nextcord.Message):
             await message.channel.send(embed = Help)
         elif message.content.startswith("T!help "):
             query= message.content[7:len(message.content)].replace("T!","")
-            if query in regiseredcommands:
-                await message.channel.send(embed=nextcord.Embed(title="T!"+query,description=regiseredcommands[query],color=0xe74c3c))
+            if query in registeredcommands:
+                await message.channel.send(embed=nextcord.Embed(title="T!"+query,description=registeredcommands[query],color=0xe74c3c))
             else:
                 await message.channel.send(embed=nextcord.Embed(title="T!"+query,description="Der Command existiert nicht",color=0xe74c3c))
             
@@ -454,7 +446,7 @@ async def on_message(message:nextcord.Message):
                     playerembed.add_field(inline=False,name="`Online`",value="🟩")
                 else:
                     playerembed.add_field(inline=False,name="`Offline`",value="🔲")
-                playerembed.add_field(inline=False,name="`nextcord`",value=f"{link}")
+                playerembed.add_field(inline=False,name="`Discord`",value=f"{link}")
                 playerembed.add_field(inline=False,name=f"`Level {math.floor(level)}`",value=f"{levelbar}")
                 await message.channel.send(embed=playerembed)
         elif message.content.startswith("T!activität "):
@@ -466,7 +458,7 @@ async def on_message(message:nextcord.Message):
             else:
                 await noperms(message)
         elif message.content.startswith("T!guckle") or message.content.startswith("T!google") or message.content.startswith("T!g"):
-            myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","")
+            myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","").replace(" ","+")
             myurl = f"https://www.google.com/search?q={myquery}"
             await message.channel.send(embed=nextcord.Embed(type="article",url=f"https://www.google.com/search?q={myquery}",description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
         elif message.content.startswith("T!mute"):
@@ -478,7 +470,6 @@ async def on_message(message:nextcord.Message):
                 await message.mentions[0].edit(timeout=datetime.datetime.utcnow()+datetime.timedelta(minutes=int(muteduration)))
             else:
                 await noperms(message)
-
         
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
