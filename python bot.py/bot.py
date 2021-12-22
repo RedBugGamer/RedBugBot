@@ -1,34 +1,34 @@
 # imports
-from discord.ext import tasks, commands
+from nextcord.ext import tasks, commands
 from PIL import Image,ImageFont,ImageDraw
 import json
 import math
 import asyncio
-from datetime import datetime
-from discord import colour
-from discord.ui.item import Item
+import datetime
+from nextcord import colour
+from nextcord.ui.item import Item
 import nextcord
 from nextcord.client import Client
 from nextcord.ui import view
-from discord import guild
+from nextcord import guild
 import time
 import requests
 from random import randrange
-from discord.ui import Button,View
+from nextcord.ui import Button,View
 import os
 from nextcord import *
-from discord.colour import Color, Colour
+from nextcord.colour import Color, Colour
 from exaroton import Exaroton
 import tinydb
 from dotenv import load_dotenv
-import discord
-from discord.enums import TeamMembershipState
+import nextcord
+from nextcord.enums import TeamMembershipState
 import time
 import macro
 import random
 from typing import List, Mapping
-from discord.ext import commands
-import discord
+from nextcord.ext import commands
+import nextcord
 from tinydb import *
 from mouse import press
 from pynput.keyboard import Key
@@ -40,9 +40,11 @@ from bson.objectid import ObjectId
 load_dotenv()
 
 #define important variables
+intents = Intents.default()
+intents.members = True
 exa = Exaroton(os.environ["exaroton"])
 TOKEN = os.environ["token"]
-client = discord.Client()
+client = nextcord.Client(intents=intents)
 awaitpoll = False
 id = "H6WIxtAqtR1pMJJb"
 dice = False
@@ -52,18 +54,19 @@ myclient = pymongo.MongoClient("mongodb://localhost",port=27017)
 RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
 somedata=RedBugBot["somedata"]
+redbuggamer = 772386889817784340
 morsealphabet = {'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''}
 #Button menus
-class TicTacToeButton(discord.ui.Button['TicTacToe']):
+class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
         
-        super().__init__(style=discord.ButtonStyle.secondary, label='\u200b', row=y)
+        super().__init__(style=nextcord.ButtonStyle.secondary, label='\u200b', row=y)
         self.x = x
         self.y = y
 
     # This function is called whenever this particular button is pressed
     # This is part of the "meat" of the game logic
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: nextcord.Interaction):
         assert self.view is not None
         view: TicTacToe = self.view
         state = view.board[self.y][self.x]
@@ -71,14 +74,14 @@ class TicTacToeButton(discord.ui.Button['TicTacToe']):
             return
 
         if view.current_player == view.X:
-            self.style = discord.ButtonStyle.danger
+            self.style = nextcord.ButtonStyle.danger
             self.label = 'X'
             self.disabled = True
             view.board[self.y][self.x] = view.X
             view.current_player = view.O
             content = "O ist dran"
         else:
-            self.style = discord.ButtonStyle.success
+            self.style = nextcord.ButtonStyle.success
             self.label = 'O'
             self.disabled = True
             view.board[self.y][self.x] = view.O
@@ -100,7 +103,7 @@ class TicTacToeButton(discord.ui.Button['TicTacToe']):
             view.stop()
 
         await interaction.response.edit_message(content=content, view=view)
-class TicTacToe(discord.ui.View):
+class TicTacToe(nextcord.ui.View):
     # This tells the IDE or linter that all our children will be TicTacToeButtons
     # This is not required
     children: List[TicTacToeButton]
@@ -159,7 +162,7 @@ class TicTacToe(discord.ui.View):
             return self.Tie
 
         return None
-class Schiffefeld(discord.ui.View):
+class Schiffefeld(nextcord.ui.View):
     def __init__(self):
         super().__init__()
         self.value = None
@@ -176,7 +179,7 @@ class Schiffetot():
     async def Field1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
         await interaction.response.send_message("Dein spielfeld XD",ephemeral=True,view=Schiffefeld())
         await interaction.edit_original_message()
-class stopstatus(discord.ui.View):
+class stopstatus(nextcord.ui.View):
                 def __init__(self):
                     super().__init__()
                     self.value = None
@@ -187,19 +190,19 @@ class stopstatus(discord.ui.View):
 def getstatuscolor(currentrequest,sendtimestamp):
     
     if currentrequest == "Online":
-        return discord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x2ecc71,timestamp=sendtimestamp)
+        return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x2ecc71,timestamp=sendtimestamp)
     elif currentrequest == "Offline":
-        return discord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x979c9f,timestamp=sendtimestamp)
+        return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x979c9f,timestamp=sendtimestamp)
     elif currentrequest == "Saving":
-        return discord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0xFEE75C,timestamp=sendtimestamp)
+        return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0xFEE75C,timestamp=sendtimestamp)
     elif currentrequest == "Loading":
-        return discord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0xe67e22,timestamp=sendtimestamp)
+        return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0xe67e22,timestamp=sendtimestamp)
     elif currentrequest == "Starting":
-        return discord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x3498db,timestamp=sendtimestamp)
+        return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x3498db,timestamp=sendtimestamp)
     else:
-        return discord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
+        return nextcord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
 async def noperms(obj):
-    await obj.channel.send(embed=discord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
+    await obj.channel.send(embed=nextcord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
 regiseredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
                     "ping":"Gibt meinen ping `Usage: T!ping`",
                     "control":"Botowner only `Usage: T!control <action>`",
@@ -215,23 +218,24 @@ regiseredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>
                     "stats":"Gibt die Hypixel stats `Usage: T!stats <player>`",
                     "poll":"Macht eine Umfrage `Usage: T!poll <Frage>`",
                     "eval":"führt code aus `Usage: T!eval <code>`",
-                    "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`'
+                    "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
+                    "mute":"Mutet einen User für x minuten `Usage: T!mute @member <x>`"
                         }
 
 #Help menu
-Help = discord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.now())
+Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.datetime.now())
 Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
 Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
 Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activität`",inline=False)
 Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
 Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
 Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`,`T!eval`",inline=False)
-Help.add_field(name="Admin",value="`T!bind`",inline=False)
+Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
 
 @tasks.loop(count=1)
 async def statuschange():
     while True:
-        await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
+        await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
         await asyncio.sleep(randrange(15,60))
 
 #Bot activities
@@ -249,7 +253,7 @@ async def on_disconnect():
 
 #commands/ingame chat
 @client.event
-async def on_message(message:discord.Message):
+async def on_message(message:nextcord.Message):
     if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}) and not message.content.startswith("T!"):
         if linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)] != "":
             exa.command(linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
@@ -272,8 +276,8 @@ async def on_message(message:discord.Message):
                 dice = False
                 for i in range(4):
                     await asyncio.sleep(0.75)
-                    await message.edit(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
-                await message.edit(embed=discord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
+                    await message.edit(embed=nextcord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
+                await message.edit(embed=nextcord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
             return  
         if message.content == "T!help":
             #zeigt help menu
@@ -281,9 +285,9 @@ async def on_message(message:discord.Message):
         elif message.content.startswith("T!help "):
             query= message.content[7:len(message.content)].replace("T!","")
             if query in regiseredcommands:
-                await message.channel.send(embed=discord.Embed(title="T!"+query,description=regiseredcommands[query],color=0xe74c3c))
+                await message.channel.send(embed=nextcord.Embed(title="T!"+query,description=regiseredcommands[query],color=0xe74c3c))
             else:
-                await message.channel.send(embed=discord.Embed(title="T!"+query,description="Der Command existiert nicht",color=0xe74c3c))
+                await message.channel.send(embed=nextcord.Embed(title="T!"+query,description="Der Command existiert nicht",color=0xe74c3c))
             
         elif message.content.startswith("T!say"):
             if message.author.id == 772386889817784340:
@@ -298,30 +302,30 @@ async def on_message(message:discord.Message):
             awaitpoll = True
             if message.author.avatar == None:
                 #check avatar exists
-                await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author))
+                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.datetime.now()).set_author(name=message.author))
             else:
-                await message.channel.send(embed=discord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
+                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
         elif message.content.startswith("T!controll "):
             #control computer
             if message.author.id == 772386889817784340:
                 await message.channel.trigger_typing()
                 if message.content.replace("T!controll ","") == "hotspot":
                     macro.hotspot()
-                    await message.channel.send(embed=discord.Embed(description="Hotspot eingeschalten"))
+                    await message.channel.send(embed=nextcord.Embed(description="Hotspot eingeschalten"))
                 elif message.content.replace("T!controll ","") == "shutdown":
-                    await message.channel.send(embed=discord.Embed(description="Ausschalten"))
+                    await message.channel.send(embed=nextcord.Embed(description="Ausschalten"))
                     macro.shutdown()
                 elif message.content.replace("T!controll ","").startswith("message"):
-                    await message.channel.send(embed=discord.Embed(description="Du hast `"+message.content.replace("T!controll","").replace(" message ","")+"` gesendet"))
+                    await message.channel.send(embed=nextcord.Embed(description="Du hast `"+message.content.replace("T!controll","").replace(" message ","")+"` gesendet"))
                     macro.message(message.content.replace("T!controll","").replace(" message",""),15)
                 elif message.content.replace("T!controll ","") == "restart":
-                    await message.channel.send(embed=discord.Embed(description="Neustarten"))
+                    await message.channel.send(embed=nextcord.Embed(description="Neustarten"))
                     macro.restart()
                 elif message.content.replace("T!controll ","") == "gamer":
                     macro.win_r("C:/Users/RedBugGamer/AppData/Roaming/MultiMC/Multimc.exe")
                     time.sleep(2)
                     macro.press(Key.enter)
-                    await message.channel.send(embed=discord.Embed(description="Aktuelle instanz gestartet"))
+                    await message.channel.send(embed=nextcord.Embed(description="Aktuelle instanz gestartet"))
                 
             else:
                 #keine perms
@@ -329,7 +333,7 @@ async def on_message(message:discord.Message):
         
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
-            if message.author.id == 772386889817784340 or message.author.adminstrator:
+            if message.author.id == 772386889817784340 or message.author.guild_permissions.administrator:
                 await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
             else:
@@ -338,12 +342,12 @@ async def on_message(message:discord.Message):
         elif message.content == "T!dice":
             #würfelt
             dice=True
-            await message.channel.send(embed=discord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
+            await message.channel.send(embed=nextcord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
 
             
         elif message.content == "T!web":
             #link zur website W.I.P.
-            await message.channel.send(embed=discord.Embed(description="Meine [Website](https://RedBugBot-in-python.redbuggamer.repl.co)"))
+            await message.channel.send(embed=nextcord.Embed(description="Meine [Website](https://RedBugBot-in-python.redbuggamer.repl.co)"))
         elif message.content == "T!tictactoe":
             #startet tictactoe
             await message.channel.send("⠀",view=TicTacToe())
@@ -352,7 +356,7 @@ async def on_message(message:discord.Message):
             await message.channel.send("⠀",view=Schiffetot())
         elif message.content == "T!ping":
             #macht botping
-            await message.channel.send(embed=discord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
+            await message.channel.send(embed=nextcord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
         elif message.content.startswith("T!send "):
             #sendet was in den channel
             if message.author.id == 772386889817784340:
@@ -363,12 +367,12 @@ async def on_message(message:discord.Message):
             await message.channel.trigger_typing()
             arguments = message.content[8:len(message.content)].split("|")
             if (len(arguments) %2) == 0:
-                await message.channel.send(embed=discord.Embed(description="ERROR Du benötigst mehr input",colour=0xe74c3c))
+                await message.channel.send(embed=nextcord.Embed(description="ERROR Du benötigst mehr input",colour=0xe74c3c))
             else:
                 if message.author.avatar == None:
-                    customembed = discord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}")
+                    customembed = nextcord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}")
                 else:
-                    customembed = discord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}",icon_url=message.author.avatar.url)
+                    customembed = nextcord.Embed(description=arguments[0],color=0x2ecc71).set_author(name=f"{message.author.name}#{message.author.discriminator}",icon_url=message.author.avatar.url)
                 active = False
                 for i in range(int(len(arguments))):
                     if active:
@@ -380,49 +384,52 @@ async def on_message(message:discord.Message):
         elif message.content.startswith("T!block"):
             blockedusers = somedata.find_one({"_id":ObjectId("61ba06872043ad510f6bf52b")})["blockeduserid"]
             if not message.author.id == 772386889817784340:
-                await message.channel.send(embed=discord.Embed(description="Acces denied",color=0xe74c3c))
+                await message.channel.send(embed=nextcord.Embed(description="Acces denied",color=0xe74c3c))
             elif message.mentions[0].id == 772386889817784340:
-                await message.channel.send(embed=discord.Embed(description="Block dich nicht selbst!",color=0xe74c3c))
+                await message.channel.send(embed=nextcord.Embed(description="Block dich nicht selbst!",color=0xe74c3c))
             elif message.author.id == 772386889817784340 and not message.mentions[0].id == 772386889817784340:
                 if str(message.mentions[0].id) in blockedusers:
                     somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$pull":{"blockeduserid":str(message.mentions[0].id)}})
                     
-                    await message.channel.send(embed=discord.Embed(description=f"<@{message.mentions[0].id}> darf mich wieder benutzen",color=0x2ecc71))
+                    await message.channel.send(embed=nextcord.Embed(description=f"<@{message.mentions[0].id}> darf mich wieder benutzen",color=0x2ecc71))
                 else:
                     somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$push":{"blockeduserid":str(message.mentions[0].id)}})
-                    await message.channel.send(embed=discord.Embed(description=f"<@{message.mentions[0].id}> wurde blockiert",color=0xe74c3c))
+                    await message.channel.send(embed=nextcord.Embed(description=f"<@{message.mentions[0].id}> wurde blockiert",color=0xe74c3c))
             
 
         elif message.content.startswith("T!eval"):
             myeval = makeeval(message.content.replace("```py","").replace("```","").replace("print(","evalprint(")[6:len(message.content)])
-            await message.channel.send(embed=discord.Embed(description=f"Output: `{myeval}`"))
+            await message.channel.send(embed=nextcord.Embed(description=f"Output: `{myeval}`"))
         elif message.content.startswith("T!morse "):
             morse = ""
             morse = morse.join(" "+morsealphabet[i.lower()] for i in message.content.replace("T!morse ",""))
-            await message.channel.send(embed=discord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
+            await message.channel.send(embed=nextcord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
         elif message.content.startswith("T!bind "):
-            if message.author.id == 772386889817784340 or message.author.adminstrator:
-                idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
+            if message.author.id == 772386889817784340:
+                if [str(message.channel.id)] in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}):
+                    idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
+                else:
+                    idbefore="nope"
                 customid = message.content.replace("T!bind ","")
                 if message.content.replace("T!bind ","") == "unbind":
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):""}})
-                    await message.channel.send(embed=discord.Embed(description=f"Bindung `{idbefore}` gelöscht",color=0xe74c3c))
+                    await message.channel.send(embed=nextcord.Embed(description=f"Bindung `{idbefore}` gelöscht",color=0xe74c3c))
                 else:
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
-                    await message.channel.send(embed=discord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
+                    await message.channel.send(embed=nextcord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
             else:
                 await noperms(message)
         elif message.content == "T!bind":
             thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
-            await message.channel.send(embed=discord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
+            await message.channel.send(embed=nextcord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
 
         elif message.content.startswith("T!stats "):
             await message.channel.trigger_typing()
-            playerembed = discord.Embed(color=0x206694)
+            playerembed = nextcord.Embed(color=0x206694)
             player = message.content.replace("T!stats ","")
             request = requests.get(url=f"https://api.slothpixel.me/api/players/{player}").json()
             if "error" in request:
-                await message.channel.send(embed=discord.Embed(color=0xe74c3c,description="Der Player existiert nicht"))
+                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,description="Der Player existiert nicht"))
             else:
                 uuid = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{player}").json()["id"]
                 apikey = os.environ["apikey"]
@@ -447,37 +454,48 @@ async def on_message(message:discord.Message):
                     playerembed.add_field(inline=False,name="`Online`",value="🟩")
                 else:
                     playerembed.add_field(inline=False,name="`Offline`",value="🔲")
-                playerembed.add_field(inline=False,name="`Discord`",value=f"{link}")
+                playerembed.add_field(inline=False,name="`nextcord`",value=f"{link}")
                 playerembed.add_field(inline=False,name=f"`Level {math.floor(level)}`",value=f"{levelbar}")
                 await message.channel.send(embed=playerembed)
         elif message.content.startswith("T!activität "):
             if message.author.id == 772386889817784340:
                 if message.content.replace("T!activität ","") == "reset":
-                    await client.change_presence(activity=discord.Game(random.choice(activitys)),status=discord.Status.online)
+                    await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
                 else:
-                    await client.change_presence(activity=discord.Game(message.content.replace("T!activität ","")),status=discord.Status.online)
+                    await client.change_presence(activity=nextcord.Game(message.content.replace("T!activität ","")),status=nextcord.Status.online)
             else:
                 await noperms(message)
         elif message.content.startswith("T!guckle") or message.content.startswith("T!google") or message.content.startswith("T!g"):
             myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","")
             myurl = f"https://www.google.com/search?q={myquery}"
-            await message.channel.send(embed=discord.Embed(type="article",url=f"https://www.google.com/search?q={myquery}",description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
+            await message.channel.send(embed=nextcord.Embed(type="article",url=f"https://www.google.com/search?q={myquery}",description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
+        elif message.content.startswith("T!mute"):
+            if message.author.guild_permissions.ban_members or message.author.id == redbuggamer:
+                theblockeduser = message.mentions[0]
+                muteduration = message.content[message.content.find("> ")+2:len(message.content)]
+                
+                await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
+                await message.mentions[0].edit(timeout=datetime.datetime.utcnow()+datetime.timedelta(minutes=int(muteduration)))
+            else:
+                await noperms(message)
 
         
         elif message.content.startswith("T!"):
-            await message.channel.send(embed=discord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
+            await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
         
     elif message.content.startswith("T!"):
-        await message.channel.send(embed=discord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
+        await message.channel.send(embed=nextcord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
     if message.content.startswith("T!") and not message.content.startswith("T!purge"):
             await message.delete()
 
 @client.event
-async def on_member_join(member:discord.Member):
+async def on_member_join(member:nextcord.Member):
     if member.dm_channel == None:
-        await member.create_dm
-    
-    await member.dm_channel.send(embed=discord.Embed(description="Willkommen auf "+member).set_image(member.guild.icon_url))
-
+        await member.create_dm()
+    if member.avatar== None:
+        await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url="https://cdn.discordapp.com/embed/avatars/0.png"))
+    else:
+        await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url=member.avatar))
+    print(str(member.name)+" "+str(member.guild))
 #run the bot
 client.run(TOKEN)
