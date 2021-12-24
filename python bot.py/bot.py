@@ -20,7 +20,6 @@ import os
 from nextcord import *
 from nextcord.colour import Color, Colour
 from exaroton import Exaroton
-import tinydb
 from dotenv import load_dotenv
 import nextcord
 from nextcord.enums import TeamMembershipState
@@ -30,7 +29,6 @@ import random
 from typing import List, Mapping
 from nextcord.ext import commands
 import nextcord
-from tinydb import *
 from mouse import press
 from pynput.keyboard import Key
 from evalprot import makeeval
