@@ -329,7 +329,7 @@ async def on_message(message:nextcord.Message):
                     macro.restart()
                 elif message.content.replace("T!controll ","") == "gamer":
                     macro.win_r("C:/Users/RedBugGamer/AppData/Roaming/MultiMC/Multimc.exe")
-                    asyncio.sleep(2)
+                    await asyncio.sleep(2)
                     macro.press(Key.enter)
                     await message.channel.send(embed=nextcord.Embed(description="Aktuelle instanz gestartet"))
                 
