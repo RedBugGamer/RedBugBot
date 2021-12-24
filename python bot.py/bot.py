@@ -6,6 +6,7 @@ import math
 import asyncio
 import datetime
 from nextcord import colour
+import humanfriendly
 from nextcord.ui.item import Item
 import nextcord
 from nextcord.client import Client
@@ -55,6 +56,8 @@ RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
 somedata=RedBugBot["somedata"]
 redbuggamer = 772386889817784340
+zen = "https://zenquotes.io/api/random"
+sadwords=["demotivatet"]
 morsealphabet = {'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''}
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
@@ -201,7 +204,7 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "block":"Blockiert einen User sodass der den bot nicht nutzen kann `Usage: T!help <@ member>`",
                     "send":"sendet etwas in kanal x `Usage: T!send <# channel> <message>`",
                     "say":"sagt etwas als ich `Usage: T!say <message>`",
-                    "activität":"Setzt meine Bot Aktivität `Usage: T!activität <str>`",
+                    "activität":"Setzt meine Bot Aktivität `Usage: T!activity <str>`",
                     "dice":"Würfelt für dich `Usage: T!dice`",
                     "tictactoe":"Startet ein TikTakToe game `Usage: T!tictactoe`",
                     "google":"googelt was für dich `Usage: T!google/T!g/T!guckle`",
@@ -209,19 +212,18 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "embed":"Sendet eine Einbettung `Usage: T!embed <description>` um ein feld hinzuzufügen: ` | <name> | <value>`",
                     "stats":"Gibt die Hypixel stats `Usage: T!stats <player>`",
                     "poll":"Macht eine Umfrage `Usage: T!poll <Frage>`",
-                    "eval":"führt code aus `Usage: T!eval <code>`",
                     "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
-                    "mute":"Mutet einen User für x minuten `Usage: T!mute @member <x>`"
+                    "mute":"Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`"
                         }
 
 #Help menu
-Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.datetime.now())
+Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c)
 Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
 Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
-Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activität`",inline=False)
+Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activity`",inline=False)
 Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
 Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
-Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`,`T!eval`",inline=False)
+Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
 Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
 
 @tasks.loop(count=1)
@@ -235,13 +237,16 @@ activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung 
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
-    statuschange.start()
+    if not statuschange.is_running():
+        statuschange.start()
     Help.set_author(name=client.user,icon_url=client.user.avatar.url)
     print(f'{client.user} has connected to Discord!')
     
 @client.event
 async def on_disconnect():
     print("disconnectet")
+    if statuschange.is_running():
+        statuschange.stop()
 
 #commands/ingame chat
 @client.event
@@ -270,9 +275,18 @@ async def on_message(message:nextcord.Message):
                     await asyncio.sleep(0.75)
                     await message.edit(embed=nextcord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
                 await message.edit(embed=nextcord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
-            return  
+            if not message.content.startswith("T!"):
+                return  
         if message.content == "T!help":
             #zeigt help menu
+            Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c)
+            Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
+            Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
+            Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activity`",inline=False)
+            Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
+            Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
+            Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
+            Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
             await message.channel.send(embed = Help)
         elif message.content.startswith("T!help "):
             query= message.content[7:len(message.content)].replace("T!","")
@@ -284,7 +298,7 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!say"):
             if message.author.id == 772386889817784340:
                 #sagt string
-                await message.channel.send(message.content.replace("T!say",""))
+                await message.channel.send(message.content.replace("T!say",""),embeds=message.embeds,tts=message.tts)
             else:
                 await noperms(message)
 
@@ -315,7 +329,7 @@ async def on_message(message:nextcord.Message):
                     macro.restart()
                 elif message.content.replace("T!controll ","") == "gamer":
                     macro.win_r("C:/Users/RedBugGamer/AppData/Roaming/MultiMC/Multimc.exe")
-                    time.sleep(2)
+                    asyncio.sleep(2)
                     macro.press(Key.enter)
                     await message.channel.send(embed=nextcord.Embed(description="Aktuelle instanz gestartet"))
                 
@@ -325,7 +339,7 @@ async def on_message(message:nextcord.Message):
         
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
-            if message.author.id == 772386889817784340 or message.author.guild_permissions.administrator:
+            if message.author.id == redbuggamer or message.author.guild_permissions.administrator:
                 await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
             else:
@@ -387,11 +401,6 @@ async def on_message(message:nextcord.Message):
                 else:
                     somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$push":{"blockeduserid":str(message.mentions[0].id)}})
                     await message.channel.send(embed=nextcord.Embed(description=f"<@{message.mentions[0].id}> wurde blockiert",color=0xe74c3c))
-            
-
-        elif message.content.startswith("T!eval"):
-            myeval = makeeval(message.content.replace("```py","").replace("```","").replace("print(","evalprint(")[6:len(message.content)])
-            await message.channel.send(embed=nextcord.Embed(description=f"Output: `{myeval}`"))
         elif message.content.startswith("T!morse "):
             morse = ""
             morse = morse.join(" "+morsealphabet[i.lower()] for i in message.content.replace("T!morse ",""))
@@ -449,28 +458,36 @@ async def on_message(message:nextcord.Message):
                 playerembed.add_field(inline=False,name="`Discord`",value=f"{link}")
                 playerembed.add_field(inline=False,name=f"`Level {math.floor(level)}`",value=f"{levelbar}")
                 await message.channel.send(embed=playerembed)
-        elif message.content.startswith("T!activität "):
+        elif message.content.startswith("T!activity "):
             if message.author.id == 772386889817784340:
-                if message.content.replace("T!activität ","") == "reset":
+                if message.content.replace("T!activity ","") == "reset":
                     await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
+                    if not statuschange.is_running():
+                        statuschange.start()
                 else:
-                    await client.change_presence(activity=nextcord.Game(message.content.replace("T!activität ","")),status=nextcord.Status.online)
+                    await client.change_presence(activity=nextcord.Game(message.content.replace("T!activity ","")),status=nextcord.Status.online)
+                    if statuschange.is_running():
+                        statuschange.stop()
             else:
                 await noperms(message)
         elif message.content.startswith("T!guckle") or message.content.startswith("T!google") or message.content.startswith("T!g"):
             myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","").replace(" ","+")
             myurl = f"https://www.google.com/search?q={myquery}"
+            myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","")
             await message.channel.send(embed=nextcord.Embed(type="article",url=f"https://www.google.com/search?q={myquery}",description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
         elif message.content.startswith("T!mute"):
-            if message.author.guild_permissions.ban_members or message.author.id == redbuggamer:
+            if message.author.guild_permissions.moderate_members or message.author.id == redbuggamer:
                 theblockeduser = message.mentions[0]
                 muteduration = message.content[message.content.find("> ")+2:len(message.content)]
-                
+                parsed=humanfriendly.parse_timespan(muteduration)
+                await message.mentions[0].edit(timeout=datetime.datetime.utcnow()+datetime.timedelta(seconds=parsed))
                 await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
-                await message.mentions[0].edit(timeout=datetime.datetime.utcnow()+datetime.timedelta(minutes=int(muteduration)))
             else:
                 await noperms(message)
-        
+        elif "hi" == message.content.lower().replace("!","") and not message.author.id == redbuggamer:
+            await message.channel.trigger_typing()
+            await asyncio.sleep(random.randrange(1,2))
+            await message.channel.send("Hi!")
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
         
