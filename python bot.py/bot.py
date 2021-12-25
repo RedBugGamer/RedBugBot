@@ -201,7 +201,7 @@ async def noperms(obj:nextcord.Message):
 registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
                     "ping":"Gibt meinen ping `Usage: T!ping`",
                     "control":"Botowner only `Usage: T!control <action>`",
-                    "block":"Blockiert einen User sodass der den bot nicht nutzen kann `Usage: T!help <@ member>`",
+                    "block":"Blockiert einen User sodass der den bot nicht nutzen kann `Usage: T!block <@ member>`",
                     "send":"sendet etwas in kanal x `Usage: T!send <# channel> <message>`",
                     "say":"sagt etwas als ich `Usage: T!say <message>`",
                     "activität":"Setzt meine Bot Aktivität `Usage: T!activity <str>`",
@@ -236,7 +236,7 @@ async def statuschange():
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Dischordserver"]
 #on ready/Change bot activitie
 @client.event
-async def on_ready():
+async def on_connect():
     if not statuschange.is_running():
         statuschange.start()
     Help.set_author(name=client.user,icon_url=client.user.avatar.url)
