@@ -234,17 +234,14 @@ async def statuschange():
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Dischordserver"]
 #on ready/Change bot activitie
 @client.event
-async def on_connect():
+async def on_ready():
     if not statuschange.is_running():
         statuschange.start()
-    Help.set_author(name=client.user,icon_url=client.user.avatar.url)
     print(f'{client.user} has connected to Discord!')
     
 @client.event
 async def on_disconnect():
     print("disconnectet")
-    if statuschange.is_running():
-        statuschange.stop()
 
 #commands/ingame chat
 @client.event
@@ -278,6 +275,7 @@ async def on_message(message:nextcord.Message):
         if message.content == "T!help":
             #zeigt help menu
             Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c)
+            Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
             Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
             Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activity`",inline=False)
