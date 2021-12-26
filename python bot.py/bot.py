@@ -476,7 +476,7 @@ async def on_message(message:nextcord.Message):
                 theblockeduser = message.mentions[0]
                 muteduration = message.content[message.content.find("> ")+2:len(message.content)]
                 parsed=humanfriendly.parse_timespan(muteduration)
-                await message.mentions[0].edit(timeout=datetime.datetime.utcnow()+datetime.timedelta(seconds=parsed))
+                await message.mentions[0].edit(timeout=datetime.datetime.now()+datetime.timedelta(seconds=parsed))
                 await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
             else:
                 await noperms(message)
