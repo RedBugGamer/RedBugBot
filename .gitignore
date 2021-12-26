@@ -11,3 +11,4 @@ db.json
 .env
 db.json
 .gitignore
+python bot.py
