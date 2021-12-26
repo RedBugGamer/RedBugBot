@@ -296,7 +296,7 @@ async def on_message(message:nextcord.Message):
                 #sagt string
                 await message.channel.send(message.content.replace("T!say",""),embeds=message.embeds,tts=message.tts)
             else:
-                await noperms(message)
+                    await noperms(message,"Du brauchst Botowner")
 
         elif message.content.startswith("T!poll"):
             await message.channel.trigger_typing()
@@ -331,7 +331,7 @@ async def on_message(message:nextcord.Message):
                 
             else:
                 #keine perms
-                await noperms(message)
+                await noperms(message,"Du brauchst botowner")
         
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
