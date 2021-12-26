@@ -194,8 +194,8 @@ def getstatuscolor(currentrequest,sendtimestamp):
         return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x3498db,timestamp=sendtimestamp)
     else:
         return nextcord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
-async def noperms(obj:nextcord.Message):
-    await obj.reply(embed=nextcord.Embed(description="Du hast keine Berechtigung dazu",color=0xe74c3c))
+async def noperms(obj:nextcord.Message,permission:nextcord.Embed.Empty):
+    await obj.reply(embed=nextcord.Embed(title="Du hast keine Berechtigung dazu",color=0xe74c3c))
 registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
                     "ping":"Gibt meinen ping `Usage: T!ping`",
                     "control":"Botowner only `Usage: T!control <action>`",
@@ -292,7 +292,7 @@ async def on_message(message:nextcord.Message):
                 await message.channel.send(embed=nextcord.Embed(title="T!"+query,description="Der Command existiert nicht",color=0xe74c3c))
             
         elif message.content.startswith("T!say"):
-            if message.author.id == 772386889817784340:
+            if message.author.id == redbuggamer:
                 #sagt string
                 await message.channel.send(message.content.replace("T!say",""),embeds=message.embeds,tts=message.tts)
             else:
@@ -309,7 +309,7 @@ async def on_message(message:nextcord.Message):
                 await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
         elif message.content.startswith("T!controll "):
             #control computer
-            if message.author.id == 772386889817784340:
+            if message.author.id == redbuggamer:
                 await message.channel.trigger_typing()
                 if message.content.replace("T!controll ","") == "hotspot":
                     macro.hotspot()
@@ -361,7 +361,7 @@ async def on_message(message:nextcord.Message):
             await message.channel.send(embed=nextcord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
         elif message.content.startswith("T!send "):
             #sendet was in den channel
-            if message.author.id == 772386889817784340:
+            if message.author.id == redbuggamer:
                 await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
             else:
                 await noperms(message)
@@ -385,11 +385,11 @@ async def on_message(message:nextcord.Message):
                 await message.channel.send(embed=customembed)
         elif message.content.startswith("T!block"):
             blockedusers = somedata.find_one({"_id":ObjectId("61ba06872043ad510f6bf52b")})["blockeduserid"]
-            if not message.author.id == 772386889817784340:
-                await message.channel.send(embed=nextcord.Embed(description="Acces denied",color=0xe74c3c))
-            elif message.mentions[0].id == 772386889817784340:
+            if not message.author.id == redbuggamer:
+                await noperms(message)
+            elif message.mentions[0].id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="Block dich nicht selbst!",color=0xe74c3c))
-            elif message.author.id == 772386889817784340 and not message.mentions[0].id == 772386889817784340:
+            elif message.author.id == redbuggamer and not message.mentions[0].id == redbuggamer:
                 if str(message.mentions[0].id) in blockedusers:
                     somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$pull":{"blockeduserid":str(message.mentions[0].id)}})
                     
@@ -402,7 +402,7 @@ async def on_message(message:nextcord.Message):
             morse = morse.join(" "+morsealphabet[i.lower()] for i in message.content.replace("T!morse ",""))
             await message.channel.send(embed=nextcord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
         elif message.content.startswith("T!bind "):
-            if message.author.id == 772386889817784340:
+            if message.author.id == redbuggamer:
                 if [str(message.channel.id)] in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}):
                     idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
                 else:
@@ -455,7 +455,7 @@ async def on_message(message:nextcord.Message):
                 playerembed.add_field(inline=False,name=f"`Level {math.floor(level)}`",value=f"{levelbar}")
                 await message.channel.send(embed=playerembed)
         elif message.content.startswith("T!activity "):
-            if message.author.id == 772386889817784340:
+            if message.author.id == redbuggamer:
                 if message.content.replace("T!activity ","") == "reset":
                     await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
                     if not statuschange.is_running():
@@ -488,7 +488,7 @@ async def on_message(message:nextcord.Message):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
         
     elif message.content.startswith("T!"):
-        await message.channel.send(embed=nextcord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
+        await message.reply(embed=nextcord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
     if message.content.startswith("T!") and not message.content.startswith("T!purge"):
             await message.delete()
 
