@@ -470,7 +470,7 @@ async def on_message(message:nextcord.Message):
             myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","").replace(" ","+")
             myurl = f"https://www.google.com/search?q={myquery}"
             myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","")
-            await message.channel.send(embed=nextcord.Embed(type="article",url=f"https://www.google.com/search?q={myquery}",description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
+            await message.channel.send(embed=nextcord.Embed(description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
         elif message.content.startswith("T!mute"):
             if message.author.guild_permissions.moderate_members or message.author.id == redbuggamer:
                 theblockeduser = message.mentions[0]
