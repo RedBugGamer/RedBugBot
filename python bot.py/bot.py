@@ -194,8 +194,8 @@ def getstatuscolor(currentrequest,sendtimestamp):
         return nextcord.Embed(description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",color=0x3498db,timestamp=sendtimestamp)
     else:
         return nextcord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
-async def noperms(obj:nextcord.Message,permission:nextcord.Embed.Empty):
-    await obj.reply(embed=nextcord.Embed(title="Du hast keine Berechtigung dazu",color=0xe74c3c))
+async def noperms(obj:nextcord.Message,neededpermission=""):
+    await obj.reply(embed=nextcord.Embed(title="Du hast keine Berechtigung dazu",description=neededpermission,color=0xe74c3c))
 registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
                     "ping":"Gibt meinen ping `Usage: T!ping`",
                     "control":"Botowner only `Usage: T!control <action>`",
