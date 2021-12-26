@@ -224,11 +224,9 @@ Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
 Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
 Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
 
-@tasks.loop(count=1)
+@tasks.loop(minutes=4)
 async def statuschange():
-    while True:
-        await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
-        await asyncio.sleep(240)
+    await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
 
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Dischordserver"]
@@ -472,7 +470,7 @@ async def on_message(message:nextcord.Message):
             myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","")
             await message.channel.send(embed=nextcord.Embed(description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
         elif message.content.startswith("T!mute"):
-            if message.author.guild_permissions.moderate_members or message.author.id == redbuggamer:
+            if message.author.guild_permissions.moderate_members or message.author.id == redbuggamer or message.author.guild_permissions.administrator:
                 theblockeduser = message.mentions[0]
                 muteduration = message.content[message.content.find("> ")+2:len(message.content)]
                 parsed=humanfriendly.parse_timespan(muteduration)
@@ -490,7 +488,8 @@ async def on_message(message:nextcord.Message):
     elif message.content.startswith("T!"):
         await message.reply(embed=nextcord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
     if message.content.startswith("T!") and not message.content.startswith("T!purge"):
-            await message.delete()
+            if not message.guild ==None:
+                await message.delete()
 
 @client.event
 async def on_member_join(member:nextcord.Member):
@@ -501,5 +500,11 @@ async def on_member_join(member:nextcord.Member):
     else:
         await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url=member.avatar))
     print(str(member.name)+" "+str(member.guild))
+
+@client.event
+async def on_guild_join(guild:nextcord.Guild):
+    if guild.owner.dm_channel == None:
+        await guild.owner.create_dm()
+    await guild.owner.dm_channel.send(embed=nextcord.Embed(description="Hi also ich bin ein bot mach einfach mal `T!help` für eine Liste der commands",color=0x3498db))
 #run the bot
 client.run(TOKEN)
