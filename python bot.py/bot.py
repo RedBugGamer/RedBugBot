@@ -339,7 +339,7 @@ async def on_message(message:nextcord.Message):
                 await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
             else:
-                await noperms(message)
+                await noperms(message,"Du braucht Admin oder Botowner")
 
         elif message.content == "T!dice":
             #würfelt
@@ -364,7 +364,7 @@ async def on_message(message:nextcord.Message):
             if message.author.id == redbuggamer:
                 await message.channel_mentions[0].send(message.content[message.content.find("> ")+1:int(len(message.content))])        
             else:
-                await noperms(message)
+                await noperms(message,"Du brauchst Botowner")
         elif message.content.startswith("T!embed "):
             await message.channel.trigger_typing()
             arguments = message.content[8:len(message.content)].split("|")
@@ -386,7 +386,7 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!block"):
             blockedusers = somedata.find_one({"_id":ObjectId("61ba06872043ad510f6bf52b")})["blockeduserid"]
             if not message.author.id == redbuggamer:
-                await noperms(message)
+                await noperms(message,"Du brauchst Botowner")
             elif message.mentions[0].id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="Block dich nicht selbst!",color=0xe74c3c))
             elif message.author.id == redbuggamer and not message.mentions[0].id == redbuggamer:
@@ -415,7 +415,7 @@ async def on_message(message:nextcord.Message):
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
                     await message.channel.send(embed=nextcord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
             else:
-                await noperms(message)
+                await noperms(message,"Du brauchst Botowner")
         elif message.content == "T!bind":
             thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
             await message.channel.send(embed=nextcord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
@@ -465,7 +465,7 @@ async def on_message(message:nextcord.Message):
                     if statuschange.is_running():
                         statuschange.stop()
             else:
-                await noperms(message)
+                await noperms(message,"Du brauchst Botowner")
         elif message.content.startswith("T!guckle") or message.content.startswith("T!google") or message.content.startswith("T!g"):
             myquery = message.content.replace("T!guckle ","").replace("T!google ","").replace("T!g ","").replace(" ","+")
             myurl = f"https://www.google.com/search?q={myquery}"
@@ -479,7 +479,7 @@ async def on_message(message:nextcord.Message):
                 await message.mentions[0].edit(timeout=datetime.datetime.now()+datetime.timedelta(seconds=parsed))
                 await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
             else:
-                await noperms(message)
+                await noperms(message,"Du brauchst Botowner oder timeout members")
         elif "hi" == message.content.lower().replace("!","") and not message.author.id == redbuggamer:
             await message.channel.trigger_typing()
             await asyncio.sleep(random.randrange(1,2))
