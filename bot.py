@@ -1,7 +1,6 @@
 # imports
 from nextcord.ext import tasks, commands
 from PIL import Image,ImageFont,ImageDraw
-import json
 import math
 import asyncio
 import datetime
