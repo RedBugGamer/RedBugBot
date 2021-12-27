@@ -1,38 +1,25 @@
 # imports
-from nextcord.ext import tasks, commands
-from PIL import Image,ImageFont,ImageDraw
-import math
 import asyncio
 import datetime
-from nextcord import colour
-import humanfriendly
-from nextcord.ui.item import Item
-import nextcord
-from nextcord.client import Client
-from nextcord.ui import view
-from nextcord import guild
-import time
-import requests
-from random import randrange
-from nextcord.ui import Button,View
+import math
 import os
-from nextcord import *
-from nextcord.colour import Color, Colour
-from exaroton import Exaroton
-from dotenv import load_dotenv
-import nextcord
-from nextcord.enums import TeamMembershipState
-import time
-import macro
 import random
-from typing import List, Mapping
-from nextcord.ext import commands
+from random import randrange
+from typing import List
+import humanfriendly
+import macro
 import nextcord
+import pymongo
+import requests
+from bson.objectid import ObjectId
+from dotenv import load_dotenv
+from exaroton import Exaroton
 from mouse import press
+from nextcord import *
+from nextcord.ext import tasks
+from nextcord.ui import Button, View, view
 from pynput.keyboard import Key
 from evalprot import makeeval
-import pymongo
-from bson.objectid import ObjectId
 
 #load .env filw
 load_dotenv()
