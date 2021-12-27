@@ -12,3 +12,5 @@ db.json
 db.json
 .gitignore
 python bot.py
+.gitignore
+__pycache__/evalprot.cpython-39.pyc
