@@ -12,3 +12,4 @@ db.json
 db.json
 .gitignore
 python bot.py
+__pycache__
