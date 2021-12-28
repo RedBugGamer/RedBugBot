@@ -27,6 +27,7 @@ load_dotenv()
 #define important variables
 intents = Intents.default()
 intents.members = True
+intents.all()
 exa = Exaroton(os.environ["exaroton"])
 TOKEN = os.environ["token"]
 client = nextcord.Client(intents=intents)
