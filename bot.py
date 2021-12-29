@@ -414,7 +414,7 @@ async def on_message(message:nextcord.Message):
                 await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,description="Der Player existiert nicht"))
             else:
                 uuid = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{player}").json()["id"]
-                apikey = os.environ["apikey"]
+                # apikey = os.environ["apikey"]
                 lastlogin = math.floor(request["last_login"]/1000)
                 level = request["level"]
                 levelbarpercent= math.ceil((math.floor(level)-level)*-12)
