@@ -36,7 +36,7 @@ id = "H6WIxtAqtR1pMJJb"
 dice = False
 running = False
 status=False
-myclient = pymongo.MongoClient("mongodb://localhost",port=27017)
+myclient = pymongo.MongoClient("localhost",port=27017)
 RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
 somedata=RedBugBot["somedata"]
@@ -263,7 +263,7 @@ async def on_message(message:nextcord.Message):
             Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
             Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
-            Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activity`",inline=False)
+            Help.add_field(name="Botowner",value="`T!control`,`T!block`,`T!send`,`T!activity`",inline=False)
             Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
             Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
             Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
@@ -391,7 +391,7 @@ async def on_message(message:nextcord.Message):
                 if [str(message.channel.id)] in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}):
                     idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
                 else:
-                    idbefore="nope"
+                    idbefore="None"
                 customid = message.content.replace("T!bind ","")
                 if message.content.replace("T!bind ","") == "unbind":
                     linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):""}})
@@ -402,7 +402,10 @@ async def on_message(message:nextcord.Message):
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content == "T!bind":
-            thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
+            if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}):
+                thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
+            else:
+                thatid="None"
             await message.channel.send(embed=nextcord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
 
         elif message.content.startswith("T!stats "):
