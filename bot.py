@@ -45,7 +45,7 @@ zen = "https://zenquotes.io/api/random"
 sadwords=["demotivatet"]
 blockeduserdocid="61d191f56c7061e409ed16d6"
 linkedchannelsmongoid="61b5d3560d296088f9c970f4"
-morsealphabet = {'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''}
+morsealphabet = {'a' : '.-', 'b' : '-...', 'c' : '-.-.', 'd' : '-..', 'e' : '.', 'f' : '..-.', 'g' : '--.', 'h' : '....', 'i' : '..', 'j' : '.---', 'k' : '-.-', 'l' : '.-..', 'm' : '--', 'n' : '-.', 'o' : '---', 'p' : '.--.', 'q' : '--.-', 'r' : '.-.', 's' : '...', 't' : '-', 'u' : '..-', 'v' : '...-', 'w' : '.--', 'x' : '-..-', 'y' : '-.--', 'z' : '--..', '.' : '.-.-.-', '?' : '..--..', ',' : '--..--', ' ' : ''}
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
@@ -242,7 +242,7 @@ async def on_message(message:nextcord.Message):
     global status
     global running
     # block users
-    if not str(message.author.id) in somedata.find_one({"_id":ObjectId(blockeduserdocid)})["blockeduserid"]:
+    if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61d191f56c7061e409ed16d6")})["blockeduserid"]:
         #await message from self
         if message.author == client.user:
             if awaitpoll:
