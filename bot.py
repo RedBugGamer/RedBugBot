@@ -39,7 +39,7 @@ status=False
 myclient = pymongo.MongoClient(os.environ["mongourl"],port=27017) #"mongodb://localhost"
 RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
-somedata=RedBugBot["somedata"]
+somedata=RedBugBot[" somedata"]
 redbuggamer = 772386889817784340
 zen = "https://zenquotes.io/api/random"
 sadwords=["demotivatet"]
@@ -371,18 +371,18 @@ async def on_message(message:nextcord.Message):
                         active=True
                 await message.channel.send(embed=customembed)
         elif message.content.startswith("T!block"):
-            blockedusers = somedata.find_one({"_id":ObjectId("61ba06872043ad510f6bf52b")})["blockeduserid"]
+            blockedusers = somedata.find_one({"_id":ObjectId(blockeduserdocid)})["blockeduserid"]
             if not message.author.id == redbuggamer:
                 await noperms(message,"Du brauchst Botowner")
             elif message.mentions[0].id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="Block dich nicht selbst!",color=0xe74c3c))
             elif message.author.id == redbuggamer and not message.mentions[0].id == redbuggamer:
                 if str(message.mentions[0].id) in blockedusers:
-                    somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$pull":{"blockeduserid":str(message.mentions[0].id)}})
+                    somedata.update_one({"_id":ObjectId(blockeduserdocid)},{"$pull":{"blockeduserid":str(message.mentions[0].id)}})
                     
                     await message.channel.send(embed=nextcord.Embed(description=f"<@{message.mentions[0].id}> darf mich wieder benutzen",color=0x2ecc71))
                 else:
-                    somedata.update_one({"_id":ObjectId("61ba06872043ad510f6bf52b")},{"$push":{"blockeduserid":str(message.mentions[0].id)}})
+                    somedata.update_one({"_id":ObjectId(blockeduserdocid)},{"$push":{"blockeduserid":str(message.mentions[0].id)}})
                     await message.channel.send(embed=nextcord.Embed(description=f"<@{message.mentions[0].id}> wurde blockiert",color=0xe74c3c))
         elif message.content.startswith("T!morse "):
             morse = ""
@@ -390,22 +390,22 @@ async def on_message(message:nextcord.Message):
             await message.channel.send(embed=nextcord.Embed(description=f"Dein morsecode: `{morse}`",color=0x3498db))
         elif message.content.startswith("T!bind "):
             if message.author.id == redbuggamer:
-                if [str(message.channel.id)] in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}):
-                    idbefore = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
+                if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId(linkedchannelsmongoid)}):
+                    idbefore = linkedchannels.find_one({"_id": ObjectId(linkedchannelsmongoid)})[str(message.channel.id)]
                 else:
                     idbefore="None"
                 customid = message.content.replace("T!bind ","")
                 if message.content.replace("T!bind ","") == "unbind":
-                    linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):""}})
+                    linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$pull":{str(message.channel.id):linkedchannels.find_one({"_id": ObjectId(linkedchannelsmongoid)})[str(message.channel.id)]}})
                     await message.channel.send(embed=nextcord.Embed(description=f"Bindung `{idbefore}` gelöscht",color=0xe74c3c))
                 else:
-                    linkedchannels.update_one({"_id": ObjectId("61b5d3560d296088f9c970f4")},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
+                    linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
                     await message.channel.send(embed=nextcord.Embed(description=f"Bound Exaroton Server `{customid}`",color=0x3498db))
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content == "T!bind":
-            if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}):
-                thatid = linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)]
+            if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId(linkedchannelsmongoid)}):
+                thatid = linkedchannels.find_one({"_id": ObjectId(linkedchannelsmongoid)})[str(message.channel.id)]
             else:
                 thatid="None"
             await message.channel.send(embed=nextcord.Embed(description=f"Channel ist zu Server `{thatid}` gebunden"))
