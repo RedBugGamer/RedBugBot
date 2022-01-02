@@ -4,7 +4,7 @@ import datetime
 import math
 import os
 import random
-from random import randrange
+from random import randint, randrange
 from typing import List
 import humanfriendly
 # import macro
@@ -36,13 +36,15 @@ id = "H6WIxtAqtR1pMJJb"
 dice = False
 running = False
 status=False
-myclient = pymongo.MongoClient("mongodb://localhost",port=27017)
+myclient = pymongo.MongoClient(os.environ["mongourl"],port=27017) #"mongodb://localhost"
 RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
 somedata=RedBugBot["somedata"]
 redbuggamer = 772386889817784340
 zen = "https://zenquotes.io/api/random"
 sadwords=["demotivatet"]
+blockeduserdocid="61d191f56c7061e409ed16d6"
+linkedchannelsmongoid="61b5d3560d296088f9c970f4"
 morsealphabet = {'a' : '•-', 'b' : '-•••', 'c' : '-•-•', 'd' : '-••', 'e' : '•', 'f' : '••-•', 'g' : '--•', 'h' : '••••', 'i' : '••', 'j' : '•---', 'k' : '-•-', 'l' : '•-••', 'm' : '--', 'n' : '-•', 'o' : '---', 'p' : '•--•', 'q' : '--•-', 'r' : '•-•', 's' : '•••', 't' : '-', 'u' : '••-', 'v' : '•••-', 'w' : '•--', 'x' : '-••-', 'y' : '-•--', 'z' : '--••', '•' : '•-•-•-', '?' : '••--••', ',' : '--••--', ' ' : ''}
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
@@ -231,16 +233,16 @@ async def on_disconnect():
 #commands/ingame chat
 @client.event
 async def on_message(message:nextcord.Message):
-    if str(message.channel.id) in linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")}) and not message.content.startswith("T!"):
-        if linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)] != "":
-            exa.command(linkedchannels.find_one({"_id": ObjectId("61b5d3560d296088f9c970f4")})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
+    if str(message.channel.id) in linkedchannels.find_one({}) and not message.content.startswith("T!"):
+        if linkedchannels.find_one({})[str(message.channel.id)] != "":
+            exa.command(linkedchannels.find_one({})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
     #make global variables
     global awaitpoll
     global dice
     global status
     global running
     # block users
-    if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61ba06872043ad510f6bf52b")})["blockeduserid"]:
+    if not str(message.author.id) in somedata.find_one({"_id":ObjectId(blockeduserdocid)})["blockeduserid"]:
         #await message from self
         if message.author == client.user:
             if awaitpoll:
@@ -253,8 +255,8 @@ async def on_message(message:nextcord.Message):
                 dice = False
                 for i in range(4):
                     await asyncio.sleep(0.75)
-                    await message.edit(embed=nextcord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
-                await message.edit(embed=nextcord.Embed(color=0x1f8b4c,description="🎲 "+str(randrange(1,6))))
+                    await message.edit(embed=nextcord.Embed(description="Rolling 🎲 "+str(randint(1,6))))
+                await message.edit(embed=nextcord.Embed(color=0x1f8b4c,description="🎲 "+str(randint(1,6))))
             if not message.content.startswith("T!"):
                 return  
         if message.content == "T!help":
