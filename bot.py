@@ -205,15 +205,6 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "reboot":"Startet mich neu `Usage: T!reboot`"
                         }
 
-#Help menu
-Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c)
-Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
-Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
-Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activity`,`T!reboot`",inline=False)
-Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
-Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
-Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
-Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
 
 @tasks.loop(minutes=4)
 async def statuschange():
@@ -287,7 +278,7 @@ async def on_message(message:nextcord.Message):
             Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
             Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
-            Help.add_field(name="Botowner",value="`T!control`,`T!block`,`T!send`,`T!activity`",inline=False)
+            Help.add_field(name="Botowner",value="`T!control`,`T!block`,`T!send`,`T!activity`,`T!reboot`",inline=False)
             Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
             Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
             Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
