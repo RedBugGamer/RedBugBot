@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # imports
 import asyncio
+from asyncio.tasks import wait_for
 import datetime
 import math
 import os
@@ -287,6 +288,7 @@ async def on_message(message:nextcord.Message):
                     await noperms(message,"Du brauchst Botowner")
 
         elif message.content.startswith("T!poll"):
+            await message.delete()
             await message.channel.trigger_typing()
             #macht einen poll
             if message.author.avatar == None:
@@ -296,6 +298,15 @@ async def on_message(message:nextcord.Message):
                 poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
             await poll.add_reaction("👍")
             await poll.add_reaction("👎")
+            def check(reaction, user):
+                return user == message.author or not str(reaction.emoji) == "👍" or not str(reaction.emoji) == "👎"
+            while True:
+                reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
+                poll.remove_reaction(reaction.emoji,user)
+                
+
+
+        
         # elif message.content.startswith("T!controll "):
         #     #control computer
         #     if message.author.id == redbuggamer:
