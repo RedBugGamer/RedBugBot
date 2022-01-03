@@ -234,7 +234,7 @@ async def on_disconnect():
 #commands/ingame chat
 @client.event
 async def on_message(message:nextcord.Message):
-    if message.channel.id ==917083417127055470:
+    if message.channel.id == 917083417127055470:
                 client.change_presence(status=nextcord.Status.dnd)
                 await asyncio.sleep("5")
                 os.system("./mystartupscript")
