@@ -481,7 +481,7 @@ async def on_message(message:nextcord.Message):
                     for i in parameter[3:len(parameter)]:
                         reason += i
                     parsed=humanfriendly.parse_timespan(muteduration)
-                    await message.mentions[0].edit(timeout=datetime.datetime.utcnow()+datetime.timedelta(seconds=parsed-3600),reason=reason)
+                    await message.mentions[0].edit(timeout=datetime.datetime.utcnow()+datetime.timedelta(seconds=parsed+3600),reason=reason)
                     await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet. `Reason {reason}`"))
                 else:
                     await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: T!mute @member <time> <reason>",color=0xe74c3c))
