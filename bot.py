@@ -236,7 +236,7 @@ async def on_disconnect():
 async def on_message(message:nextcord.Message):
     if message.channel.id == 917083417127055470:
                 client.change_presence(status=nextcord.Status.dnd)
-                await asyncio.sleep("5")
+                await asyncio.sleep(5)
                 os.system("./mystartupscript")
                 print("Rebooting")
                 quit()
@@ -245,7 +245,7 @@ async def on_message(message:nextcord.Message):
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
                 await message.delete()
                 client.change_presence(status=nextcord.Status.dnd)
-                await asyncio.sleep("5")
+                await asyncio.sleep(5)
                 os.system("./mystartupscript")
                 print("Rebooting")
                 quit()
