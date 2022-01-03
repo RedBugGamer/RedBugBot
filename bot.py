@@ -237,12 +237,15 @@ async def on_disconnect():
 async def on_message(message:nextcord.Message):
     if message.channel.id == 917083417127055470:
             print("Rebooting")
+            await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
             await asyncio.sleep(5)
             os.system("./mystartupscript")
             quit()
 
     if message.content=="T!reboot":
             if message.author.id == redbuggamer:
+                await message.channel.trigger_typing()
+                await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
                 await message.delete()
                 print("Rebooting")
@@ -490,12 +493,12 @@ async def on_message(message:nextcord.Message):
                     await message.mentions[0].edit(timeout=datetime.datetime.now()+datetime.timedelta(seconds=parsed))
                     await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
                 else:
-                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: T!mute @member <time>"))
+                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: T!mute @member <time>",color=0xe74c3c))
             else:
                 await noperms(message,"Du brauchst Botowner oder timeout members")
         elif "hi" == message.content.lower().replace("!","") and not message.author.id == redbuggamer:
             await message.channel.trigger_typing()
-            await asyncio.sleep(random.randrange(1,2))
+            await asyncio.sleep(random.randrange(1,2,0.1))
             await message.channel.send("Hi!")
         
 
