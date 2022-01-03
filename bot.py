@@ -240,6 +240,7 @@ async def on_message(message:nextcord.Message):
                 os.system("./mystartupscript")
                 print("Rebooting")
                 quit()
+                
     if message.content=="T!reboot":
             if message.author.id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
