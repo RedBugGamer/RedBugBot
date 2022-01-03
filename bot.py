@@ -240,7 +240,7 @@ async def on_message(message:nextcord.Message):
                 os.system("./mystartupscript")
                 print("Rebooting")
                 quit()
-                
+
     if message.content=="T!reboot":
             if message.author.id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
@@ -252,6 +252,7 @@ async def on_message(message:nextcord.Message):
                 quit()
             else:
                 noperms(message,"Du brauchst Botowner")
+                
     if str(message.channel.id) in linkedchannels.find_one({}) and not message.content.startswith("T!"):
         if linkedchannels.find_one({})[str(message.channel.id)] != "":
             exa.command(linkedchannels.find_one({})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
