@@ -201,14 +201,15 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "stats":"Gibt die Hypixel stats `Usage: T!stats <player>`",
                     "poll":"Macht eine Umfrage `Usage: T!poll <Frage>`",
                     "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
-                    "mute":"Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`"
+                    "mute":"Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`",
+                    "reboot":"Startet mich neu `Usage: T!reboot`"
                         }
 
 #Help menu
 Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c)
 Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
 Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
-Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activity`",inline=False)
+Help.add_field(name="Botowner only",value="`T!control`,`T!block`,`T!send`,`T!activity`,`T!reboot`",inline=False)
 Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
 Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
 Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
@@ -481,11 +482,15 @@ async def on_message(message:nextcord.Message):
             await message.channel.send(embed=nextcord.Embed(description=f"[Google: {myquery}]({myurl})",color=0xFEE75C))
         elif message.content.startswith("T!mute"):
             if message.author.guild_permissions.moderate_members or message.author.id == redbuggamer or message.author.guild_permissions.administrator:
-                theblockeduser = message.mentions[0]
-                muteduration = message.content[message.content.find("> ")+2:len(message.content)]
-                parsed=humanfriendly.parse_timespan(muteduration)
-                await message.mentions[0].edit(timeout=datetime.datetime.now()+datetime.timedelta(seconds=parsed))
-                await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
+                parameter=message.content.split()
+                if len(parameter) == 3:
+                    theblockeduser = message.mentions[0]
+                    muteduration = parameter[2]
+                    parsed=humanfriendly.parse_timespan(muteduration)
+                    await message.mentions[0].edit(timeout=datetime.datetime.now()+datetime.timedelta(seconds=parsed))
+                    await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
+                else:
+                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: T!mute @member <time>"))
             else:
                 await noperms(message,"Du brauchst Botowner oder timeout members")
         elif "hi" == message.content.lower().replace("!","") and not message.author.id == redbuggamer:
