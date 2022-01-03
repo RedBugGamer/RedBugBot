@@ -475,6 +475,14 @@ async def on_message(message:nextcord.Message):
             await message.channel.trigger_typing()
             await asyncio.sleep(random.randrange(1,2))
             await message.channel.send("Hi!")
+        elif message.content=="T!reboot":
+            if message.author.id == redbuggamer:
+                await message.channel.send(embed=nextcord.Embed(description="RESTARTING myself"))
+                await message.delete()
+                os.system("sudo reboot")
+            else:
+                noperms(message,"Du brauchst Botowner")
+
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
         
