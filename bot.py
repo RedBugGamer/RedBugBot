@@ -235,20 +235,18 @@ async def on_disconnect():
 @client.event
 async def on_message(message:nextcord.Message):
     if message.channel.id == 917083417127055470:
-                await client.change_presence(status=nextcord.Status.dnd)
+                print("Rebooting")
                 await asyncio.sleep(5)
                 os.system("./mystartupscript")
-                print("Rebooting")
                 quit()
 
     if message.content=="T!reboot":
             if message.author.id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
                 await message.delete()
-                await client.change_presence(status=nextcord.Status.dnd)
+                print("Rebooting")
                 await asyncio.sleep(5)
                 os.system("./mystartupscript")
-                print("Rebooting")
                 quit()
             else:
                 noperms(message,"Du brauchst Botowner")
