@@ -283,7 +283,7 @@ async def on_message(message:nextcord.Message):
                 return  
         if message.content == "T!help":
             #zeigt help menu
-            Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c)
+            Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.datetime.utcnow())
             Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
             Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
@@ -294,7 +294,7 @@ async def on_message(message:nextcord.Message):
             Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
             await message.channel.send(embed = Help)
         elif message.content.startswith("T!help "):
-            query= message.content[7:len(message.content)].replace("T!","")
+            query= message.content.split()[1]
             if query in registeredcommands:
                 await message.channel.send(embed=nextcord.Embed(title="T!"+query,description=registeredcommands[query],color=0xe74c3c))
             else:
@@ -303,7 +303,7 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!say"):
             if message.author.id == redbuggamer:
                 #sagt string
-                await message.channel.send(message.content.replace("T!say",""),embeds=message.embeds,tts=message.tts)
+                await message.channel.send(message.content.replace("T!say","",1),embeds=message.embeds,tts=message.tts)
             else:
                     await noperms(message,"Du brauchst Botowner")
 
@@ -313,9 +313,9 @@ async def on_message(message:nextcord.Message):
             awaitpoll = True
             if message.author.avatar == None:
                 #check avatar exists
-                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.datetime.now()).set_author(name=message.author))
+                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author))
             else:
-                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll",""),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
+                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
         # elif message.content.startswith("T!controll "):
         #     #control computer
         #     if message.author.id == redbuggamer:
@@ -362,9 +362,6 @@ async def on_message(message:nextcord.Message):
         elif message.content == "T!tictactoe":
             #startet tictactoe
             await message.channel.send("⠀",view=TicTacToe())
-        elif message.content == "T!schiffetot":
-            #macht schiffeversenken W.I.P.
-            await message.channel.send("⠀",view=Schiffetot())
         elif message.content == "T!ping":
             #macht botping
             await message.channel.send(embed=nextcord.Embed(description=f"Latency of `{round(client.latency*1000)}` ms",color=0x3498db))
@@ -396,7 +393,7 @@ async def on_message(message:nextcord.Message):
             blockedusers = somedata.find_one({"_id":ObjectId(blockeduserdocid)})["blockeduserid"]
             if not message.author.id == redbuggamer:
                 await noperms(message,"Du brauchst Botowner")
-            elif message.mentions[0].id == redbuggamer:
+            elif message.mentions[0].id == message.author.id:
                 await message.channel.send(embed=nextcord.Embed(description="Block dich nicht selbst!",color=0xe74c3c))
             elif message.author.id == redbuggamer and not message.mentions[0].id == redbuggamer:
                 if str(message.mentions[0].id) in blockedusers:
@@ -416,7 +413,7 @@ async def on_message(message:nextcord.Message):
                     idbefore = linkedchannels.find_one({"_id": ObjectId(linkedchannelsmongoid)})[str(message.channel.id)]
                 else:
                     idbefore="None"
-                customid = message.content.replace("T!bind ","")
+                customid = message.content.split()[1]
                 if message.content.replace("T!bind ","") == "unbind":
                     linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$pull":{str(message.channel.id):linkedchannels.find_one({"_id": ObjectId(linkedchannelsmongoid)})[str(message.channel.id)]}})
                     await message.channel.send(embed=nextcord.Embed(description=f"Bindung `{idbefore}` gelöscht",color=0xe74c3c))
@@ -435,7 +432,7 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!stats "):
             await message.channel.trigger_typing()
             playerembed = nextcord.Embed(color=0x206694)
-            player = message.content.replace("T!stats ","")
+            player = message.content.split()[1]
             request = requests.get(url=f"https://api.slothpixel.me/api/players/{player}").json()
             if "error" in request:
                 await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,description="Der Player existiert nicht"))
@@ -473,7 +470,7 @@ async def on_message(message:nextcord.Message):
                     if not statuschange.is_running():
                         statuschange.start()
                 else:
-                    await client.change_presence(activity=nextcord.Game(message.content.replace("T!activity ","")),status=nextcord.Status.online)
+                    await client.change_presence(activity=nextcord.Game(message.content.split(" ",1)[1]),status=nextcord.Status.online)
                     if statuschange.is_running():
                         statuschange.stop()
             else:
@@ -519,7 +516,7 @@ async def on_member_join(member:nextcord.Member):
         await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url="https://cdn.discordapp.com/embed/avatars/0.png"))
     else:
         await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url=member.avatar))
-    print(str(member.name)+" "+str(member.guild))
+    print(str(member.name)+" joined "+str(member.guild))
 
 @client.event
 async def on_guild_join(guild:nextcord.Guild):
