@@ -278,11 +278,11 @@ async def on_message(message:nextcord.Message):
             Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
             Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
-            Help.add_field(name="Botowner",value="`T!block`,`T!send`,`T!activity`,`T!reboot`",inline=False)
+            Help.add_field(name="Botowner",value="`T!block`,`T!send`,`T!activity`,`T!reboot`,`T!bind`",inline=False)
             Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!google`",inline=False)
             Help.add_field(name="Sinnloses Zeug",value="`T!morse`",inline=False)
             Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
-            Help.add_field(name="Admin",value="`T!bind`,`T!mute`",inline=False)
+            Help.add_field(name="Admin",value="`T!mute`",inline=False)
             await message.channel.send(embed = Help)
         elif message.content.startswith("T!help "):
             query= message.content.split()[1]
@@ -406,7 +406,7 @@ async def on_message(message:nextcord.Message):
                     idbefore="None"
                 customid = message.content.split()[1]
                 if message.content.replace("T!bind ","") == "unbind":
-                    linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$set":{str(message.channel.id):None}})
+                    linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$set":{str(message.channel.id):"None"}})
                     await message.channel.send(embed=nextcord.Embed(description=f"Bindung `{idbefore}` gelöscht",color=0xe74c3c))
                 else:
                     linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
