@@ -300,6 +300,8 @@ async def on_message(message:nextcord.Message):
             await poll.add_reaction("👎")
             def check(reaction, user):
                 return user == message.author or not str(reaction.emoji) == "👍" or not str(reaction.emoji) == "👎"
+                reaction, user = await client.wait_for('reaction_add', check=check)
+                reaction, user = await client.wait_for('reaction_add', check=check)
             while True:
                 reaction, user = await client.wait_for('reaction_add', check=check)
                 await poll.remove_reaction(reaction.emoji,user)
