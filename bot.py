@@ -474,14 +474,17 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!mute"):
             if message.author.guild_permissions.moderate_members or message.author.id == redbuggamer or message.author.guild_permissions.administrator:
                 parameter=message.content.split()
-                if len(parameter) == 3:
+                if len(parameter) == 4:
                     theblockeduser = message.mentions[0]
                     muteduration = parameter[2]
+                    reason = ""
+                    for i in parameter[3:len(parameter)]:
+                        reason += i
                     parsed=humanfriendly.parse_timespan(muteduration)
-                    await message.mentions[0].edit(timeout=datetime.datetime.now()+datetime.timedelta(seconds=parsed))
-                    await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet"))
+                    await message.mentions[0].edit(timeout=datetime.datetime.now()+datetime.timedelta(seconds=parsed),reason=reason)
+                    await message.channel.send(embed=nextcord.Embed(color=0xED4245,description=f"{theblockeduser.mention} wurde für `{muteduration}` gemutet. Reason {reason}"))
                 else:
-                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: T!mute @member <time>",color=0xe74c3c))
+                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: T!mute @member <time> <reason>",color=0xe74c3c))
             else:
                 await noperms(message,"Du brauchst Botowner oder timeout members")
         elif "hi" == message.content.lower().replace("!","") and not message.author.id == redbuggamer:
