@@ -234,6 +234,16 @@ async def on_disconnect():
 #commands/ingame chat
 @client.event
 async def on_message(message:nextcord.Message):
+    if message.content=="T!reboot":
+            if message.author.id == redbuggamer:
+                await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
+                await message.delete()
+                
+                os.system("./mystartupscript")
+                print("Rebooting")
+                quit()
+            else:
+                noperms(message,"Du brauchst Botowner")
     if str(message.channel.id) in linkedchannels.find_one({}) and not message.content.startswith("T!"):
         if linkedchannels.find_one({})[str(message.channel.id)] != "":
             exa.command(linkedchannels.find_one({})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
@@ -475,15 +485,7 @@ async def on_message(message:nextcord.Message):
             await message.channel.trigger_typing()
             await asyncio.sleep(random.randrange(1,2))
             await message.channel.send("Hi!")
-        elif message.content=="T!reboot":
-            if message.author.id == redbuggamer:
-                await message.channel.send(embed=nextcord.Embed(description="RESTARTING myself"))
-                await message.delete()
-                
-                os.system("./mystartupscript")
-                quit()
-            else:
-                noperms(message,"Du brauchst Botowner")
+        
 
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
