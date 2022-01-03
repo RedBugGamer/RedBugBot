@@ -258,12 +258,8 @@ async def on_message(message:nextcord.Message):
     if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61d191f56c7061e409ed16d6")})["blockeduserid"]:
         #await message from self
         if message.author == client.user:
-            if awaitpoll:
-                #macht poll
-                awaitpoll = False
-                await message.add_reaction("👍")
-                await message.add_reaction("👎")
-            elif dice:
+
+            if dice:
                 #macht würfel
                 dice = False
                 for i in range(4):
@@ -301,12 +297,13 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!poll"):
             await message.channel.trigger_typing()
             #macht einen poll
-            awaitpoll = True
             if message.author.avatar == None:
                 #check avatar exists
-                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author))
+                poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author))
             else:
-                await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
+                poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
+            await poll.add_reaction("👍")
+            await poll.add_reaction("👎")
         # elif message.content.startswith("T!controll "):
         #     #control computer
         #     if message.author.id == redbuggamer:
