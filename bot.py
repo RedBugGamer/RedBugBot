@@ -252,6 +252,8 @@ async def on_message(message:nextcord.Message):
                 quit()
             else:
                 noperms(message,"Du brauchst Botowner")
+    elif message.content == "T!test":
+        print("test")
 
     if str(message.channel.id) in linkedchannels.find_one({}) and not message.content.startswith("T!"):
         if linkedchannels.find_one({})[str(message.channel.id)] != "":
