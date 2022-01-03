@@ -479,7 +479,9 @@ async def on_message(message:nextcord.Message):
             if message.author.id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING myself"))
                 await message.delete()
-                os.system("sudo reboot")
+                
+                os.system("./mystartupscript")
+                quit()
             else:
                 noperms(message,"Du brauchst Botowner")
 
