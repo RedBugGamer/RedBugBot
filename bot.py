@@ -235,10 +235,10 @@ async def on_disconnect():
 @client.event
 async def on_message(message:nextcord.Message):
     if message.channel.id == 917083417127055470:
-                print("Rebooting")
-                await asyncio.sleep(5)
-                os.system("./mystartupscript")
-                quit()
+            print("Rebooting")
+            await asyncio.sleep(5)
+            os.system("./mystartupscript")
+            quit()
 
     if message.content=="T!reboot":
             if message.author.id == redbuggamer:
