@@ -258,14 +258,6 @@ async def on_message(message:nextcord.Message):
     if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61d191f56c7061e409ed16d6")})["blockeduserid"]:
         #await message from self
         if message.author == client.user:
-
-            if dice:
-                #macht würfel
-                dice = False
-                for i in range(4):
-                    await asyncio.sleep(0.75)
-                    await message.edit(embed=nextcord.Embed(description="Rolling 🎲 "+str(randint(1,6))))
-                await message.edit(embed=nextcord.Embed(color=0x1f8b4c,description="🎲 "+str(randint(1,6))))
             if not message.content.startswith("T!"):
                 return  
         if message.content == "T!help":
@@ -340,8 +332,11 @@ async def on_message(message:nextcord.Message):
 
         elif message.content == "T!dice":
             #würfelt
-            dice=True
-            await message.channel.send(embed=nextcord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
+            dice =await message.channel.send(embed=nextcord.Embed(description="Rolling 🎲 "+str(randrange(1,6))))
+            for i in range(4):
+                await asyncio.sleep(0.75)
+                await dice.edit(embed=nextcord.Embed(description="Rolling 🎲 "+str(randint(1,6))))
+            await dice.edit(embed=nextcord.Embed(color=0x1f8b4c,description="🎲 "+str(randint(1,6))))
 
             
         elif message.content == "T!web":
