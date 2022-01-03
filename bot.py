@@ -238,7 +238,7 @@ async def on_message(message:nextcord.Message):
             if message.author.id == redbuggamer:
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
                 await message.delete()
-                
+                client.change_presence(status=nextcord.Status.dnd)
                 os.system("./mystartupscript")
                 print("Rebooting")
                 quit()
