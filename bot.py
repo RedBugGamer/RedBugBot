@@ -498,8 +498,9 @@ async def on_message(message:nextcord.Message):
                 await message.channel.trigger_typing()
                 await asyncio.sleep(random.randrange(1,2))
                 await message.channel.send("Hi!")
+                Hicooldown =30
                 for i in range(Hicooldown):
-                    Hicooldown = Hicooldown+1
+                    Hicooldown +=-1
                     print(Hicooldown)
                     await asyncio.sleep(1)
         
