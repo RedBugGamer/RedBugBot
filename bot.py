@@ -501,6 +501,8 @@ async def on_message(message:nextcord.Message):
                 for i in range(Hicooldown):
                     Hicooldown +=-1
                     await asyncio.sleep(1)
+        elif message.content == "T!time":
+            await message.channel.send(datetime.datetime.utcnow())
         
 
         elif message.content.startswith("T!"):
