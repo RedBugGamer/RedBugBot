@@ -288,7 +288,7 @@ async def on_message(message:nextcord.Message):
                     await noperms(message,"Du brauchst Botowner")
 
         elif message.content.startswith("T!poll"):
-            await message.delete()
+            
             await message.channel.trigger_typing()
             #macht einen poll
             if message.author.avatar == None:
@@ -298,15 +298,15 @@ async def on_message(message:nextcord.Message):
                 poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
             await poll.add_reaction("👍")
             await poll.add_reaction("👎")
+            messagebackup = poll.id
             def check(reaction, user):
                 mycheck=[
-                    reaction.message == message,
+                    reaction.message.id == messagebackup,
                     user == message.author,
                     not user == client.user,
                     ]
-
                 return not False in mycheck or not str(reaction.emoji) == "👍"or not str(reaction.emoji) == "👎"
-            
+            await message.delete()
             while True:
                 reaction, user = await client.wait_for('reaction_add', check=check)
                 await poll.remove_reaction(reaction.emoji,user)
