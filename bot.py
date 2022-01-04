@@ -48,6 +48,7 @@ sadwords=["demotivatet"]
 blockeduserdocid="61d191f56c7061e409ed16d6"
 linkedchannelsmongoid="61b5d3560d296088f9c970f4"
 morsealphabet = {'a' : '.-', 'b' : '-...', 'c' : '-.-.', 'd' : '-..', 'e' : '.', 'f' : '..-.', 'g' : '--.', 'h' : '....', 'i' : '..', 'j' : '.---', 'k' : '-.-', 'l' : '.-..', 'm' : '--', 'n' : '-.', 'o' : '---', 'p' : '.--.', 'q' : '--.-', 'r' : '.-.', 's' : '...', 't' : '-', 'u' : '..-', 'v' : '...-', 'w' : '.--', 'x' : '-..-', 'y' : '-.--', 'z' : '--..', '.' : '.-.-.-', '?' : '..--..', ',' : '--..--', ' ' : ''}
+Hicooldown = 0
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
@@ -255,6 +256,7 @@ async def on_message(message:nextcord.Message):
     global dice
     global status
     global running
+    global Hicooldown
     # block users
     if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61d191f56c7061e409ed16d6")})["blockeduserid"]:
         #await message from self
@@ -492,9 +494,14 @@ async def on_message(message:nextcord.Message):
             else:
                 await noperms(message,"Du brauchst Botowner oder timeout members")
         elif "hi" == message.content.lower().replace("!","") and not message.author.id == redbuggamer:
-            await message.channel.trigger_typing()
-            await asyncio.sleep(random.randrange(1,2,0.1))
-            await message.channel.send("Hi!")
+            if Hicooldown == 0:
+                await message.channel.trigger_typing()
+                await asyncio.sleep(random.randrange(1,2))
+                await message.channel.send("Hi!")
+                for i in range(Hicooldown):
+                    Hicooldown = Hicooldown+1
+                    print(Hicooldown)
+                    await asyncio.sleep(1)
         
 
         elif message.content.startswith("T!"):
