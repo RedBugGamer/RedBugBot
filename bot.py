@@ -298,14 +298,8 @@ async def on_message(message:nextcord.Message):
                 poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
             await poll.add_reaction("👍")
             await poll.add_reaction("👎")
-            messagebackup = poll.id
-            def check(reaction, user):
-                mycheck=[
-                    reaction.message.id == messagebackup,
-                    user == message.author,
-                    not user == client.user,
-                    ]
-                return not False in mycheck or not str(reaction.emoji) == "👍"or not str(reaction.emoji) == "👎"
+            def check(reaction:nextcord.Reaction, user):
+                return poll== reaction.message and message.author == user or not reaction.emoji == "👍" and not reaction.emoji == "👎"
             await message.delete()
             while True:
                 reaction, user = await client.wait_for('reaction_add', check=check)
