@@ -229,7 +229,7 @@ async def on_disconnect():
 async def on_message(message:nextcord.Message):
     if message.channel.id == 917083417127055470:
             print("Rebooting")
-            await client.change_presence(status=nextcord.Status.idle,activity=nextcord.Game("Rebooting"))
+            await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
             await asyncio.sleep(5)
             os.system("./mystartupscript")
             quit()
@@ -237,7 +237,7 @@ async def on_message(message:nextcord.Message):
     if message.content=="T!reboot":
             if message.author.id == redbuggamer:
                 await message.channel.trigger_typing()
-                await client.change_presence(status=nextcord.Status.idle,activity=nextcord.Game("Rebooting"))
+                await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
                 await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
                 await message.delete()
                 print("Rebooting")
