@@ -501,7 +501,6 @@ async def on_message(message:nextcord.Message):
                 Hicooldown =30
                 for i in range(Hicooldown):
                     Hicooldown +=-1
-                    print(Hicooldown)
                     await asyncio.sleep(1)
         
 
