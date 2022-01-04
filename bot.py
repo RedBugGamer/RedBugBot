@@ -493,7 +493,7 @@ async def on_message(message:nextcord.Message):
                     await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: T!mute @member <time> <reason>",color=0xe74c3c))
             else:
                 await noperms(message,"Du brauchst Botowner oder timeout members")
-        elif "hi" == message.content.lower().replace("!","") and not message.author.id == redbuggamer:
+        elif "hi" == message.content.lower().replace("!",""):
             if Hicooldown == 0:
                 await message.channel.trigger_typing()
                 await asyncio.sleep(random.randrange(1,2))
