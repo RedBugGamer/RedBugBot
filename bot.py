@@ -274,7 +274,7 @@ async def on_message(message:nextcord.Message):
             Help.add_field(name="Admin",value="`T!mute`",inline=False)
             await message.channel.send(embed = Help)
         elif message.content.startswith("T!help "):
-            query= message.content.split()[1]
+            query= message.content.split()[1].replace("T!","",1)
             if query in registeredcommands:
                 await message.channel.send(embed=nextcord.Embed(title="T!"+query,description=registeredcommands[query],color=0xe74c3c))
             else:
