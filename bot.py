@@ -442,9 +442,9 @@ async def on_message(message:nextcord.Message):
                 rank={"VIP":"[VIP]","VIP_PLUS":"[VIP+]","MVP":"[MVP]","MVP_PLUS":"[MVP+]","MVP_PLUS_PLUS":"[MVP++]",None:""}
                 currrank = rank[request["rank"]]
                 for i in range(levelbarpercent):
-                    levelbar += "🟩"
+                    levelbar += "<:levelbarfull:927881143699787786>"
                 for i in range(12-levelbarpercent):
-                    levelbar += "🔳"
+                    levelbar += "<:levelbarempty:927881034178134047>"
 
                 playerembed.set_thumbnail(url=f"https://crafatar.com/renders/body/{uuid}?size=200&default=MHF_Steve&overlay")
                 playerembed.set_author(name=f"{currrank} {player}",icon_url=f"https://crafatar.com/avatars/{uuid}?size=200&default=MHF_Steve&overlay")
