@@ -16,11 +16,11 @@ import requests
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from exaroton import Exaroton
-from mouse import press
+# from mouse import press
 from nextcord import *
 from nextcord.ext import tasks
 from nextcord.ui import Button, View, view
-from pynput.keyboard import Key
+# from pynput.keyboard import Key
 from evalprot import makeeval
 
 #load .env filw
