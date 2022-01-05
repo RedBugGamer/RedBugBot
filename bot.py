@@ -504,7 +504,7 @@ async def on_message(message:nextcord.Message):
                     await client.wait_for("message",check=check,timeout=20.0)
                 except asyncio.TimeoutError:
                     pass
-                msg.delete()
+                await msg.delete()
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content.startswith("T!licht "):
