@@ -497,7 +497,14 @@ async def on_message(message:nextcord.Message):
                 embed.add_field(inline=False,name="`Erdgeschoss`",value=erdgeschoss)
                 embed.add_field(inline=False,name="`Obergeschoss`",value=obergeschoß)
                 embed.add_field(inline=False,name="`Dachgeschoss`",value=dachgeschoß)
-                await message.channel.send(embed=embed)
+                msg = await message.channel.send(embed=embed)
+                def check(m:nextcord.Message):
+                    return m.author == message.author and m.content.startswith("T!licht")
+                try:
+                    await client.wait_for("message",check=check,timeout=20.0)
+                except asyncio.TimeoutError:
+                    pass
+                msg.delete()
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content.startswith("T!licht "):
