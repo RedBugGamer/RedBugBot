@@ -9,18 +9,15 @@ import random
 from random import randint, randrange
 from typing import List
 import humanfriendly
-# import macro
 import nextcord
 import pymongo
 import requests
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from exaroton import Exaroton
-# from mouse import press
 from nextcord import *
 from nextcord.ext import tasks
 from nextcord.ui import Button, View, view
-# from pynput.keyboard import Key
 from evalprot import makeeval
 
 #load .env filw
@@ -190,7 +187,6 @@ async def noperms(obj:nextcord.Message,neededpermission=""):
     await obj.reply(embed=nextcord.Embed(title="Du hast keine Berechtigung dazu",description=neededpermission,color=0xe74c3c))
 registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
                     "ping":"Gibt meinen ping `Usage: T!ping`",
-                    "control":"Botowner only `Usage: T!control <action>`",
                     "block":"Blockiert einen User sodass der den bot nicht nutzen kann `Usage: T!block <@ member>`",
                     "send":"sendet etwas in kanal x `Usage: T!send <# channel> <message>`",
                     "say":"sagt etwas als ich `Usage: T!say <message>`",
@@ -306,34 +302,6 @@ async def on_message(message:nextcord.Message):
                 reaction, user = await client.wait_for('reaction_add', check=check)
                 await poll.remove_reaction(reaction.emoji,user)
                 
-
-
-        
-        # elif message.content.startswith("T!controll "):
-        #     #control computer
-        #     if message.author.id == redbuggamer:
-        #         await message.channel.trigger_typing()
-        #         if message.content.replace("T!controll ","") == "hotspot":
-        #             macro.hotspot()
-        #             await message.channel.send(embed=nextcord.Embed(description="Hotspot eingeschalten"))
-        #         elif message.content.replace("T!controll ","") == "shutdown":
-        #             await message.channel.send(embed=nextcord.Embed(description="Ausschalten"))
-        #             macro.shutdown()
-        #         elif message.content.replace("T!controll ","").startswith("message"):
-        #             await message.channel.send(embed=nextcord.Embed(description="Du hast `"+message.content.replace("T!controll","").replace(" message ","")+"` gesendet"))
-        #             macro.message(message.content.replace("T!controll","").replace(" message",""),15)
-        #         elif message.content.replace("T!controll ","") == "restart":
-        #             await message.channel.send(embed=nextcord.Embed(description="Neustarten"))
-        #             macro.restart()
-        #         elif message.content.replace("T!controll ","") == "gamer":
-        #             macro.win_r("C:/Users/RedBugGamer/AppData/Roaming/MultiMC/Multimc.exe")
-        #             await asyncio.sleep(2)
-        #             macro.press(Key.enter)
-        #             await message.channel.send(embed=nextcord.Embed(description="Aktuelle instanz gestartet"))
-                
-        #     else:
-        #         #keine perms
-        #         await noperms(message,"Du brauchst botowner")
         
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
