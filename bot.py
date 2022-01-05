@@ -200,7 +200,8 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "poll":"Macht eine Umfrage `Usage: T!poll <Frage>`",
                     "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
                     "mute":"Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`",
-                    "reboot":"Startet mich neu `Usage: T!reboot`"
+                    "reboot":"Startet mich neu `Usage: T!reboot`",
+                    "licht":"""toggelt licht mit id x `Usage: T!licht <id> <time>`"""
                         }
 
 
@@ -471,7 +472,7 @@ async def on_message(message:nextcord.Message):
                     await asyncio.sleep(1)
         elif message.content.startswith("T!licht"):
             if message.author.id == redbuggamer:
-                args=message.content.splitlines() 
+                args=message.content.split(" ") 
                 lichtid=args[1]
                 time=humanfriendly.parse_timespan(args[2])
                 await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt"))
