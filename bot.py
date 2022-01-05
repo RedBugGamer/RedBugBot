@@ -472,7 +472,7 @@ async def on_message(message:nextcord.Message):
                     await asyncio.sleep(1)
         elif message.content == "T!licht":
             if message.author.id == redbuggamer or message.author.id == 381905896546107392 or message.author.id or 772467937436893205:
-                embed = nextcord.Embed(description="Liste der Id's")
+                embed = nextcord.Embed(description="Liste der Id's",color=0x3498db)
                 keller = """Lampe1 : 1
                 Flur : 2
                 Werkstatt : 4
