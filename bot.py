@@ -469,6 +469,17 @@ async def on_message(message:nextcord.Message):
                 for i in range(Hicooldown):
                     Hicooldown +=-1
                     await asyncio.sleep(1)
+        elif message.content.startswith("T!licht"):
+            if message.author.id == redbuggamer:
+                args=message.content.splitlines() 
+                lichtid=args[1]
+                time=humanfriendly.parse_timespan(args[2])
+                await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt"))
+                await asyncio.sleep(time)
+                requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
+                await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt"))
+            else:
+                noperms(message,"Du brauchst Botowner")
         
         # other essential stuff here:
         elif message.content.startswith("T!"):
