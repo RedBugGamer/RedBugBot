@@ -470,8 +470,38 @@ async def on_message(message:nextcord.Message):
                 for i in range(Hicooldown):
                     Hicooldown +=-1
                     await asyncio.sleep(1)
+        elif message.content == "T!licht":
+            if message.author.id == redbuggamer or message.author.id == 381905896546107392 or message.author.id or 772467937436893205:
+                embed = nextcord.Embed(description="Liste der Id's")
+                keller = """Lampe1 : 1
+                Flur : 2
+                Werkstatt : 4
+                Heizungsraum : 13
+                West : 20"""
+                erdgeschoss = """Bad : 3
+                Flur : 6
+                Küche : 7
+                Wohnzimmer Ost : 8
+                Wohnzimmer West : 9
+                Esstisch : 15
+                Bewegungsmelder Ost : 10
+                Bewegungsmelder Haustür : 11"""
+                obergeschoß = """Bad : 5
+                Bad Spiegel : 17
+                Flur : 14
+                Schlafzimmer : 16
+                Zimmer K : 18
+                Zimmer A : 19"""
+                dachgeschoß = """Studio : 12"""
+                embed.add_field(inline=False,name="`Keller`",value=keller)
+                embed.add_field(inline=False,name="`Erdgeschoss`",value=erdgeschoss)
+                embed.add_field(inline=False,name="`Obergeschoss`",value=obergeschoß)
+                embed.add_field(inline=False,name="`Dachgeschoss`",value=dachgeschoß)
+                await message.channel.send(embed=embed)
+            else:
+                await noperms(message,"Du brauchst Botowner")
         elif message.content.startswith("T!licht"):
-            if message.author.id == redbuggamer:
+            if message.author.id == redbuggamer or message.author.id == 381905896546107392 or message.author.id or 772467937436893205:
                 args=message.content.split(" ") 
                 lichtid=args[1]
                 time=humanfriendly.parse_timespan(args[2])
