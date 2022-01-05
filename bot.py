@@ -506,15 +506,15 @@ async def on_message(message:nextcord.Message):
                 lichtid=args[1]
                 if len(args) == 2:
                     time=humanfriendly.parse_timespan(args[2])
-                    await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt"))
+                    await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt",color=nextcord.Colour.blue()))
                     await asyncio.sleep(time)
                     requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
-                    await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt"))
+                    await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt",color=nextcord.Colour.blue()))
                 elif len(args) == 1:
                     requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
-                    await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt"))
+                    await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt",color=nextcord.Colour.blue()))
                 else:
-                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: `T!licht <id> (timespan)`"))
+                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: `T!licht <id> (timespan)`",color=nextcord.Colour.blue()))
             else:
                 noperms(message,"Du brauchst Botowner")
         
