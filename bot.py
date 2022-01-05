@@ -500,15 +500,19 @@ async def on_message(message:nextcord.Message):
                 await message.channel.send(embed=embed)
             else:
                 await noperms(message,"Du brauchst Botowner")
-        elif message.content.startswith("T!licht"):
+        elif message.content.startswith("T!licht "):
             if message.author.id == redbuggamer or message.author.id == 381905896546107392 or message.author.id or 772467937436893205:
                 args=message.content.split(" ") 
                 lichtid=args[1]
-                time=humanfriendly.parse_timespan(args[2])
-                await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt"))
-                await asyncio.sleep(time)
-                requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
-                await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt"))
+                if len(args) == 2:
+                    time=humanfriendly.parse_timespan(args[2])
+                    await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt"))
+                    await asyncio.sleep(time)
+                    requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
+                    await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt"))
+                elif len(args) == 1:
+                    requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
+                    await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt"))
             else:
                 noperms(message,"Du brauchst Botowner")
         
