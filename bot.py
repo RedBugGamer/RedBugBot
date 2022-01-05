@@ -513,6 +513,8 @@ async def on_message(message:nextcord.Message):
                 elif len(args) == 1:
                     requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
                     await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt"))
+                else:
+                    await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: `T!licht <id> (timespan)`"))
             else:
                 noperms(message,"Du brauchst Botowner")
         
