@@ -520,7 +520,7 @@ async def on_message(message:nextcord.Message):
                 await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt",color=0x3498db))
                 await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: `T!licht <id> (timespan)`",color=0x3498db))
             else:
-                noperms(message,"Du brauchst Botowner")
+                await noperms(message,"Du brauchst Botowner")
         
         # other essential stuff here:
         elif message.content.startswith("T!"):
