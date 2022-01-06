@@ -380,7 +380,7 @@ async def on_message(message:nextcord.Message):
                     idbefore="None"
                 customid = message.content.split()[1]
                 if message.content.replace("T!bind ","") == "unbind":
-                    linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$set":{str(message.channel.id):"None"}})
+                    linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$set":{str(message.channel.id):""}})
                     await message.channel.send(embed=nextcord.Embed(description=f"Bindung `{idbefore}` gelöscht",color=0xe74c3c))
                 else:
                     linkedchannels.update_one({"_id": ObjectId(linkedchannelsmongoid)},{"$set":{str(message.channel.id):str(message.content.replace("T!bind ",""))}})
