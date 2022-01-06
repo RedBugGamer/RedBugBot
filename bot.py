@@ -516,7 +516,6 @@ async def on_message(message:nextcord.Message):
                 await asyncio.sleep(time)
                 requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
                 await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt",color=0x3498db))
-                await message.channel.send(embed=nextcord.Embed(description="Falsches Usage: `T!licht <id> (timespan)`",color=0x3498db))
             else:
                 await noperms(message,"Du brauchst Botowner")
         
