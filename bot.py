@@ -201,7 +201,7 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
                     "mute":"Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`",
                     "reboot":"Startet mich neu `Usage: T!reboot`",
-                    "licht":"""toggelt licht mit id x `Usage: T!licht <id> <time>`"""
+                    "licht":"toggelt licht mit id x `Usage: T!licht <id> <time>`"
                         }
 
 
