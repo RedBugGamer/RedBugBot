@@ -324,7 +324,7 @@ async def on_message(message:nextcord.Message):
             
         elif message.content == "T!web":
             #link zur website W.I.P.
-            await message.channel.send(embed=nextcord.Embed(description="Meine [Website](https://RedBugBot.redbuggamer.repl.co)"))
+            await message.channel.send(embed=nextcord.Embed(description="Meine [Website](https://RedBugBot.redbuggamer.repl.co)",color=nextcord.Colour.blue()))
         elif message.content == "T!tictactoe":
             #startet tictactoe
             await message.channel.send("⠀",view=TicTacToe())
