@@ -201,7 +201,8 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "bind":'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
                     "mute":"Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`",
                     "reboot":"Startet mich neu `Usage: T!reboot`",
-                    "licht":"toggelt licht mit id x `Usage: T!licht <id> <time>`"
+                    "licht":"toggelt licht mit id x `Usage: T!licht <id> <time>`",
+                    "web":"Gibt dir den link zu meiner Website `Usage: T!web`"
                         }
 
 
@@ -264,7 +265,7 @@ async def on_message(message:nextcord.Message):
             Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.datetime.utcnow())
             Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
-            Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`",inline=False)
+            Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`,`T!web`",inline=False)
             Help.add_field(name="Botowner",value="`T!block`,`T!send`,`T!activity`,`T!reboot`,`T!bind`",inline=False)
             Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`",inline=False)
             Help.add_field(name="Sinnloses Zeug",value="`T!morse`,`T!google`",inline=False)
@@ -323,7 +324,7 @@ async def on_message(message:nextcord.Message):
             
         elif message.content == "T!web":
             #link zur website W.I.P.
-            await message.channel.send(embed=nextcord.Embed(description="Meine [Website](https://RedBugBot-in-python.redbuggamer.repl.co)"))
+            await message.channel.send(embed=nextcord.Embed(description="Meine [Website](https://RedBugBot.redbuggamer.repl.co)"))
         elif message.content == "T!tictactoe":
             #startet tictactoe
             await message.channel.send("⠀",view=TicTacToe())
