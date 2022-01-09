@@ -224,6 +224,8 @@ activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung 
 async def on_ready():
     if not statuschange.is_running():
         statuschange.start()
+    if not uptime.is_running():
+        uptime.start()
     print(f'{client.user} has connected to Discord!')
     
 @client.event
