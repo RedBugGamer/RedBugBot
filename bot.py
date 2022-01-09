@@ -46,6 +46,7 @@ blockeduserdocid="61d191f56c7061e409ed16d6"
 linkedchannelsmongoid="61b5d3560d296088f9c970f4"
 morsealphabet = {'a' : '.-', 'b' : '-...', 'c' : '-.-.', 'd' : '-..', 'e' : '.', 'f' : '..-.', 'g' : '--.', 'h' : '....', 'i' : '..', 'j' : '.---', 'k' : '-.-', 'l' : '.-..', 'm' : '--', 'n' : '-.', 'o' : '---', 'p' : '.--.', 'q' : '--.-', 'r' : '.-.', 's' : '...', 't' : '-', 'u' : '..-', 'v' : '...-', 'w' : '.--', 'x' : '-..-', 'y' : '-.--', 'z' : '--..', '.' : '.-.-.-', '?' : '..--..', ',' : '--..--', ' ' : ''}
 Hicooldown = 0
+startuptime = datetime.datetime.utcnow()
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
@@ -210,13 +211,6 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
 async def statuschange():
     await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
 
-@tasks.loop(count=1)
-async def uptime():
-    global uptimeminutes
-    uptimeminutes=0
-    while True:
-        uptimeminutes += 1
-        await asyncio.sleep(60)
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Dischordserver"]
 #on ready/Change bot activitie
@@ -224,8 +218,6 @@ activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung 
 async def on_ready():
     if not statuschange.is_running():
         statuschange.start()
-    if not uptime.is_running():
-        uptime.start()
     print(f'{client.user} has connected to Discord!')
     
 @client.event
@@ -529,7 +521,7 @@ async def on_message(message:nextcord.Message):
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content == "T!uptime":
-            await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(uptimeminutes)))
+            await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(startuptime)))
         
         # other essential stuff here:
         elif message.content.startswith("T!"):
