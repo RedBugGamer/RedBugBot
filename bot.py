@@ -222,7 +222,7 @@ async def on_ready():
         statuschange.start()
     print(f'{client.user} has connected to Discord!')
     global githubcooldown
-    async for i in range(githubcooldown):
+    for i in range(githubcooldown):
         await asyncio.sleep(1)
         githubcooldown -=1
 
