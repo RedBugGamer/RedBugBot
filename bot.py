@@ -525,7 +525,7 @@ async def on_message(message:nextcord.Message):
             m = await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(datetime.datetime.now() - startuptime)))
             for i in range(10):
                 await asyncio.sleep(3)
-                m.edit(embed=nextcord.Embed(title="Uptime",description=str(datetime.datetime.now() - startuptime)))
+                await m.edit(embed=nextcord.Embed(title="Uptime",description=str(datetime.datetime.now() - startuptime)))
         # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
