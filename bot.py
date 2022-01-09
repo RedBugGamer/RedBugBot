@@ -235,10 +235,10 @@ async def on_disconnect():
 @client.event
 async def on_message(message:nextcord.Message):
     if message.channel.id == 917083417127055470:
-            print("Rebooting")
-            await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
+            print("Rebooting in",githubcooldown)
             for i in range(githubcooldown):
                 await asyncio.sleep(1)
+            await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
             os.system("./mystartupscript")
             quit()
 
@@ -247,7 +247,7 @@ async def on_message(message:nextcord.Message):
                 await message.channel.trigger_typing()
                 await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
                 if githubcooldown != 0:
-                    await message.channel.send(embed=nextcord.Embed(description="awaiting restart"))
+                    await message.channel.send(embed=nextcord.Embed(description=f"awaiting restart in {githubcooldown} seconds"))
                 await message.delete()
                 print("Rebooting")
                 for i in range(githubcooldown):
