@@ -210,6 +210,13 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
 async def statuschange():
     await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
 
+@tasks.loop(count=1)
+async def uptime():
+    global uptimeminutes
+    uptimeminutes=0
+    while True:
+        uptimeminutes += 1
+        await asyncio.sleep(60)
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Dischordserver"]
 #on ready/Change bot activitie
@@ -519,6 +526,8 @@ async def on_message(message:nextcord.Message):
                 await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt",color=0x3498db))
             else:
                 await noperms(message,"Du brauchst Botowner")
+        elif message.content == "T!uptime":
+            await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(uptimeminutes))
         
         # other essential stuff here:
         elif message.content.startswith("T!"):
