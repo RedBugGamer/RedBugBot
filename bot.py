@@ -203,7 +203,8 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "mute":"Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`",
                     "reboot":"Startet mich neu `Usage: T!reboot`",
                     "licht":"toggelt licht mit id x `Usage: T!licht <id> <time>`",
-                    "web":"Gibt dir den link zu meiner Website `Usage: T!web`"
+                    "web":"Gibt dir den link zu meiner Website `Usage: T!web`",
+                    "uptime":"Gibt die zeit zurück, die ich Online war `Usage: T!uptime`"
                         }
 
 
@@ -266,7 +267,7 @@ async def on_message(message:nextcord.Message):
             Help = nextcord.Embed(description="Hi also ich bin ein bot von RedBugGamer#2069",color=0xe74c3c,timestamp=datetime.datetime.utcnow())
             Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
-            Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`,`T!web`",inline=False)
+            Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`,`T!web`,`T!uptime`",inline=False)
             Help.add_field(name="Botowner",value="`T!block`,`T!send`,`T!activity`,`T!reboot`,`T!bind`",inline=False)
             Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`",inline=False)
             Help.add_field(name="Sinnloses Zeug",value="`T!morse`,`T!google`",inline=False)
