@@ -527,7 +527,7 @@ async def on_message(message:nextcord.Message):
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content == "T!uptime":
-            await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(uptimeminutes))
+            await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(uptimeminutes)))
         
         # other essential stuff here:
         elif message.content.startswith("T!"):
