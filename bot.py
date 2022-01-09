@@ -46,7 +46,7 @@ blockeduserdocid="61d191f56c7061e409ed16d6"
 linkedchannelsmongoid="61b5d3560d296088f9c970f4"
 morsealphabet = {'a' : '.-', 'b' : '-...', 'c' : '-.-.', 'd' : '-..', 'e' : '.', 'f' : '..-.', 'g' : '--.', 'h' : '....', 'i' : '..', 'j' : '.---', 'k' : '-.-', 'l' : '.-..', 'm' : '--', 'n' : '-.', 'o' : '---', 'p' : '.--.', 'q' : '--.-', 'r' : '.-.', 's' : '...', 't' : '-', 'u' : '..-', 'v' : '...-', 'w' : '.--', 'x' : '-..-', 'y' : '-.--', 'z' : '--..', '.' : '.-.-.-', '?' : '..--..', ',' : '--..--', ' ' : ''}
 Hicooldown = 0
-startuptime = datetime.datetime.utcnow()
+startuptime = datetime.datetime.now()
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
