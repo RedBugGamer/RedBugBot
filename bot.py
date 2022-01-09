@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # imports
 import asyncio
-from asyncio.tasks import wait_for
 import datetime
 import math
 import os
 import random
 from random import randint, randrange
 from typing import List
+import time
 import humanfriendly
 import nextcord
 import pymongo
@@ -521,8 +521,7 @@ async def on_message(message:nextcord.Message):
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content == "T!uptime":
-            await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(startuptime-datetime.timedelta(milliseconds=datetime.datetime.utcnow()))))
-        
+            await message.channel.send(embed=nextcord.Embed(title="Uptime",description=str(startuptime-datetime.timedelta(milliseconds=datetime.datetime.now()*1000))))
         # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
