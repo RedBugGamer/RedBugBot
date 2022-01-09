@@ -47,6 +47,7 @@ linkedchannelsmongoid="61b5d3560d296088f9c970f4"
 morsealphabet = {'a' : '.-', 'b' : '-...', 'c' : '-.-.', 'd' : '-..', 'e' : '.', 'f' : '..-.', 'g' : '--.', 'h' : '....', 'i' : '..', 'j' : '.---', 'k' : '-.-', 'l' : '.-..', 'm' : '--', 'n' : '-.', 'o' : '---', 'p' : '.--.', 'q' : '--.-', 'r' : '.-.', 's' : '...', 't' : '-', 'u' : '..-', 'v' : '...-', 'w' : '.--', 'x' : '-..-', 'y' : '-.--', 'z' : '--..', '.' : '.-.-.-', '?' : '..--..', ',' : '--..--', ' ' : ''}
 Hicooldown = 0
 startuptime = datetime.datetime.now()
+githubcooldown = 180
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
@@ -220,6 +221,11 @@ async def on_ready():
     if not statuschange.is_running():
         statuschange.start()
     print(f'{client.user} has connected to Discord!')
+    global githubcooldown
+    async for i in range(githubcooldown):
+        await asyncio.sleep(1)
+        githubcooldown -=1
+
     
 @client.event
 async def on_disconnect():
@@ -231,7 +237,8 @@ async def on_message(message:nextcord.Message):
     if message.channel.id == 917083417127055470:
             print("Rebooting")
             await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
-            await asyncio.sleep(5)
+            for i in range(githubcooldown):
+                await asyncio.sleep(1)
             os.system("./mystartupscript")
             quit()
 
@@ -239,10 +246,13 @@ async def on_message(message:nextcord.Message):
             if message.author.id == redbuggamer:
                 await message.channel.trigger_typing()
                 await client.change_presence(status=nextcord.Status.dnd,activity=nextcord.Game("Rebooting"))
-                await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
+                if githubcooldown != 0:
+                    await message.channel.send(embed=nextcord.Embed(description="awaiting restart"))
                 await message.delete()
                 print("Rebooting")
-                await asyncio.sleep(5)
+                for i in range(githubcooldown):
+                    await asyncio.sleep(1)
+                await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
                 os.system("./mystartupscript")
                 quit()
             else:
