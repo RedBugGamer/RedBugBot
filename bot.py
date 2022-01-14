@@ -157,7 +157,6 @@ class TicTacToe(nextcord.ui.View):
 class Schiffefeld(nextcord.ui.View):
     def __init__(self):
         super().__init__()
-        self.value = None
     @nextcord.ui.button(label="⠀",style=nextcord.ButtonStyle.blurple)
     async def Spielfeld1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
         while True:
@@ -171,6 +170,13 @@ class Schiffetot():
     async def Field1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
         await interaction.response.send_message("Dein spielfeld XD",ephemeral=True,view=Schiffefeld())
         await interaction.edit_original_message()
+class testbutton(nextcord.ui.View):
+    def __init__(self):
+        super().__init__()
+    @nextcord.ui.button(label="testlabel")
+    async def testbutton(self,button:nextcord.ui.Button,interaction:nextcord.Interaction):
+        button.label="test"
+        await interaction.response.edit_message(view=self)
 def getstatuscolor(currentrequest,sendtimestamp):
     
     if currentrequest == "Online":
