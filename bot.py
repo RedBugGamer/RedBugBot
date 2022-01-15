@@ -548,6 +548,8 @@ async def on_message(message:nextcord.Message):
                 await asyncio.sleep(1)
                 await m.edit(embed=nextcord.Embed(title="Uptime",description=str(datetime.datetime.now() - startuptime)))
         elif "demotivated" in message.content.lower() or "demotiviert" in message.content.lower():
+            await message.channel.trigger_typing()
+            await asyncio.sleep(2)
             request=requests.get(zen).json()
             await message.reply(f"""{request[0]["q"]}
                                     -{request[0]["a"]}""")
