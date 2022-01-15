@@ -549,8 +549,8 @@ async def on_message(message:nextcord.Message):
                 await m.edit(embed=nextcord.Embed(title="Uptime",description=str(datetime.datetime.now() - startuptime)))
         elif "demotivated" in message.content.lower() or "demotiviert" in message.content.lower():
             request=requests.get(zen).json()
-            await message.reply(f"""{request["q"]}
-                                    -{request["a"]}""")
+            await message.reply(f"""{request[0]["q"]}
+                                    -{request[0]["a"]}""")
             # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
