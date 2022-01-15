@@ -552,7 +552,7 @@ async def on_message(message:nextcord.Message):
             await asyncio.sleep(2)
             request=requests.get(zen).json()
             await message.reply(f"""{request[0]["q"]}
-                                    -{request[0]["a"]}""")
+    -{request[0]["a"]}""")
             # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
