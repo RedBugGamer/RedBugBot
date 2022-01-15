@@ -49,6 +49,8 @@ morsealphabet = {'a' : '.-', 'b' : '-...', 'c' : '-.-.', 'd' : '-..', 'e' : '.',
 Hicooldown = 0
 startuptime = datetime.datetime.now()
 githubcooldown = 180
+
+chatboton=False
 #Button menus
 class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
     def __init__(self, x: int, y: int):
@@ -277,6 +279,7 @@ async def on_message(message:nextcord.Message):
         if linkedchannels.find_one({})[str(message.channel.id)] != "":
             exa.command(linkedchannels.find_one({})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
     #make global variables
+    global chatboton
     global awaitpoll
     global dice
     global status
@@ -493,7 +496,7 @@ async def on_message(message:nextcord.Message):
             else:
                 await noperms(message,"Du brauchst Botowner oder timeout members")
         elif "hi" == message.content.lower().replace("!",""):
-            if Hicooldown == 0:
+            if Hicooldown == 0 and not chatboton:
                 await message.channel.trigger_typing()
                 await asyncio.sleep(random.randrange(1,2))
                 await message.channel.send("Hi!")
@@ -541,8 +544,14 @@ async def on_message(message:nextcord.Message):
     -{request[0]["a"]}""")
         elif message.content == "T!chatbot":
             delete = False
+            if message.author.id == 772386889817784340:
+                chatboton = True
             await secretlib.chatbot(message,client)
-
+            if message.author.id == 772386889817784340:
+                chatboton = False
+        elif message.content.startswith("T!chatbot "):
+            if message.author.id == redbuggamer:
+                secretlib.verlauf = message.content.replace("T!chatbot ","",1).split("|")
 
 
 
