@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # imports
+from ast import arg
 import asyncio
 import datetime
 import math
@@ -170,13 +171,17 @@ class Schiffetot():
     async def Field1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
         await interaction.response.send_message("Dein spielfeld XD",ephemeral=True,view=Schiffefeld())
         await interaction.edit_original_message()
-class testbutton(nextcord.ui.View):
-    def __init__(self):
+class lichtschalter(nextcord.ui.View):
+    def __init__(self,lichtid:str):
+        self.lichtid = lichtid
         super().__init__()
-    @nextcord.ui.button(label="testlabel")
-    async def testbutton(self,button:nextcord.ui.Button,interaction:nextcord.Interaction):
-        button.label="test"
-        await interaction.response.edit_message(view=self)
+    @nextcord.ui.button(emoji="💡")
+    async def lichtschalter(self,button:nextcord.ui.Button,interaction:nextcord.Interaction):
+        if interaction.user.id in [redbuggamer,381905896546107392,772467937436893205]:
+            requests.get(f"http://raspberrypi:8088/rest/devices/{self.lichtid}/methods/1")
+            await interaction.response.send_message(f"licht {self.lichtid} getoggelt",ephemeral=True)
+        else:
+            await interaction.response.send_message("Keine permission",ephemeral=True)
 def getstatuscolor(currentrequest,sendtimestamp):
     
     if currentrequest == "Online":
@@ -534,12 +539,15 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!licht "):
             if message.author.id == redbuggamer or message.author.id == 381905896546107392 or message.author.id or 772467937436893205:
                 args=message.content.split(" ") 
-                lichtid=args[1]
-                time=humanfriendly.parse_timespan(args[2])
-                await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt",color=0x3498db))
-                await asyncio.sleep(time)
-                requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
-                await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt",color=0x3498db))
+                if int(len(args)) == 3:
+                    lichtid=args[1]
+                    time=humanfriendly.parse_timespan(args[2])
+                    await message.channel.send(embed=nextcord.Embed(description=f"Licht `{lichtid}` wird in {args[2]} getoggelt",color=0x3498db))
+                    await asyncio.sleep(time)
+                    requests.get(f"http://raspberrypi:8088/rest/devices/{lichtid}/methods/1")
+                    await message.reply(embed=nextcord.Embed(description=f"Licht `{lichtid}` ist jetzt getoggelt",color=0x3498db))
+                elif int(len(args))==2:
+                    await message.channel.send(f"Lichtschalter für Licht {args[1]}",view=lichtschalter(args[1]))
             else:
                 await noperms(message,"Du brauchst Botowner")
         elif message.content == "T!uptime":
