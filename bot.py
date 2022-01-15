@@ -162,17 +162,27 @@ class Schiffefeld(nextcord.ui.View):
         super().__init__()
     @nextcord.ui.button(label="⠀",style=nextcord.ButtonStyle.blurple)
     async def Spielfeld1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
-        while True:
-            await interaction.response.send_message("Dein spielfeld XD2",ephemeral=True)
-class Schiffetot():
+        await interaction.response.send_message("Dein spielfeld XD",ephemeral=True)
+    @nextcord.ui.button(label="⠀",style=nextcord.ButtonStyle.blurple)
+    async def Spielfeld2(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
+        await interaction.response.send_message("Dein spielfeld XD",ephemeral=True)
+    @nextcord.ui.button(label="⠀",style=nextcord.ButtonStyle.blurple,row=2)
+    async def Spielfeld3(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
+        await interaction.response.send_message("Dein spielfeld XD",ephemeral=True)
+class Schiffetot(nextcord.ui.View):
     def __init__(self):
         super().__init__()
-        self.value = None
     
-    @nextcord.ui.button(label="Spielfeld",style=nextcord.ButtonStyle.grey)
+    @nextcord.ui.button(label="Player1")
     async def Field1(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
-        await interaction.response.send_message("Dein spielfeld XD",ephemeral=True,view=Schiffefeld())
-        await interaction.edit_original_message()
+        await interaction.response.send_message("Player1",ephemeral=True,view=Schiffefeld())
+        button.disabled = True
+        await interaction.edit(view=self)
+    @nextcord.ui.button(label="Player2")
+    async def Field2(self,button : nextcord.ui.Button,interaction:nextcord.Interaction):
+        await interaction.response.send_message("Player2",ephemeral=True,view=Schiffefeld())
+        button.disabled = True
+        await interaction.edit(view=self)
 class lichtschalter(nextcord.ui.View):
     def __init__(self,lichtid:str):
         self.lichtid = lichtid
@@ -552,6 +562,8 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!chatbot "):
             if message.author.id == redbuggamer:
                 secretlib.verlauf = message.content.replace("T!chatbot ","",1).split("|")
+        elif message.content == "T!schiffetot":
+            await message.channel.send("temp",view=Schiffetot())
 
 
 
