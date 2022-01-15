@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # imports
-from ast import arg
 import asyncio
 import datetime
 import math
@@ -20,6 +19,7 @@ from nextcord import *
 from nextcord.ext import tasks
 from nextcord.ui import Button, View, view
 from evalprot import makeeval
+import secretlib
 
 #load .env filw
 load_dotenv()
@@ -284,6 +284,7 @@ async def on_message(message:nextcord.Message):
     global Hicooldown
     # block users
     if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61d191f56c7061e409ed16d6")})["blockeduserid"]:
+        delete=True
         #await message from self
         if message.author == client.user:
             if not message.content.startswith("T!"):
@@ -336,6 +337,7 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
             if message.author.id == redbuggamer or message.author.guild_permissions.administrator:
+                delete=False
                 await message.channel.purge(limit=int(message.content.replace("T!purge ","")))
 
             else:
@@ -501,31 +503,7 @@ async def on_message(message:nextcord.Message):
                     await asyncio.sleep(1)
         elif message.content == "T!licht":
             if message.author.id == redbuggamer or message.author.id == 381905896546107392 or message.author.id or 772467937436893205:
-                embed = nextcord.Embed(description="Liste der Id's",color=0x3498db)
-                keller = """Lampe1 : 1
-                Flur : 2
-                Werkstatt : 4
-                Heizungsraum : 13
-                West : 20"""
-                erdgeschoss = """Bad : 3
-                Flur : 6
-                Küche : 7
-                Wohnzimmer Ost : 8
-                Wohnzimmer West : 9
-                Esstisch : 15
-                Bewegungsmelder Ost : 10
-                Bewegungsmelder Haustür : 11"""
-                obergeschoß = """Bad : 5
-                Bad Spiegel : 17
-                Flur : 14
-                Schlafzimmer : 16
-                Zimmer K : 18
-                Zimmer A : 19"""
-                dachgeschoß = """Studio : 12"""
-                embed.add_field(inline=False,name="`Keller`",value=keller)
-                embed.add_field(inline=False,name="`Erdgeschoss`",value=erdgeschoss)
-                embed.add_field(inline=False,name="`Obergeschoss`",value=obergeschoß)
-                embed.add_field(inline=False,name="`Dachgeschoss`",value=dachgeschoß)
+                embed=secretlib.haus()
                 msg = await message.channel.send(embed=embed)
                 def check(m:nextcord.Message):
                     return m.author == message.author and m.content.startswith("T!licht")
@@ -561,13 +539,20 @@ async def on_message(message:nextcord.Message):
             request=requests.get(zen).json()
             await message.reply(f"""{request[0]["q"]}
     -{request[0]["a"]}""")
+        elif message.content == "T!chatbot":
+            delete = False
+            await secretlib.chatbot(message,client)
+
+
+
+
+            
             # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(embed=nextcord.Embed(description="Der Command `"+message.content+"` existiert nicht"))
-        
     elif message.content.startswith("T!"):
         await message.reply(embed=nextcord.Embed(description="Acces denied - You have been blocked",color=0xe74c3c))
-    if message.content.startswith("T!") and not message.content.startswith("T!purge"):
+    if message.content.startswith("T!") and delete:
             if not message.guild ==None:
                 await message.delete()
 
