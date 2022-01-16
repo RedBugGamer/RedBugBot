@@ -210,10 +210,6 @@ def getstatuscolor(currentrequest,sendtimestamp):
         return nextcord.Embed(description=f"Aktueller status `Fail`",color=0xe74c3c)
 async def noperms(obj:nextcord.Message,neededpermission=""):
     await obj.reply(embed=nextcord.Embed(title="Du hast keine Berechtigung dazu",description=neededpermission,color=0xe74c3c))
-async def perms(*args,**kwargs):
-    async def idk(func):
-        if args[0].author.guild_permissions():
-            pass
  
 registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command>`",
                     "ping":"Gibt meinen ping `Usage: T!ping`",
