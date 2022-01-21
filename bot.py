@@ -246,6 +246,7 @@ async def on_ready():
         statuschange.start()
     print(f'{client.user} has connected to Discord!')
     global githubcooldown
+    print(client.user.display_avatar.url)
     for i in range(githubcooldown):
         await asyncio.sleep(1)
         githubcooldown -=1
@@ -577,10 +578,7 @@ async def on_message(message:nextcord.Message):
 async def on_member_join(member:nextcord.Member):
     if member.dm_channel == None:
         await member.create_dm()
-    if member.avatar== None:
-        await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url="https://cdn.discordapp.com/embed/avatars/0.png"))
-    else:
-        await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url=member.avatar))
+    await member.dm_channel.send(embed=nextcord.Embed(description="Willkommen auf "+str(member.guild)+"!",color=0x206694).set_thumbnail(url=member.display_avatar.url))
     print(str(member.name)+" joined "+str(member.guild))
 
 @client.event
