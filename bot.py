@@ -238,7 +238,7 @@ async def statuschange():
     await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
 
 #Bot activities
-activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Dischordserver"]
+activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Discordserver","Training neural network"]
 #on ready/Change bot activitie
 @client.event
 async def on_ready():
@@ -363,7 +363,7 @@ async def on_message(message:nextcord.Message):
             
         elif message.content == "T!web":
             #link zur website W.I.P.
-            await message.channel.send(embed=nextcord.Embed(description="Meine [Website](https://RedBugBot.redbuggamer.repl.co)",color=nextcord.Colour.blue()))
+            await message.channel.send(embed=nextcord.Embed(description="Meine [Website](http://RedBugBot.de)",color=nextcord.Colour.blue()))
         elif message.content == "T!tictactoe":
             #startet tictactoe
             await message.channel.send("⠀",view=TicTacToe())
