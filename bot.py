@@ -8,6 +8,7 @@ import random
 from random import randint, randrange
 from typing import List
 import time
+from urllib import response
 import humanfriendly
 import nextcord
 import pymongo
@@ -194,6 +195,26 @@ class lichtschalter(nextcord.ui.View):
             await interaction.response.send_message(f"licht {self.lichtid} getoggelt",ephemeral=True)
         else:
             await interaction.response.send_message("Keine permission",ephemeral=True)
+class mypoll(nextcord.ui.View):
+    def __init__(self,owner):
+        super().__init__()
+        self.voters=[owner]
+    @nextcord.ui.button(label="0",style=nextcord.ButtonStyle.green,custom_id="pollup")
+    async def pollup(self,button:nextcord.ui.Button,interaction:nextcord.Interaction):
+        if not interaction.user in self.voters:
+            button.label = str(int(button.label)+1)
+            await interaction.edit(view=self)
+            self.voters.append(interaction.user)
+        else:
+            await interaction.response.send_message("Du hast schon gevotet",ephemeral=True)
+    @nextcord.ui.button(label="0",style=nextcord.ButtonStyle.red,custom_id="polldown")
+    async def polldown(self,button:nextcord.ui.Button,interaction:nextcord.Interaction):
+        if not interaction.user in self.voters:
+            button.label = str(int(button.label)+1)
+            await interaction.edit(view=self)
+            self.voters.append(interaction.user)
+        else:
+            await interaction.response.send_message("Du hast schon gevotet",ephemeral=True)
 def getstatuscolor(currentrequest,sendtimestamp):
     
     if currentrequest == "Online":
@@ -246,7 +267,6 @@ async def on_ready():
         statuschange.start()
     print(f'{client.user} has connected to Discord!')
     global githubcooldown
-    print(client.user.display_avatar.url)
     for i in range(githubcooldown):
         await asyncio.sleep(1)
         githubcooldown -=1
@@ -328,21 +348,20 @@ async def on_message(message:nextcord.Message):
         elif message.content.startswith("T!poll"):
             
             await message.channel.trigger_typing()
-            #macht einen poll
+            # #macht einen poll
             if message.author.avatar == None:
                 #check avatar exists
-                poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author))
+                poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author),view=mypoll(message.author))
             else:
-                poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url))
-            await poll.add_reaction("👍")
-            await poll.add_reaction("👎")
-            def check(reaction:nextcord.Reaction, user):
-                return poll== reaction.message and message.author == user or not reaction.emoji == "👍" and not reaction.emoji == "👎"
-            await message.delete()
-            while True:
-                reaction, user = await client.wait_for('reaction_add', check=check)
-                await poll.remove_reaction(reaction.emoji,user)
-                
+                poll = await message.channel.send(embed=nextcord.Embed(color=0xe74c3c,title="Poll",description=message.content.replace("T!poll","",1),timestamp=datetime.datetime.now()).set_author(name=message.author,icon_url=message.author.avatar.url),view=mypoll(message.author))
+            # await poll.add_reaction("👍")
+            # await poll.add_reaction("👎")
+            # def check(reaction:nextcord.Reaction, user):
+            #     return poll== reaction.message and message.author == user or not reaction.emoji == "👍" and not reaction.emoji == "👎"
+            # await message.delete()
+            # while True:
+            #     reaction, user = await client.wait_for('reaction_add', check=check)
+            #     await poll.remove_reaction(reaction.emoji,user)
         
         elif message.content.startswith("T!purge "):
             #botowner only lösch command
