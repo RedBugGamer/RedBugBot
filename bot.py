@@ -197,7 +197,7 @@ class lichtschalter(nextcord.ui.View):
             await interaction.response.send_message("Keine permission",ephemeral=True)
 class mypoll(nextcord.ui.View):
     def __init__(self,owner):
-        super().__init__()
+        super().__init__(timeout=None)
         self.voters=[owner]
     @nextcord.ui.button(label="0",style=nextcord.ButtonStyle.green,custom_id="pollup")
     async def pollup(self,button:nextcord.ui.Button,interaction:nextcord.Interaction):
