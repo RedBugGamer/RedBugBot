@@ -620,9 +620,9 @@ async def on_guild_join(guild:nextcord.Guild):
     await guild.owner.dm_channel.send(embed=nextcord.Embed(description="Hi also ich bin ein bot mach einfach mal `T!help` für eine Liste der commands",color=0x3498db))
 
 
-@client.slash_command("test","macht stuff",guild_ids=[867750507774869545])
-async def test(interaction:nextcord.Interaction,string:ApplicationCommandOptionType.string):
-    await interaction.response.send_message(string,ephemeral=True)
+# @client.slash_command("test","macht stuff",guild_ids=[867750507774869545])
+# async def test(interaction:nextcord.Interaction,string:ApplicationCommandOptionType.string):
+#     await interaction.response.send_message(string,ephemeral=True)
 
 
 #run the bot
