@@ -50,6 +50,7 @@ morsealphabet = {'a' : '.-', 'b' : '-...', 'c' : '-.-.', 'd' : '-..', 'e' : '.',
 Hicooldown = 0
 startuptime = datetime.datetime.now()
 githubcooldown = 180
+blockedusers = somedata.find_one({"_id":ObjectId(blockeduserdocid)})["blockeduserid"]
 
 chatboton=False
 #Button menus
@@ -82,14 +83,14 @@ class TicTacToeButton(nextcord.ui.Button['TicTacToe']):
             self.disabled = True
             view.board[self.y][self.x] = view.O
             view.current_player = view.X
-            content = "X sit drann"
+            content = "X ist dran"
 
         winner = view.check_board_winner()
         if winner is not None:
             if winner == view.X:
-                content = 'X won!'
+                content = 'X gewinnt!'
             elif winner == view.O:
-                content = 'O won!'
+                content = 'O gewinnt!'
             else:
                 content = "It's a tie!"
 
@@ -258,6 +259,18 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
 async def statuschange():
     await client.change_presence(activity=nextcord.Game(random.choice(activitys)),status=nextcord.Status.online)
 
+
+@tasks.loop(minutes=1)
+async def refreshblockedplayers():
+    global blockedusers
+    blockedusers = somedata.find_one({"_id":ObjectId(blockeduserdocid)})["blockeduserid"]
+
+@tasks.loop(count=1,seconds=1)
+async def cooldowngithub():
+    global githubcooldown
+    for i in range(githubcooldown):
+        await asyncio.sleep(1)
+        githubcooldown -=1
 #Bot activities
 activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung der eigenen bot.py","Ließt deine Gedanken","definitiv kein Minecraft Server hacken","Fresse Elektrizität","Testet virtuelle Synapsen","Beobachtet Discordserver","Training neural network"]
 #on ready/Change bot activitie
@@ -265,13 +278,12 @@ activitys = ["Welteroberungspläne","Deine Voodopuppe","Langeweile","Editierung 
 async def on_ready():
     if not statuschange.is_running():
         statuschange.start()
+    if not refreshblockedplayers.is_running():
+        refreshblockedplayers.start()
+    if not cooldowngithub.is_running():
+        cooldowngithub.start()
     print(f'{client.user} has connected to Discord!')
-    global githubcooldown
-    for i in range(githubcooldown):
-        await asyncio.sleep(1)
-        githubcooldown -=1
 
-    
 @client.event
 async def on_disconnect():
     print("disconnectet")
@@ -312,8 +324,9 @@ async def on_message(message:nextcord.Message):
     global status
     global running
     global Hicooldown
+    global blockedusers
     # block users
-    if not str(message.author.id) in somedata.find_one({"_id":ObjectId("61d191f56c7061e409ed16d6")})["blockeduserid"]:
+    if not str(message.author.id) in blockedusers:
         delete=True
         #await message from self
         if message.author == client.user:
@@ -605,5 +618,12 @@ async def on_guild_join(guild:nextcord.Guild):
     if guild.owner.dm_channel == None:
         await guild.owner.create_dm()
     await guild.owner.dm_channel.send(embed=nextcord.Embed(description="Hi also ich bin ein bot mach einfach mal `T!help` für eine Liste der commands",color=0x3498db))
+
+
+@client.slash_command("test","macht stuff",guild_ids=[867750507774869545])
+async def test(interaction:nextcord.Interaction,string:ApplicationCommandOptionType.string):
+    await interaction.response.send_message(string,ephemeral=True)
+
+
 #run the bot
 client.run(TOKEN)
