@@ -599,11 +599,11 @@ async def on_message(message:nextcord.Message):
                     mytimestamp = datetime.datetime.now()
                     exec(message.content[6:])
                     doneafter=datetime.datetime.now()-mytimestamp
+                    
+                except Exception as e:
+                    await message.channel.send(embed=nextcord.Embed(title="Error: "+e))
+                finally:
                     await message.channel.send(embed=nextcord.Embed(title="Done nach "+doneafter))
-                except SyntaxError():
-                    await message.channel.send(embed=nextcord.Embed(title="Syntaxerror"))
-                else:
-                    await message.channel.send(embed=nextcord.Embed(title="Error"))
             else:
                 await noperms(message,"Du brauchst Botowner")
 
