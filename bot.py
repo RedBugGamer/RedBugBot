@@ -599,7 +599,7 @@ async def on_message(message:nextcord.Message):
                 executet = "None"
                 code = message.content[6:]
                 try:
-                    executet= exec(code)
+                    executet= exec(code,globals(),locals())
                     doneafter=str(datetime.datetime.now()-mytimestamp)
                     await message.channel.send(embed=nextcord.Embed(title="Done nach "+doneafter,description=f"```{executet}```"))
                     
