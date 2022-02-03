@@ -600,7 +600,7 @@ async def on_message(message:nextcord.Message):
                     exec(message.content[6:])
                     
                 except Exception as e:
-                    await message.channel.send(embed=nextcord.Embed(title="Error: "+e))
+                    await message.channel.send(embed=nextcord.Embed(title="Error",color=nextcord.Color.red()))
                 finally:
                     doneafter=datetime.datetime.now()-mytimestamp
                     await message.channel.send(embed=nextcord.Embed(title="Done nach "+doneafter))
