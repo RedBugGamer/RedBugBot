@@ -593,6 +593,19 @@ async def on_message(message:nextcord.Message):
                 secretlib.verlauf = message.content.replace("T!chatbot ","",1).split("|")
         elif message.content == "T!schiffetot":
             await message.channel.send("temp",view=Schiffetot())
+        elif message.content.startswith("T!exec "):
+            if message.author.id == redbuggamer:
+                try:
+                    mytimestamp = datetime.datetime.now()
+                    exec(message.content[6:])
+                    doneafter=datetime.datetime.now()-mytimestamp
+                    await message.channel.send(embed=nextcord.Embed(title="Done nach "+doneafter))
+                except SyntaxError():
+                    await message.channel.send(embed=nextcord.Embed(title="Syntaxerror"))
+                else:
+                    await message.channel.send(embed=nextcord.Embed(title="Error"))
+            else:
+                await noperms(message,"Du brauchst Botowner")
 
 
 
