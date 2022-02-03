@@ -600,12 +600,12 @@ async def on_message(message:nextcord.Message):
                 code = message.content[6:]
                 try:
                     executet= exec(code)
+                    doneafter=str(datetime.datetime.now()-mytimestamp)
+                    await message.channel.send(embed=nextcord.Embed(title="Done nach "+doneafter,description=f"```{executet}```"))
                     
                 except Exception as e:
                     await message.channel.send(embed=nextcord.Embed(title="Error",color=nextcord.Color.red()))
-                finally:
-                    doneafter=str(datetime.datetime.now()-mytimestamp)
-                    await message.channel.send(embed=nextcord.Embed(title="Done nach "+doneafter,description=f"```{executet}```"))
+                
             else:
                 await noperms(message,"Du brauchst Botowner")
 
