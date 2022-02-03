@@ -595,14 +595,14 @@ async def on_message(message:nextcord.Message):
             await message.channel.send("temp",view=Schiffetot())
         elif message.content.startswith("T!exec "):
             if message.author.id == redbuggamer:
+                mytimestamp = datetime.datetime.now()
                 try:
-                    mytimestamp = datetime.datetime.now()
                     exec(message.content[6:])
-                    doneafter=datetime.datetime.now()-mytimestamp
                     
                 except Exception as e:
                     await message.channel.send(embed=nextcord.Embed(title="Error: "+e))
                 finally:
+                    doneafter=datetime.datetime.now()-mytimestamp
                     await message.channel.send(embed=nextcord.Embed(title="Done nach "+doneafter))
             else:
                 await noperms(message,"Du brauchst Botowner")
