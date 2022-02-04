@@ -286,7 +286,8 @@ async def on_ready():
 
 @client.event
 async def on_disconnect():
-    print("disconnectet")
+    time=datetime.datetime.now()
+    print(f"[{time}] disconnectet")
 
 #commands/ingame chat
 @client.event
