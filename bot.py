@@ -315,7 +315,7 @@ async def on_message(message:nextcord.Message):
                 quit()
             else:
                 noperms(message,"Du brauchst Botowner")
-    if str(message.channel.id) in linkedchannels.find_one({}) and not message.content.startswith("T!"):
+    if not message.author.bot and str(message.channel.id) in linkedchannels.find_one({}) and not message.content.startswith("T!"):
         if linkedchannels.find_one({})[str(message.channel.id)] != "":
             exa.command(linkedchannels.find_one({})[str(message.channel.id)],f'tellraw @a "<{message.author}> {message.content}"')
     #make global variables
