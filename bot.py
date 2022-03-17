@@ -251,7 +251,10 @@ registeredcommands = {"help":"Zeigt dir diese Einbettung `Usage: T!help <command
                     "reboot":"Startet mich neu `Usage: T!reboot`",
                     "licht":"toggelt licht mit id x `Usage: T!licht <id> <time>`",
                     "web":"Gibt dir den link zu meiner Website `Usage: T!web`",
-                    "uptime":"Gibt die zeit zurück, die ich Online war `Usage: T!uptime`"
+                    "uptime":"Gibt die zeit zurück, die ich Online war `Usage: T!uptime`",
+                    "chatbot":"Imitiert ein Gespräch mit mir `Usage: T!chatbot [message1|message2|...]`",
+                    "schiffetot":"startet ein Schiffeversenken Spiel `Usage: T!schiffetot`",
+                    "exec":"Führt den beiliegenden Python code aus `Usage: T!exec code`"
                         }
 
 
@@ -339,10 +342,10 @@ async def on_message(message:nextcord.Message):
             Help.set_author(name=client.user,icon_url=client.user.avatar.url)
             Help.add_field(name = "Prefix",value="Mein prefix ist `T!`",inline=False)
             Help.add_field(name = "Basic Commands",value="`T!help`,`T!ping`,`T!web`,`T!uptime`",inline=False)
-            Help.add_field(name="Botowner",value="`T!block`,`T!send`,`T!activity`,`T!reboot`,`T!bind`",inline=False)
-            Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`",inline=False)
+            Help.add_field(name="Botowner",value="`T!block`,`T!send`,`T!activity`,`T!reboot`,`T!bind`,T!exec",inline=False)
+            Help.add_field(name="Fun stuff",value="`T!dice`,`T!tictactoe`,`T!schiffetot`",inline=False)
             Help.add_field(name="Sinnloses Zeug",value="`T!morse`,`T!google`",inline=False)
-            Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`",inline=False)
+            Help.add_field(name="Advanced",value="`T!embed`,`T!stats`,`T!poll`,`T!chatbot`",inline=False)
             Help.add_field(name="Admin",value="`T!mute`",inline=False)
             await message.channel.send(embed = Help)
         elif message.content.startswith("T!help "):
