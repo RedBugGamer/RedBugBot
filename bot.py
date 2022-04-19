@@ -612,6 +612,13 @@ async def on_message(message:nextcord.Message):
                 
             else:
                 await noperms(message,"Du brauchst Botowner")
+        elif message.content=="T!quit":
+            if message.author.id == redbuggamer:
+                await message.channel.send("Bye Bye! Hab kein bock mehr auf euch")
+                await message.channel.send("*Leaves Server*")
+                await message.guild.leave()
+            else:
+                await noperms(message,"Du brauchst Admin")
 
 
 
