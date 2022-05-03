@@ -5,10 +5,12 @@ import datetime
 import math
 import os
 import random
+import sqlite3
+import time
 from random import randint, randrange
 from typing import List
-import time
 from urllib import response
+
 import humanfriendly
 import nextcord
 import pymongo
@@ -19,8 +21,9 @@ from exaroton import Exaroton
 from nextcord import *
 from nextcord.ext import tasks
 from nextcord.ui import Button, View, view
-from evalprot import makeeval
+
 import secretlib
+from evalprot import makeeval
 
 # load .env filw
 load_dotenv()
@@ -32,17 +35,24 @@ intents.all()
 exa = Exaroton(os.environ["exaroton"])
 TOKEN = os.environ["token"]
 client = nextcord.Client(intents=intents)
-awaitpoll = False
-id = "H6WIxtAqtR1pMJJb"
-dice = False
 running = False
 status = False
+# Old database
 myclient = pymongo.MongoClient(
     os.environ["mongourl"], port=27017
 )  # "mongodb://localhost"
 RedBugBot = myclient["RedBugBot"]
 linkedchannels = RedBugBot["linkedchannels"]
 somedata = RedBugBot[" somedata"]
+
+# new database
+connection = sqlite3.connect("database.db")
+curser = connection.cursor()
+curser.execute(
+    "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT)"
+)
+
+
 redbuggamer = 772386889817784340
 zen = "https://zenquotes.io/api/random"
 sadwords = ["demotivatet"]
@@ -265,35 +275,57 @@ class lichtschalter(nextcord.ui.View):
 
 
 class mypoll(nextcord.ui.View):
-    def __init__(self, owner):
+    def __init__(self):
         super().__init__(timeout=None)
-        self.voters = [owner]
 
-    @nextcord.ui.button(label="0", style=nextcord.ButtonStyle.green, custom_id="pollup")
+    @nextcord.ui.button(
+        label="0", style=nextcord.ButtonStyle.green, custom_id="poll:up"
+    )
     async def pollup(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
-    ):
-        if not interaction.user in self.voters:
-            button.label = str(int(button.label) + 1)
-            await interaction.edit(view=self)
-            self.voters.append(interaction.user)
-        else:
-            await interaction.response.send_message(
-                "Du hast schon gevotet", ephemeral=True
-            )
+    ):  
 
-    @nextcord.ui.button(label="0", style=nextcord.ButtonStyle.red, custom_id="polldown")
+        id1 = interaction.message.id
+        # print(id1)
+        # print(curser.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
+        id, up, down, owner, voted = curser.execute(
+            "SELECT * FROM polls WHERE id = ?", (id1,)
+        ).fetchall()[0]
+        output = {}
+        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(interaction.user.id):
+            voters = voted.split("-")
+            voters.append(str(interaction.user.id))
+            output["voted"] = "-".join(voters)
+            button.label = str(up+1)
+            curser.execute("UPDATE polls SET up = ?, voted = ? WHERE id = ?",(up+1,output["voted"], id1))
+            connection.commit()
+            await interaction.edit(view = self)
+        else:
+            await interaction.response.send_message("Du hast leider schon gevotet oder bist owner",ephemeral=True)
+
+    @nextcord.ui.button(
+        label="0", style=nextcord.ButtonStyle.red, custom_id="poll:down"
+    )
     async def polldown(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
     ):
-        if not interaction.user in self.voters:
-            button.label = str(int(button.label) + 1)
-            await interaction.edit(view=self)
-            self.voters.append(interaction.user)
+        id1 = interaction.message.id
+        # print(id1)
+        # print(curser.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
+        id, up, down, owner, voted = curser.execute(
+            "SELECT * FROM polls WHERE id = ?", (id1,)
+        ).fetchall()[0]
+        output = {}
+        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(interaction.user.id):
+            voters = voted.split("-")
+            voters.append(str(interaction.user.id))
+            output["voted"] = "-".join(voters)
+            button.label = str(down+1)
+            curser.execute("UPDATE polls SET up = ?, voted = ? WHERE id = ?",(down+1,output["voted"], id1))
+            connection.commit()
+            await interaction.edit(view = self)
         else:
-            await interaction.response.send_message(
-                "Du hast schon gevotet", ephemeral=True
-            )
+            await interaction.response.send_message("Du hast leider schon gevotet oder bist owner",ephemeral=True)
 
 
 def getstatuscolor(currentrequest, sendtimestamp):
@@ -413,6 +445,7 @@ async def on_ready():
         refreshblockedplayers.start()
     if not cooldowngithub.is_running():
         cooldowngithub.start()
+    client.add_view(mypoll())
     print(f"{client.user} has connected to Discord!")
 
 
@@ -548,7 +581,8 @@ async def on_message(message: nextcord.Message):
         elif message.content.startswith("T!poll"):
 
             await message.channel.trigger_typing()
-            # #macht einen poll
+            # macht einen poll
+            await asyncio.sleep(0.5)
             if message.author.avatar == None:
                 # check avatar exists
                 poll = await message.channel.send(
@@ -558,7 +592,7 @@ async def on_message(message: nextcord.Message):
                         description=message.content.replace("T!poll", "", 1),
                         timestamp=datetime.datetime.now(),
                     ).set_author(name=message.author),
-                    view=mypoll(message.author),
+                    view=mypoll(),
                 )
             else:
                 poll = await message.channel.send(
@@ -570,16 +604,11 @@ async def on_message(message: nextcord.Message):
                     ).set_author(
                         name=message.author, icon_url=message.author.avatar.url
                     ),
-                    view=mypoll(message.author),
+                    view=mypoll(),
                 )
-            # await poll.add_reaction("👍")
-            # await poll.add_reaction("👎")
-            # def check(reaction:nextcord.Reaction, user):
-            #     return poll== reaction.message and message.author == user or not reaction.emoji == "👍" and not reaction.emoji == "👎"
-            # await message.delete()
-            # while True:
-            #     reaction, user = await client.wait_for('reaction_add', check=check)
-            #     await poll.remove_reaction(reaction.emoji,user)
+            curser.execute("INSERT into polls VALUES (?,?,?,?,?)",(poll.id,0,0,message.author.id,""))
+            connection.commit()
+            
 
         elif message.content.startswith("T!purge "):
             # botowner only lösch command
@@ -1088,7 +1117,7 @@ async def on_member_join(member: nextcord.Member):
     )
     print(str(member.name) + " joined " + str(member.guild))
 
- 
+
 @client.event
 async def on_guild_join(guild: nextcord.Guild):
     if guild.owner.dm_channel == None:
@@ -1100,6 +1129,12 @@ async def on_guild_join(guild: nextcord.Guild):
         )
     )
 
+@client.event
+async def on_message_delete(message:nextcord.Message):
+    if message.author == client.user:
+        if len(curser.execute("SELECT * FROM polls WHERE id = ?", (message.id,)).fetchall()) >=1:
+            curser.execute("DELETE FROM polls WHERE id = ?", (message.id,))
+            connection.commit()
 
 # @client.slash_command("test","macht stuff",guild_ids=[867750507774869545])
 # async def test(interaction:nextcord.Interaction,string:ApplicationCommandOptionType.string):
