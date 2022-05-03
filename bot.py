@@ -51,6 +51,7 @@ curser = connection.cursor()
 curser.execute(
     "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT)"
 )
+curser.execute("CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked bool)")
 
 
 redbuggamer = 772386889817784340
@@ -283,7 +284,7 @@ class mypoll(nextcord.ui.View):
     )
     async def pollup(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
-    ):  
+    ):
 
         id1 = interaction.message.id
         # print(id1)
@@ -292,16 +293,23 @@ class mypoll(nextcord.ui.View):
             "SELECT * FROM polls WHERE id = ?", (id1,)
         ).fetchall()[0]
         output = {}
-        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(interaction.user.id):
+        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(
+            interaction.user.id
+        ):
             voters = voted.split("-")
             voters.append(str(interaction.user.id))
             output["voted"] = "-".join(voters)
-            button.label = str(up+1)
-            curser.execute("UPDATE polls SET up = ?, voted = ? WHERE id = ?",(up+1,output["voted"], id1))
+            button.label = str(up + 1)
+            curser.execute(
+                "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
+                (up + 1, output["voted"], id1),
+            )
             connection.commit()
-            await interaction.edit(view = self)
+            await interaction.edit(view=self)
         else:
-            await interaction.response.send_message("Du hast leider schon gevotet oder bist owner",ephemeral=True)
+            await interaction.response.send_message(
+                "Du hast leider schon gevotet oder bist owner", ephemeral=True
+            )
 
     @nextcord.ui.button(
         label="0", style=nextcord.ButtonStyle.red, custom_id="poll:down"
@@ -316,16 +324,23 @@ class mypoll(nextcord.ui.View):
             "SELECT * FROM polls WHERE id = ?", (id1,)
         ).fetchall()[0]
         output = {}
-        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(interaction.user.id):
+        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(
+            interaction.user.id
+        ):
             voters = voted.split("-")
             voters.append(str(interaction.user.id))
             output["voted"] = "-".join(voters)
-            button.label = str(down+1)
-            curser.execute("UPDATE polls SET up = ?, voted = ? WHERE id = ?",(down+1,output["voted"], id1))
+            button.label = str(down + 1)
+            curser.execute(
+                "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
+                (down + 1, output["voted"], id1),
+            )
             connection.commit()
-            await interaction.edit(view = self)
+            await interaction.edit(view=self)
         else:
-            await interaction.response.send_message("Du hast leider schon gevotet oder bist owner",ephemeral=True)
+            await interaction.response.send_message(
+                "Du hast leider schon gevotet oder bist owner", ephemeral=True
+            )
 
 
 def getstatuscolor(currentrequest, sendtimestamp):
@@ -363,6 +378,10 @@ def getstatuscolor(currentrequest, sendtimestamp):
     else:
         return nextcord.Embed(description=f"Aktueller status `Fail`", color=0xE74C3C)
 
+def user_in_db(id:int):
+    if len(curser.execute("SELECT * FROM userdata WHERE id = ?",(id,)).fetchall()) == 0:
+        curser.execute("INSERT INTO userdata VALUES(?,?)",(id,False))
+        connection.commit()
 
 async def noperms(obj: nextcord.Message, neededpermission=""):
     await obj.reply(
@@ -396,7 +415,7 @@ registeredcommands = {
     "uptime": "Gibt die zeit zurück, die ich Online war `Usage: T!uptime`",
     "chatbot": "Imitiert ein Gespräch mit mir `Usage: T!chatbot [message1|message2|...]`",
     "schiffetot": "startet ein Schiffeversenken Spiel `Usage: T!schiffetot`",
-    "exec": "Führt den beiliegenden Python code aus `Usage: T!exec code`",
+    "exec": "Führt den beiliegenden Python code aus `Usage: T!exec <code>`",
 }
 
 
@@ -410,10 +429,10 @@ async def statuschange():
 @tasks.loop(minutes=1)
 async def refreshblockedplayers():
     global blockedusers
-    blockedusers = somedata.find_one({"_id": ObjectId(blockeduserdocid)})[
-        "blockeduserid"
-    ]
-
+    temp = []
+    for user in curser.execute("SELECT * FROM userdata WHERE blocked = true"):
+        temp.append(user[1])
+    blockedusers = temp
 
 @tasks.loop(count=1, seconds=1)
 async def cooldowngithub():
@@ -508,7 +527,7 @@ async def on_message(message: nextcord.Message):
     global Hicooldown
     global blockedusers
     # block users
-    if not str(message.author.id) in blockedusers:
+    if not message.author.id in blockedusers:
         delete = True
         # await message from self
         if message.author == client.user:
@@ -606,9 +625,11 @@ async def on_message(message: nextcord.Message):
                     ),
                     view=mypoll(),
                 )
-            curser.execute("INSERT into polls VALUES (?,?,?,?,?)",(poll.id,0,0,message.author.id,""))
+            curser.execute(
+                "INSERT into polls VALUES (?,?,?,?,?)",
+                (poll.id, 0, 0, message.author.id, ""),
+            )
             connection.commit()
-            
 
         elif message.content.startswith("T!purge "):
             # botowner only lösch command
@@ -703,9 +724,7 @@ async def on_message(message: nextcord.Message):
                         active = True
                 await message.channel.send(embed=customembed)
         elif message.content.startswith("T!block"):
-            blockedusers = somedata.find_one({"_id": ObjectId(blockeduserdocid)})[
-                "blockeduserid"
-            ]
+            user_in_db(message.mentions[0].id)
             if not message.author.id == redbuggamer:
                 await noperms(message, "Du brauchst Botowner")
             elif message.mentions[0].id == message.author.id:
@@ -718,29 +737,24 @@ async def on_message(message: nextcord.Message):
                 message.author.id == redbuggamer
                 and not message.mentions[0].id == redbuggamer
             ):
-                if str(message.mentions[0].id) in blockedusers:
-                    somedata.update_one(
-                        {"_id": ObjectId(blockeduserdocid)},
-                        {"$pull": {"blockeduserid": str(message.mentions[0].id)}},
-                    )
-
+                # print(curser.execute("SELECT * FROM userdata WHERE id = ?",(message.mentions[0].id,)).fetchall())
+                if curser.execute("SELECT * FROM userdata WHERE id = ?",(message.mentions[0].id,)).fetchall()[0][1]:
+                    curser.execute("UPDATE userdata SET blocked = false")
                     await message.channel.send(
                         embed=nextcord.Embed(
                             description=f"<@{message.mentions[0].id}> darf mich wieder benutzen",
-                            color=0x2ECC71,
+                            color=nextcord.Color.green(),
                         )
                     )
                 else:
-                    somedata.update_one(
-                        {"_id": ObjectId(blockeduserdocid)},
-                        {"$push": {"blockeduserid": str(message.mentions[0].id)}},
-                    )
+                    curser.execute("UPDATE userdata SET blocked = true")
                     await message.channel.send(
                         embed=nextcord.Embed(
-                            description=f"<@{message.mentions[0].id}> wurde blockiert",
-                            color=0xE74C3C,
+                            description=f"<@{message.mentions[0].id}> darf mich leider nicht mehr verwenden",
+                            color=nextcord.Color.red(),
                         )
                     )
+                connection.commit()
         elif message.content.startswith("T!morse "):
             morse = ""
             morse = morse.join(
@@ -1081,7 +1095,7 @@ async def on_message(message: nextcord.Message):
                 await message.channel.send("*Leaves Server*")
                 await message.guild.leave()
             else:
-                await noperms(message, "Du brauchst Admin")
+                await noperms(message, "Du brauchst Botowner")
 
             # other essential stuff here:
         elif message.content.startswith("T!"):
@@ -1129,12 +1143,21 @@ async def on_guild_join(guild: nextcord.Guild):
         )
     )
 
+
 @client.event
-async def on_message_delete(message:nextcord.Message):
+async def on_message_delete(message: nextcord.Message):
     if message.author == client.user:
-        if len(curser.execute("SELECT * FROM polls WHERE id = ?", (message.id,)).fetchall()) >=1:
+        if (
+            len(
+                curser.execute(
+                    "SELECT * FROM polls WHERE id = ?", (message.id,)
+                ).fetchall()
+            )
+            >= 1
+        ):
             curser.execute("DELETE FROM polls WHERE id = ?", (message.id,))
             connection.commit()
+
 
 # @client.slash_command("test","macht stuff",guild_ids=[867750507774869545])
 # async def test(interaction:nextcord.Interaction,string:ApplicationCommandOptionType.string):
