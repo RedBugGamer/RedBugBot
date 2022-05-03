@@ -4,3 +4,5 @@ test.py
 logocontrol.py
 secretlib.py
 /.vscode
+/polls.db
+/database.db
