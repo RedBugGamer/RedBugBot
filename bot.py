@@ -278,7 +278,7 @@ class mypoll(nextcord.ui.View):
         super().__init__(timeout=None)
 
     @nextcord.ui.button(
-        label="0", style=nextcord.ButtonStyle.green, custom_id="poll:up"
+        label="0", style=nextcord.ButtonStyle.green, custom_id="poll:up", emoji= "✅"
     )
     async def pollup(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
@@ -303,6 +303,7 @@ class mypoll(nextcord.ui.View):
                 (up + 1, output["voted"], id1),
             )
             connection.commit()
+            self.children[1].label = str(int(self.children[0].label) - int(self.children[2].label))
             await interaction.edit(view=self)
         else:
             await interaction.response.send_message(
@@ -310,7 +311,13 @@ class mypoll(nextcord.ui.View):
             )
 
     @nextcord.ui.button(
-        label="0", style=nextcord.ButtonStyle.red, custom_id="poll:down"
+        label="0", style=nextcord.ButtonStyle.grey, disabled=True
+    )
+    async def ratio(self, button:nextcord.ui.Button, interaction:nextcord.ui.Interaction):
+        await interaction.response.send_message("Lol",ephemeral = True)
+
+    @nextcord.ui.button(
+        label="0", style=nextcord.ButtonStyle.red, custom_id="poll:down", emoji = "❌"
     )
     async def polldown(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
@@ -334,6 +341,7 @@ class mypoll(nextcord.ui.View):
                 (down + 1, output["voted"], id1),
             )
             connection.commit()
+            self.children[1].label = str(int(self.children[0].label) - int(self.children[2].label))
             await interaction.edit(view=self)
         else:
             await interaction.response.send_message(
