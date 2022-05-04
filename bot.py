@@ -9,8 +9,7 @@ import sqlite3
 import time
 from random import randint, randrange
 from typing import List
-from urllib import response
-
+from pistonapi import PistonAPI
 import humanfriendly
 import nextcord
 import pymongo
@@ -20,7 +19,6 @@ from dotenv import load_dotenv
 from exaroton import Exaroton
 from nextcord import *
 from nextcord.ext import tasks
-from nextcord.ui import Button, View, view
 
 import secretlib
 from evalprot import makeeval
@@ -378,10 +376,15 @@ def getstatuscolor(currentrequest, sendtimestamp):
     else:
         return nextcord.Embed(description=f"Aktueller status `Fail`", color=0xE74C3C)
 
-def user_in_db(id:int):
-    if len(curser.execute("SELECT * FROM userdata WHERE id = ?",(id,)).fetchall()) == 0:
-        curser.execute("INSERT INTO userdata VALUES(?,?)",(id,False))
+
+def user_in_db(id: int):
+    if (
+        len(curser.execute("SELECT * FROM userdata WHERE id = ?", (id,)).fetchall())
+        == 0
+    ):
+        curser.execute("INSERT INTO userdata VALUES(?,?)", (id, False))
         connection.commit()
+
 
 async def noperms(obj: nextcord.Message, neededpermission=""):
     await obj.reply(
@@ -415,7 +418,8 @@ registeredcommands = {
     "uptime": "Gibt die zeit zurück, die ich Online war `Usage: T!uptime`",
     "chatbot": "Imitiert ein Gespräch mit mir `Usage: T!chatbot [message1|message2|...]`",
     "schiffetot": "startet ein Schiffeversenken Spiel `Usage: T!schiffetot`",
-    "exec": "Führt den beiliegenden Python code aus `Usage: T!exec <code>`",
+    "exec": "Führt den beiliegenden Python code direkt im Bot aus `Usage: T!exec <code>`",
+    "code": "Führt den beiliegenden Python code in einer Sandbox aus `Usage: T!code ```<code>```",
 }
 
 
@@ -433,6 +437,7 @@ async def refreshblockedplayers():
     for user in curser.execute("SELECT * FROM userdata WHERE blocked = true"):
         temp.append(user[1])
     blockedusers = temp
+
 
 @tasks.loop(count=1, seconds=1)
 async def cooldowngithub():
@@ -738,7 +743,9 @@ async def on_message(message: nextcord.Message):
                 and not message.mentions[0].id == redbuggamer
             ):
                 # print(curser.execute("SELECT * FROM userdata WHERE id = ?",(message.mentions[0].id,)).fetchall())
-                if curser.execute("SELECT * FROM userdata WHERE id = ?",(message.mentions[0].id,)).fetchall()[0][1]:
+                if curser.execute(
+                    "SELECT * FROM userdata WHERE id = ?", (message.mentions[0].id,)
+                ).fetchall()[0][1]:
                     curser.execute("UPDATE userdata SET blocked = false")
                     await message.channel.send(
                         embed=nextcord.Embed(
@@ -1096,6 +1103,22 @@ async def on_message(message: nextcord.Message):
                 await message.guild.leave()
             else:
                 await noperms(message, "Du brauchst Botowner")
+
+        elif message.content.startswith("T!code "):
+            a = message.content.split("```")
+            if len(a) == 3:
+                code = a[1]
+                code = code.strip("python")
+                response = PistonAPI().execute("python", "3.10.0", code)
+            else:
+                response = "Sorry, aber du must code angeben"
+            embed = Embed(
+                color=nextcord.Color.blue(),
+                title="Code execution",
+                description=f"```{response}```",
+            )
+            embed.set_footer(text="Powered by https://github.com/engineer-man/piston")
+            await message.channel.send(embed=embed)
 
             # other essential stuff here:
         elif message.content.startswith("T!"):
