@@ -311,9 +311,9 @@ class mypoll(nextcord.ui.View):
             )
 
     @nextcord.ui.button(
-        label="0", style=nextcord.ButtonStyle.grey, disabled=True
+        label="0", style=nextcord.ButtonStyle.grey, disabled=True,custom_id = "poll:ratio"
     )
-    async def ratio(self, button:nextcord.ui.Button, interaction:nextcord.ui.Interaction):
+    async def ratio(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
         await interaction.response.send_message("Lol",ephemeral = True)
 
     @nextcord.ui.button(
