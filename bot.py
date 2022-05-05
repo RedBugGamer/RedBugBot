@@ -45,11 +45,11 @@ somedata = RedBugBot[" somedata"]
 
 # new database
 connection = sqlite3.connect("database.db")
-curser = connection.cursor()
-curser.execute(
-    "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT)"
+cursor = connection.cursor()
+cursor.execute(
+    "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT, expires DATE)"
 )
-curser.execute("CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked bool)")
+cursor.execute("CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked bool)")
 
 
 redbuggamer = 772386889817784340
@@ -278,7 +278,7 @@ class mypoll(nextcord.ui.View):
         super().__init__(timeout=None)
 
     @nextcord.ui.button(
-        label="0", style=nextcord.ButtonStyle.green, custom_id="poll:up", emoji= "✅"
+        label="0", style=nextcord.ButtonStyle.green, custom_id="poll:up", emoji="✅"
     )
     async def pollup(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
@@ -286,66 +286,85 @@ class mypoll(nextcord.ui.View):
 
         id1 = interaction.message.id
         # print(id1)
-        # print(curser.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
-        id, up, down, owner, voted = curser.execute(
-            "SELECT * FROM polls WHERE id = ?", (id1,)
-        ).fetchall()[0]
-        output = {}
-        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(
-            interaction.user.id
-        ):
-            voters = voted.split("-")
-            voters.append(str(interaction.user.id))
-            output["voted"] = "-".join(voters)
-            button.label = str(up + 1)
-            curser.execute(
-                "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
-                (up + 1, output["voted"], id1),
-            )
-            connection.commit()
-            self.children[1].label = str(int(self.children[0].label) - int(self.children[2].label))
-            await interaction.edit(view=self)
-        else:
+        # print(cursor.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
+        try:
+            id, up, down, owner, voted, expires = cursor.execute(
+                "SELECT * FROM polls WHERE id = ?", (id1,)
+            ).fetchall()[0]
+            output = {}
+            if not str(interaction.user.id) in voted.split("-") and not str(
+                owner
+            ) == str(interaction.user.id):
+                voters = voted.split("-")
+                voters.append(str(interaction.user.id))
+                output["voted"] = "-".join(voters)
+                button.label = str(up + 1)
+                cursor.execute(
+                    "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
+                    (up + 1, output["voted"], id1),
+                )
+                connection.commit()
+                self.children[1].label = str(
+                    int(self.children[0].label) - int(self.children[2].label)
+                )
+                await interaction.edit(view=self)
+            else:
+                await interaction.response.send_message(
+                    "Du hast leider schon gevotet oder bist owner", ephemeral=True
+                )
+        except IndexError:
             await interaction.response.send_message(
-                "Du hast leider schon gevotet oder bist owner", ephemeral=True
+                "Sorry, aber der Poll ist expired", ephemeral=True
             )
 
     @nextcord.ui.button(
-        label="0", style=nextcord.ButtonStyle.grey, disabled=True,custom_id = "poll:ratio"
+        label="0",
+        style=nextcord.ButtonStyle.grey,
+        disabled=True,
+        custom_id="poll:ratio",
     )
-    async def ratio(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
-        await interaction.response.send_message("Lol",ephemeral = True)
+    async def ratio(
+        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
+    ):
+        await interaction.response.send_message("Lol", ephemeral=True)
 
     @nextcord.ui.button(
-        label="0", style=nextcord.ButtonStyle.red, custom_id="poll:down", emoji = "❌"
+        label="0", style=nextcord.ButtonStyle.red, custom_id="poll:down", emoji="❌"
     )
     async def polldown(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
     ):
         id1 = interaction.message.id
         # print(id1)
-        # print(curser.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
-        id, up, down, owner, voted = curser.execute(
-            "SELECT * FROM polls WHERE id = ?", (id1,)
-        ).fetchall()[0]
-        output = {}
-        if not str(interaction.user.id) in voted.split("-") and not str(owner) == str(
-            interaction.user.id
-        ):
-            voters = voted.split("-")
-            voters.append(str(interaction.user.id))
-            output["voted"] = "-".join(voters)
-            button.label = str(down + 1)
-            curser.execute(
-                "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
-                (down + 1, output["voted"], id1),
-            )
-            connection.commit()
-            self.children[1].label = str(int(self.children[0].label) - int(self.children[2].label))
-            await interaction.edit(view=self)
-        else:
+        # print(cursor.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
+        try:
+            id, up, down, owner, voted, expires = cursor.execute(
+                "SELECT * FROM polls WHERE id = ?", (id1,)
+            ).fetchall()[0]
+            output = {}
+            if not str(interaction.user.id) in voted.split("-") and not str(
+                owner
+            ) == str(interaction.user.id):
+                voters = voted.split("-")
+                voters.append(str(interaction.user.id))
+                output["voted"] = "-".join(voters)
+                button.label = str(down + 1)
+                cursor.execute(
+                    "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
+                    (down + 1, output["voted"], id1),
+                )
+                connection.commit()
+                self.children[1].label = str(
+                    int(self.children[0].label) - int(self.children[2].label)
+                )
+                await interaction.edit(view=self)
+            else:
+                await interaction.response.send_message(
+                    "Du hast leider schon gevotet oder bist owner", ephemeral=True
+                )
+        except IndexError:
             await interaction.response.send_message(
-                "Du hast leider schon gevotet oder bist owner", ephemeral=True
+                "Sorry, aber der Poll ist expired", ephemeral=True
             )
 
 
@@ -387,10 +406,10 @@ def getstatuscolor(currentrequest, sendtimestamp):
 
 def user_in_db(id: int):
     if (
-        len(curser.execute("SELECT * FROM userdata WHERE id = ?", (id,)).fetchall())
+        len(cursor.execute("SELECT * FROM userdata WHERE id = ?", (id,)).fetchall())
         == 0
     ):
-        curser.execute("INSERT INTO userdata VALUES(?,?)", (id, False))
+        cursor.execute("INSERT INTO userdata VALUES(?,?)", (id, False))
         connection.commit()
 
 
@@ -442,7 +461,7 @@ async def statuschange():
 async def refreshblockedplayers():
     global blockedusers
     temp = []
-    for user in curser.execute("SELECT * FROM userdata WHERE blocked = true"):
+    for user in cursor.execute("SELECT * FROM userdata WHERE blocked = true"):
         temp.append(user[1])
     blockedusers = temp
 
@@ -453,6 +472,15 @@ async def cooldowngithub():
     for i in range(githubcooldown):
         await asyncio.sleep(1)
         githubcooldown -= 1
+
+
+@tasks.loop(hours=2)
+async def garbagecollection():
+    # delete all expired polls
+    garbagenum = len(cursor.execute("SELECT * FROM polls WHERE expires < ?", (datetime.datetime.now(),)))
+    print("[" + str(datetime.datetime.now()) + f"] collecting {garbagenum} garbage")
+    cursor.execute("delete from polls where expires < ?", (datetime.datetime.now(),))
+    connection.commit()
 
 
 # Bot activities
@@ -477,6 +505,8 @@ async def on_ready():
         refreshblockedplayers.start()
     if not cooldowngithub.is_running():
         cooldowngithub.start()
+    if not garbagecollection.is_running():
+        garbagecollection.start()
     client.add_view(mypoll())
     print(f"{client.user} has connected to Discord!")
 
@@ -638,9 +668,17 @@ async def on_message(message: nextcord.Message):
                     ),
                     view=mypoll(),
                 )
-            curser.execute(
-                "INSERT into polls VALUES (?,?,?,?,?)",
-                (poll.id, 0, 0, message.author.id, ""),
+            t = datetime.datetime.now()
+            cursor.execute(
+                "INSERT into polls VALUES (?,?,?,?,?,?)",
+                (
+                    poll.id,
+                    0,
+                    0,
+                    message.author.id,
+                    "",
+                    t + datetime.timedelta(days=30),
+                ),
             )
             connection.commit()
 
@@ -750,11 +788,11 @@ async def on_message(message: nextcord.Message):
                 message.author.id == redbuggamer
                 and not message.mentions[0].id == redbuggamer
             ):
-                # print(curser.execute("SELECT * FROM userdata WHERE id = ?",(message.mentions[0].id,)).fetchall())
-                if curser.execute(
+                # print(cursor.execute("SELECT * FROM userdata WHERE id = ?",(message.mentions[0].id,)).fetchall())
+                if cursor.execute(
                     "SELECT * FROM userdata WHERE id = ?", (message.mentions[0].id,)
                 ).fetchall()[0][1]:
-                    curser.execute("UPDATE userdata SET blocked = false")
+                    cursor.execute("UPDATE userdata SET blocked = false")
                     await message.channel.send(
                         embed=nextcord.Embed(
                             description=f"<@{message.mentions[0].id}> darf mich wieder benutzen",
@@ -762,7 +800,7 @@ async def on_message(message: nextcord.Message):
                         )
                     )
                 else:
-                    curser.execute("UPDATE userdata SET blocked = true")
+                    cursor.execute("UPDATE userdata SET blocked = true")
                     await message.channel.send(
                         embed=nextcord.Embed(
                             description=f"<@{message.mentions[0].id}> darf mich leider nicht mehr verwenden",
@@ -1180,13 +1218,13 @@ async def on_message_delete(message: nextcord.Message):
     if message.author == client.user:
         if (
             len(
-                curser.execute(
+                cursor.execute(
                     "SELECT * FROM polls WHERE id = ?", (message.id,)
                 ).fetchall()
             )
             >= 1
         ):
-            curser.execute("DELETE FROM polls WHERE id = ?", (message.id,))
+            cursor.execute("DELETE FROM polls WHERE id = ?", (message.id,))
             connection.commit()
 
 
