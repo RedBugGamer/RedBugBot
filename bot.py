@@ -7,25 +7,21 @@ import os
 import random
 import sqlite3
 from random import randint, randrange
-from typing import List
 from pistonapi import PistonAPI
 import humanfriendly
 import nextcord
 import requests
-from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from exaroton import Exaroton
-from nextcord import *
 from nextcord.ext import tasks
 
 import secretlib
-from evalprot import makeeval
 
 # load .env filw
 load_dotenv()
 
 # define important variables
-intents = Intents.default()
+intents = nextcord.Intents.default()
 intents.members = True
 intents.all()
 exa = Exaroton(os.environ["exaroton"])
@@ -36,6 +32,7 @@ status = False
 # new database
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
+
 cursor.execute(
     "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT, expires DATE)"
 )
@@ -47,7 +44,7 @@ cursor.execute(
 
 redbuggamer = 772386889817784340
 zen = "https://zenquotes.io/api/random"
-sadwords = ["demotivatet","traurig"]
+sadwords = ["demotivatet", "traurig"]
 morsealphabet = {
     "a": ".-",
     "b": "-...",
@@ -141,7 +138,7 @@ class TicTacToeButton(nextcord.ui.Button["TicTacToe"]):
 class TicTacToe(nextcord.ui.View):
     # This tells the IDE or linter that all our children will be TicTacToeButtons
     # This is not required
-    children: List[TicTacToeButton]
+    children: list[TicTacToeButton]
     X = -1
     O = 1
     Tie = 2
@@ -362,42 +359,6 @@ class mypoll(nextcord.ui.View):
             )
 
 
-def getstatuscolor(currentrequest, sendtimestamp):
-
-    if currentrequest == "Online":
-        return nextcord.Embed(
-            description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",
-            color=0x2ECC71,
-            timestamp=sendtimestamp,
-        )
-    elif currentrequest == "Offline":
-        return nextcord.Embed(
-            description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",
-            color=0x979C9F,
-            timestamp=sendtimestamp,
-        )
-    elif currentrequest == "Saving":
-        return nextcord.Embed(
-            description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",
-            color=0xFEE75C,
-            timestamp=sendtimestamp,
-        )
-    elif currentrequest == "Loading":
-        return nextcord.Embed(
-            description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",
-            color=0xE67E22,
-            timestamp=sendtimestamp,
-        )
-    elif currentrequest == "Starting":
-        return nextcord.Embed(
-            description=f"Aktueller status `{str(currentrequest)}`. Könnte aber nicht aktuell sein",
-            color=0x3498DB,
-            timestamp=sendtimestamp,
-        )
-    else:
-        return nextcord.Embed(description=f"Aktueller status `Fail`", color=0xE74C3C)
-
-
 def user_in_db(id: int):
     if (
         len(cursor.execute("SELECT * FROM userdata WHERE id = ?", (id,)).fetchall())
@@ -520,8 +481,7 @@ async def on_disconnect():
 async def on_message(message: nextcord.Message):
     if message.channel.id == 917083417127055470:
         print("Rebooting in", githubcooldown)
-        for i in range(githubcooldown):
-            await asyncio.sleep(1)
+        await asyncio.sleep(githubcooldown)
         await client.change_presence(
             status=nextcord.Status.dnd, activity=nextcord.Game("Rebooting")
         )
@@ -542,8 +502,7 @@ async def on_message(message: nextcord.Message):
                 )
             await message.delete()
             print("Rebooting")
-            for i in range(githubcooldown):
-                await asyncio.sleep(1)
+            await asyncio.sleep(githubcooldown)
             await message.channel.send(embed=nextcord.Embed(description="RESTARTING"))
             os.system("./mystartupscript")
             quit()
@@ -646,7 +605,6 @@ async def on_message(message: nextcord.Message):
 
             await message.channel.trigger_typing()
             # macht einen poll
-            await asyncio.sleep(0.5)
             if message.author.avatar == None:
                 # check avatar exists
                 poll = await message.channel.send(
@@ -718,7 +676,7 @@ async def on_message(message: nextcord.Message):
             # link zur website W.I.P.
             await message.channel.send(
                 embed=nextcord.Embed(
-                    description="Meine [Website](http://RedBugBot.de)",
+                    description="Aktuell keine website",
                     color=nextcord.Colour.blue(),
                 )
             )
@@ -737,9 +695,7 @@ async def on_message(message: nextcord.Message):
             # sendet was in den channel
             if message.author.id == redbuggamer:
                 await message.channel_mentions[0].send(
-                    message.content[
-                        message.content.find("> ") + 1 : int(len(message.content))
-                    ]
+                    message.content.replace("T!send ", "", 1)
                 )
             else:
                 await noperms(message, "Du brauchst Botowner")
@@ -749,7 +705,10 @@ async def on_message(message: nextcord.Message):
             if (len(arguments) % 2) == 0:
                 await message.channel.send(
                     embed=nextcord.Embed(
-                        description="ERROR Du benötigst mehr input", colour=0xE74C3C
+                        description="ERROR Du benötigst mehr input.\n Dein Befehl: `"
+                        + message.content
+                        + "`",
+                        colour=0xE74C3C,
                     )
                 )
             else:
@@ -833,7 +792,8 @@ async def on_message(message: nextcord.Message):
                     >= 1
                 ):
                     idbefore = cursor.execute(
-                        "SELECT * From exaroton where channel = ?", (message.channel.id,)
+                        "SELECT * From exaroton where channel = ?",
+                        (message.channel.id,),
                     ).fetchall()[0][0]
                 else:
                     idbefore = "None"
@@ -875,11 +835,15 @@ async def on_message(message: nextcord.Message):
             else:
                 await noperms(message, "Du brauchst Botowner")
         elif message.content == "T!bind":
-            if len(
-                cursor.execute(
-                    "SELECT * FROM exaroton where channel = ?", (message.channel.id,)
-                ).fetchall()
-            ) >= 1:
+            if (
+                len(
+                    cursor.execute(
+                        "SELECT * FROM exaroton where channel = ?",
+                        (message.channel.id,),
+                    ).fetchall()
+                )
+                >= 1
+            ):
                 thatid = cursor.execute(
                     "SELECT * FROM exaroton where channel = ?", (message.channel.id,)
                 ).fetchall()[0][0]
@@ -983,11 +947,6 @@ async def on_message(message: nextcord.Message):
                 .replace(" ", "+")
             )
             myurl = f"https://www.google.com/search?q={myquery}"
-            myquery = (
-                message.content.replace("T!guckle ", "")
-                .replace("T!google ", "")
-                .replace("T!g ", "")
-            )
             await message.channel.send(
                 embed=nextcord.Embed(
                     description=f"[Google: {myquery}]({myurl})", color=0xFEE75C
@@ -1041,8 +1000,7 @@ async def on_message(message: nextcord.Message):
             if (
                 message.author.id == redbuggamer
                 or message.author.id == 381905896546107392
-                or message.author.id
-                or 772467937436893205
+                or message.author.id == 772467937436893205
             ):
                 embed = secretlib.haus()
                 msg = await message.channel.send(embed=embed)
@@ -1100,14 +1058,6 @@ async def on_message(message: nextcord.Message):
                     description=str(datetime.datetime.now() - startuptime),
                 )
             )
-            for i in range(30):
-                await asyncio.sleep(1)
-                await m.edit(
-                    embed=nextcord.Embed(
-                        title="Uptime",
-                        description=str(datetime.datetime.now() - startuptime),
-                    )
-                )
         elif (
             "demotivated" in message.content.lower()
             or "demotiviert" in message.content.lower()
@@ -1142,9 +1092,7 @@ async def on_message(message: nextcord.Message):
                     executet = exec(code, globals(), locals())
                     doneafter = str(datetime.datetime.now() - mytimestamp)
                     await message.channel.send(
-                        embed=nextcord.Embed(
-                            title="Done nach " + doneafter, description=f"```None```"
-                        )
+                        embed=nextcord.Embed(title="Done nach " + doneafter)
                     )
 
                 except Exception as e:
@@ -1175,7 +1123,7 @@ async def on_message(message: nextcord.Message):
                 response = PistonAPI().execute("python", "3.10.0", code)
             else:
                 response = "Sorry, aber du must code angeben"
-            embed = Embed(
+            embed = nextcord.Embed(
                 color=nextcord.Color.blue(),
                 title="Code execution",
                 description=f"```{response}```",
@@ -1243,11 +1191,6 @@ async def on_message_delete(message: nextcord.Message):
         ):
             cursor.execute("DELETE FROM polls WHERE id = ?", (message.id,))
             connection.commit()
-
-
-# @client.slash_command("test","macht stuff",guild_ids=[867750507774869545])
-# async def test(interaction:nextcord.Interaction,string:ApplicationCommandOptionType.string):
-#     await interaction.response.send_message(string,ephemeral=True)
 
 
 # run the bot
