@@ -6,13 +6,11 @@ import math
 import os
 import random
 import sqlite3
-import time
 from random import randint, randrange
 from typing import List
 from pistonapi import PistonAPI
 import humanfriendly
 import nextcord
-import pymongo
 import requests
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
@@ -35,14 +33,6 @@ TOKEN = os.environ["token"]
 client = nextcord.Client(intents=intents)
 running = False
 status = False
-# Old database
-myclient = pymongo.MongoClient(
-    os.environ["mongourl"], port=27017
-)  # "mongodb://localhost"
-RedBugBot = myclient["RedBugBot"]
-linkedchannels = RedBugBot["linkedchannels"]
-somedata = RedBugBot[" somedata"]
-
 # new database
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
@@ -50,13 +40,14 @@ cursor.execute(
     "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT, expires DATE)"
 )
 cursor.execute("CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked bool)")
+cursor.execute(
+    "CREATE TABLE if not exists exaroton (serverid string PRIMARY KEY, channel int)"
+)
 
 
 redbuggamer = 772386889817784340
 zen = "https://zenquotes.io/api/random"
-sadwords = ["demotivatet"]
-blockeduserdocid = "61d191f56c7061e409ed16d6"
-linkedchannelsmongoid = "61b5d3560d296088f9c970f4"
+sadwords = ["demotivatet","traurig"]
 morsealphabet = {
     "a": ".-",
     "b": "-...",
@@ -92,7 +83,10 @@ morsealphabet = {
 Hicooldown = 0
 startuptime = datetime.datetime.now()
 githubcooldown = 180
-blockedusers = somedata.find_one({"_id": ObjectId(blockeduserdocid)})["blockeduserid"]
+temp = []
+for user in cursor.execute("SELECT * FROM userdata WHERE blocked = true"):
+    temp.append(user[1])
+blockedusers = temp
 
 chatboton = False
 # Button menus
@@ -477,7 +471,11 @@ async def cooldowngithub():
 @tasks.loop(hours=2)
 async def garbagecollection():
     # delete all expired polls
-    garbagenum = len(cursor.execute("SELECT * FROM polls WHERE expires < ?", (datetime.datetime.now(),)))
+    garbagenum = len(
+        cursor.execute(
+            "SELECT * FROM polls WHERE expires < ?", (datetime.datetime.now(),)
+        ).fetchall()
+    )
     print("[" + str(datetime.datetime.now()) + f"] collecting {garbagenum} garbage")
     cursor.execute("delete from polls where expires < ?", (datetime.datetime.now(),))
     connection.commit()
@@ -553,17 +551,21 @@ async def on_message(message: nextcord.Message):
             noperms(message, "Du brauchst Botowner")
     if (
         not message.author.bot
-        and str(message.channel.id) in linkedchannels.find_one({})
+        and len(
+            cursor.execute(
+                "SELECT * FROM exaroton where channel = ?", (message.channel.id,)
+            ).fetchall()
+        )
         and not message.content.startswith("T!")
     ):
-        if linkedchannels.find_one({})[str(message.channel.id)] != "":
-            exa.command(
-                linkedchannels.find_one({})[str(message.channel.id)],
-                f'tellraw @a "<{message.author}> {message.clean_content}"',
-            )
+        exa.command(
+            cursor.execute(
+                "SELECT * FROM exaroton where channel = ?", (message.channel.id,)
+            ).fetchall()[0][0],
+            f'tellraw @a "<{message.author}> {message.clean_content}"',
+        )
     # make global variables
     global chatboton
-    global awaitpoll
     global dice
     global status
     global running
@@ -821,19 +823,24 @@ async def on_message(message: nextcord.Message):
             )
         elif message.content.startswith("T!bind "):
             if message.author.id == redbuggamer:
-                if str(message.channel.id) in linkedchannels.find_one(
-                    {"_id": ObjectId(linkedchannelsmongoid)}
+                if (
+                    len(
+                        cursor.execute(
+                            "SELECT * FROM exaroton where channel = ?",
+                            (message.channel.id,),
+                        ).fetchall()
+                    )
+                    >= 1
                 ):
-                    idbefore = linkedchannels.find_one(
-                        {"_id": ObjectId(linkedchannelsmongoid)}
-                    )[str(message.channel.id)]
+                    idbefore = cursor.execute(
+                        "SELECT * From exaroton where channel = ?", (message.channel.id,)
+                    ).fetchall()[0][0]
                 else:
                     idbefore = "None"
                 customid = message.content.split()[1]
                 if message.content.replace("T!bind ", "") == "unbind":
-                    linkedchannels.update_one(
-                        {"_id": ObjectId(linkedchannelsmongoid)},
-                        {"$set": {str(message.channel.id): ""}},
+                    cursor.execute(
+                        "DELETE from exaroton where channel = ?", (message.channel.id,)
                     )
                     await message.channel.send(
                         embed=nextcord.Embed(
@@ -841,31 +848,41 @@ async def on_message(message: nextcord.Message):
                         )
                     )
                 else:
-                    linkedchannels.update_one(
-                        {"_id": ObjectId(linkedchannelsmongoid)},
-                        {
-                            "$set": {
-                                str(message.channel.id): str(
-                                    message.content.replace("T!bind ", "")
-                                )
-                            }
-                        },
-                    )
+                    if (
+                        len(
+                            cursor.execute(
+                                "SELECT * FROM exaroton where serverid = ?", (customid,)
+                            ).fetchall()
+                        )
+                        == 0
+                    ):
+                        cursor.execute(
+                            "INSERT INTO exaroton VALUES (?,?)",
+                            (customid, message.channel.id),
+                        )
+                    else:
+                        cursor.execute(
+                            "UPDATE exaroton SET serverid = ? where channel = ?",
+                            (customid, message.channel.id),
+                        )
                     await message.channel.send(
                         embed=nextcord.Embed(
                             description=f"Bound Exaroton Server `{customid}`",
                             color=0x3498DB,
                         )
                     )
+                connection.commit()
             else:
                 await noperms(message, "Du brauchst Botowner")
         elif message.content == "T!bind":
-            if str(message.channel.id) in linkedchannels.find_one(
-                {"_id": ObjectId(linkedchannelsmongoid)}
-            ):
-                thatid = linkedchannels.find_one(
-                    {"_id": ObjectId(linkedchannelsmongoid)}
-                )[str(message.channel.id)]
+            if len(
+                cursor.execute(
+                    "SELECT * FROM exaroton where channel = ?", (message.channel.id,)
+                ).fetchall()
+            ) >= 1:
+                thatid = cursor.execute(
+                    "SELECT * FROM exaroton where channel = ?", (message.channel.id,)
+                ).fetchall()[0][0]
             else:
                 thatid = "None"
             await message.channel.send(
