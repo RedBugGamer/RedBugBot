@@ -360,6 +360,131 @@ class mypoll(nextcord.ui.View):
             )
 
 
+class EmbedBuilder(nextcord.ui.View):
+    def __init__(self, embed: dict, owner: int):
+        super().__init__(timeout=None)
+        self.embed = embed
+        self.owner = owner
+
+    @nextcord.ui.button(label="Send", style=nextcord.ButtonStyle.green)
+    async def send(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if self.owner == interaction.user.id:
+            await interaction.channel.send(embed=nextcord.Embed.from_dict(self.embed))
+            await interaction.message.delete()
+        else:
+            await interaction.response.send_message(
+                "Du bist halt kein Owner, weißt du...", ephemeral=True
+            )
+
+    @nextcord.ui.button(label="Edit")
+    async def edit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if interaction.user.id != self.owner:
+            await interaction.response.send_message(
+                "Du bist halt kein Owner, weißt du...", ephemeral=True
+            )
+            return
+        await interaction.response.send_message(
+            "Du kannst jetzt key=value in den chat schreiben", ephemeral=True
+        )
+        try:
+            msg: nextcord.Message = await client.wait_for(
+                "message", timeout=30, check=lambda m: m.author == interaction.user
+            )
+            if len(msg.content.split("=")) == 2:
+                e = nextcord.Embed.from_dict(self.embed)
+                key = msg.content.split("=")[0]
+                value = msg.content.split("=")[1]
+                d = [
+                    "titel",
+                    "description",
+                    "color",
+                    "footer",
+                    "image",
+                    "thumbnail",
+                ]
+                colors = {
+                    "red": nextcord.Color.red(),
+                    "orange": nextcord.Color.orange(),
+                    "yellow": nextcord.Color.yellow(),
+                    "green": nextcord.Color.green(),
+                    "blue": nextcord.Color.blue(),
+                    "white": nextcord.Color.from_rgb(255, 255, 255),
+                    "black": nextcord.Color.from_rgb(0, 0, 0),
+                }
+                if key in d:
+                    match key:
+                        case "titel":
+                            e.title = value
+                        case "description":
+                            e.description = value
+                        case "color":
+                            if value in colors:
+                                d1 = e.to_dict()
+                                d1["color"] = int(colors[value])
+                                e = nextcord.Embed.from_dict(d1)
+                        case "footer":
+                            e.set_footer(value)
+                        case "image":
+                            e.set_image(value)
+                        case "thumbnail":
+                            e.set_thumbnail(value)
+                    await interaction.message.edit(embed=e)
+                    self.embed = e.to_dict()
+                else:
+                    await msg.reply(
+                        "Du musst einen echten Parameter angeben", delete_after=5
+                    )
+
+            else:
+                await msg.reply("Du musst ein key=value Paar angeben", delete_after=5)
+        except asyncio.TimeoutError:
+            await interaction.message.channel.send(
+                "Sorry du warst nicht schnell genug", delete_after=5
+            )
+        await msg.delete()
+
+    @nextcord.ui.button(label="Add Field")
+    async def field_add(
+        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
+    ):
+        if self.owner == interaction.user.id:
+            await interaction.response.send_message(
+                "Gib jetzt bitte Titel=Beschreibung an", ephemeral=True
+            )
+            try:
+                msg: nextcord.Message = await client.wait_for(
+                    "message", timeout=30, check=lambda m: m.author == interaction.user
+                )
+                await msg.delete()
+                if len(msg.content.split("=")) == 2:
+                    titel = msg.content.split("=")[0]
+                    description = msg.content.split("=")[1]
+                    e = nextcord.Embed.from_dict(self.embed)
+                    e.add_field(name=titel, value=description, inline=False)
+                    self.embed = e.to_dict()
+                await interaction.message.edit(embed=e)
+            except asyncio.TimeoutError:
+                await interaction.message.channel.send(
+                    "Sorry du warst nicht schnell genug", delete_after=5
+                )
+
+        else:
+            await interaction.response.send_message(
+                "Du bist halt kein Owner, weißt du...", ephemeral=True
+            )
+
+    @nextcord.ui.button(label="Cancel", style=nextcord.ButtonStyle.red)
+    async def cancel(
+        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
+    ):
+        if self.owner == interaction.user.id:
+            await interaction.message.delete()
+        else:
+            await interaction.response.send_message(
+                "Du bist halt kein Owner, weißt du...", ephemeral=True
+            )
+
+
 def user_in_db(id: int):
     if (
         len(cursor.execute("SELECT * FROM userdata WHERE id = ?", (id,)).fetchall())
@@ -390,7 +515,7 @@ registeredcommands = {
     "tictactoe": "Startet ein TikTakToe game `Usage: T!tictactoe`",
     "google": "googelt was für dich `Usage: T!google/T!g/T!guckle`",
     "morse": "gibt die morsetext `Usage: T!morse <text>`",
-    "embed": "Sendet eine Einbettung `Usage: T!embed <description>` um ein feld hinzuzufügen: ` | <name> | <value>`",
+    "embed": "Sendet eine Einbettung `Usage: T!embed wert1=parameter1;wer2=parameter2` oder `T!embed`",
     "stats": "Gibt die Hypixel stats `Usage: T!stats <player>`",
     "poll": "Macht eine Umfrage `Usage: T!poll <Frage>`",
     "bind": 'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
@@ -459,8 +584,13 @@ activitys = [
 # on ready/Change bot activitie
 @client.event
 async def on_ready():
-    if not statuschange.is_running():
-        statuschange.start()
+    if not developer_mode:
+        if not statuschange.is_running():
+            statuschange.start()
+    else:
+        await client.change_presence(
+            activity=nextcord.Game("Under Maintence"), status=nextcord.Status.idle
+        )
     if not refreshblockedplayers.is_running():
         refreshblockedplayers.start()
     if not cooldowngithub.is_running():
@@ -533,6 +663,19 @@ async def on_message(message: nextcord.Message):
     global blockedusers
     # block users
     if not message.author.id in blockedusers:
+        if (
+            developer_mode
+            and message.content.startswith("T!")
+            and not message.author.id == redbuggamer
+        ):
+            await message.reply(
+                embed=nextcord.Embed(
+                    color=nextcord.Color.red(),
+                    description="Aktuell werde ich weiter programmiert.\nManche Befehle werden kaum oder gar nicht funktionieren.",
+                    title="Warnung",
+                ),
+                delete_after=10,
+            )
         delete = True
         # await message from self
         if message.author == client.user:
@@ -700,54 +843,56 @@ async def on_message(message: nextcord.Message):
                 )
             else:
                 await noperms(message, "Du brauchst Botowner")
-        elif message.content.startswith("T!embed "):
+        elif message.content.startswith("T!embed"):
             await message.channel.trigger_typing()
-            # titel= ""
-            # description = ""
-            # colour = ""
-            # footer = ""
-            # image=""
-            # thumbnail=""
-            # d= {}
-
-            # for key_value in message.content.replace("T!embed ","",1).split(";"):
-            #     x= key_value.split("=")
-            #     d[x[0]]=x[1]
-            # print(d)
-            arguments = message.content[8 : len(message.content)].split("|")
-            if (len(arguments) % 2) == 0:
-                await message.channel.send(
-                    embed=nextcord.Embed(
-                        description="ERROR Du benötigst mehr input.\n Dein Befehl: `"
-                        + message.content
-                        + "`",
-                        colour=0xE74C3C,
-                    )
+            d = {
+                "titel": "",
+                "description": "Description is None",
+                "color": "",
+                "footer": "",
+                "image": "",
+                "thumbnail": "",
+            }
+            colors = {
+                "red": nextcord.Color.red(),
+                "orange": nextcord.Color.orange(),
+                "yellow": nextcord.Color.yellow(),
+                "green": nextcord.Color.green(),
+                "blue": nextcord.Color.blue(),
+                "white": nextcord.Color.from_rgb(255, 255, 255),
+                "black": nextcord.Color.from_rgb(0, 0, 0),
+                "": nextcord.Embed.Empty,
+            }
+            for key_value in (
+                message.content.replace("T!embed", "", 1).strip().split(";")
+            ):
+                x = key_value.split("=")
+                if len(x) == 2:
+                    key = x[0].strip().lower()
+                    value = x[1].strip()
+                    d[key] = value
+            if d["color"] in colors:
+                e = nextcord.Embed(
+                    title=d["titel"],
+                    description=d["description"],
+                    color=colors[d["color"]],
+                )
+                e.set_author(name=message.author,icon_url = message.author.display_avatar.url)
+                e.set_footer(text=d["footer"])
+                e.set_image(url=d["image"])
+                e.set_thumbnail(url=d["thumbnail"])
+                await message.reply(
+                    "This is just the builder",
+                    embed=e,
+                    view=EmbedBuilder(e.to_dict(), message.author.id),
                 )
             else:
-                if message.author.avatar == None:
-                    customembed = nextcord.Embed(
-                        description=arguments[0], color=0x2ECC71
-                    ).set_author(
-                        name=f"{message.author.name}#{message.author.discriminator}"
+                await message.reply(
+                    embed=nextcord.Embed(
+                        title="Fehler",
+                        description="Du musst eine korrekte Farbe angeben",
                     )
-                else:
-                    customembed = nextcord.Embed(
-                        description=arguments[0], color=0x2ECC71
-                    ).set_author(
-                        name=f"{message.author.name}#{message.author.discriminator}",
-                        icon_url=message.author.avatar.url,
-                    )
-                active = False
-                for i in range(int(len(arguments))):
-                    if active:
-                        customembed.add_field(
-                            inline=False, name=arguments[i], value=arguments[i + 1]
-                        )
-                        active = False
-                    else:
-                        active = True
-                await message.channel.send(embed=customembed)
+                )
         elif message.content.startswith("T!block"):
             user_in_db(message.mentions[0].id)
             if not message.author.id == redbuggamer:
