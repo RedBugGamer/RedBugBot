@@ -29,6 +29,7 @@ TOKEN = os.environ["token"]
 client = nextcord.Client(intents=intents)
 running = False
 status = False
+developer_mode = os.environ["developer_mode"] == "True"
 # new database
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
@@ -701,6 +702,18 @@ async def on_message(message: nextcord.Message):
                 await noperms(message, "Du brauchst Botowner")
         elif message.content.startswith("T!embed "):
             await message.channel.trigger_typing()
+            # titel= ""
+            # description = ""
+            # colour = ""
+            # footer = ""
+            # image=""
+            # thumbnail=""
+            # d= {}
+
+            # for key_value in message.content.replace("T!embed ","",1).split(";"):
+            #     x= key_value.split("=")
+            #     d[x[0]]=x[1]
+            # print(d)
             arguments = message.content[8 : len(message.content)].split("|")
             if (len(arguments) % 2) == 0:
                 await message.channel.send(
@@ -1130,7 +1143,6 @@ async def on_message(message: nextcord.Message):
             )
             embed.set_footer(text="Powered by https://github.com/engineer-man/piston")
             await message.channel.send(embed=embed)
-
             # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(
