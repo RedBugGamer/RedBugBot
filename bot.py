@@ -267,7 +267,6 @@ async def on_message(message: nextcord.Message):
         )
     # make global variables
     global chatboton
-    global dice
     global status
     global running
     global Hicooldown
@@ -494,10 +493,51 @@ async def on_message(message: nextcord.Message):
                 e.set_footer(text=d["footer"])
                 e.set_image(url=d["image"])
                 e.set_thumbnail(url=d["thumbnail"])
+
+
+                description = nextcord.Embed(
+                    title = "Erklärung",
+                    color = nextcord.Color.blue()
+                )
+                description.add_field(
+                    name="titel",
+                    value="Der Titel der Einbettung",
+                    inline=False,
+                )
+                description.add_field(
+                    name="description",
+                    value="Die Beschreibung der Einbettung",
+                    inline=False,
+                )
+                description.add_field(
+                    name="color",
+                    value="Setzt die Farbe der Einbettung",
+                    inline=False,
+                    )
+                description.add_field(
+                    name="color",
+                    value="Setzt die Farbe der Einbettung",
+                    inline=False,
+                )
+                description.add_field(
+                    name="footer",
+                    value="Der Footer text der Einbettung",
+                    inline=False,
+                )
+                description.add_field(
+                    name="image",
+                    value="Der Link zum Bild",
+                    inline=False,
+                )
+                description.add_field(
+                    name="thumbnail",
+                    value="Der Link zum Titelbild",
+                    inline=False,
+                )
+                description_msg = await message.reply(embed=description)
                 await message.reply(
-                    "This is just the builder",
                     embed=e,
-                    view=EmbedBuilder(e.to_dict(), message.author.id),
+                    view=EmbedBuilder(e.to_dict(), message.author.id,description_msg),
                 )
             else:
                 await message.reply(
@@ -829,7 +869,7 @@ async def on_message(message: nextcord.Message):
                     description=str(datetime.datetime.now() - startuptime),
                 )
             )
-        elif any(word in message.content for word in sadwords):
+        elif any(word in message.content.lower() for word in sadwords):
             await message.channel.trigger_typing()
             await asyncio.sleep(2)
             request = requests.get(zen).json()

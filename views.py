@@ -297,16 +297,19 @@ class mypoll(nextcord.ui.View):
 
 
 class EmbedBuilder(nextcord.ui.View):
-    def __init__(self, embed: dict, owner: int):
+    def __init__(self, embed: dict, owner: int,description_msg:nextcord.Message):
         super().__init__(timeout=None)
         self.embed = embed
         self.owner = owner
+        self.description_msg = description_msg
 
     @nextcord.ui.button(label="Send", style=nextcord.ButtonStyle.green)
     async def send(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if self.owner == interaction.user.id:
             await interaction.channel.send(embed=nextcord.Embed.from_dict(self.embed))
             await interaction.message.delete()
+            self.description_msg.delete()
+            self.stop()
         else:
             await interaction.response.send_message(
                 "Du bist halt kein Owner, weißt du...", ephemeral=True
@@ -415,6 +418,8 @@ class EmbedBuilder(nextcord.ui.View):
     ):
         if self.owner == interaction.user.id:
             await interaction.message.delete()
+            self.description_msg.delete()
+            self.stop()
         else:
             await interaction.response.send_message(
                 "Du bist halt kein Owner, weißt du...", ephemeral=True
