@@ -308,7 +308,7 @@ class EmbedBuilder(nextcord.ui.View):
         if self.owner == interaction.user.id:
             await interaction.channel.send(embed=nextcord.Embed.from_dict(self.embed))
             await interaction.message.delete()
-            self.description_msg.delete()
+            await self.description_msg.delete()
             self.stop()
         else:
             await interaction.response.send_message(
@@ -418,7 +418,7 @@ class EmbedBuilder(nextcord.ui.View):
     ):
         if self.owner == interaction.user.id:
             await interaction.message.delete()
-            self.description_msg.delete()
+            await self.description_msg.delete()
             self.stop()
         else:
             await interaction.response.send_message(
