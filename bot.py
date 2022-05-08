@@ -51,7 +51,7 @@ cursor.execute(
 
 redbuggamer = 772386889817784340
 zen = "https://zenquotes.io/api/random"
-sadwords = ["demotivatet", "traurig"]
+sadwords = ["demotivatet", "traurig", "demotiviert", "sad"]
 morsealphabet = {
     "a": ".-",
     "b": "-...",
@@ -91,6 +91,7 @@ temp = []
 for user in cursor.execute("SELECT * FROM userdata WHERE blocked = true"):
     temp.append(user[1])
 blockedusers = temp
+del temp
 
 chatboton = False
 
@@ -828,17 +829,11 @@ async def on_message(message: nextcord.Message):
                     description=str(datetime.datetime.now() - startuptime),
                 )
             )
-        elif (
-            "demotivated" in message.content.lower()
-            or "demotiviert" in message.content.lower()
-        ):
+        elif any(word in message.content for word in sadwords):
             await message.channel.trigger_typing()
             await asyncio.sleep(2)
             request = requests.get(zen).json()
-            await message.reply(
-                f"""{request[0]["q"]}
-    -{request[0]["a"]}"""
-            )
+            await message.reply(f"""{request[0]["q"]}\n   -{request[0]["a"]}""")
         elif message.content == "T!chatbot":
             delete = False
             if message.author.id == 772386889817784340:
