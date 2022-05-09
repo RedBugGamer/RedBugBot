@@ -278,7 +278,7 @@ class mypoll(nextcord.ui.View):
                 output["voted"] = "-".join(voters)
                 button.label = str(down + 1)
                 cursor.execute(
-                    "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
+                    "UPDATE polls SET down = ?, voted = ? WHERE id = ?",
                     (down + 1, output["voted"], id1),
                 )
                 connection.commit()
