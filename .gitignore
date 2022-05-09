@@ -6,3 +6,4 @@ secretlib.py
 /.vscode
 /polls.db
 /database.db
+/test2.py
