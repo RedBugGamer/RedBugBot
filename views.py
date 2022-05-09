@@ -1,7 +1,9 @@
+import datetime
 import nextcord
 import requests
 from sqlite3 import Connection, Cursor
 import asyncio
+import json
 
 redbuggamer = 772386889817784340
 cursor: Cursor = None
@@ -297,7 +299,7 @@ class mypoll(nextcord.ui.View):
 
 
 class EmbedBuilder(nextcord.ui.View):
-    def __init__(self, embed: dict, owner: int,description_msg:nextcord.Message):
+    def __init__(self, embed: dict, owner: int, description_msg: nextcord.Message):
         super().__init__(timeout=None)
         self.embed = embed
         self.owner = owner
@@ -407,6 +409,27 @@ class EmbedBuilder(nextcord.ui.View):
                     "Sorry du warst nicht schnell genug", delete_after=5
                 )
 
+        else:
+            await interaction.response.send_message(
+                "Du bist halt kein Owner, weißt du...", ephemeral=True
+            )
+
+    @nextcord.ui.button(label="Copy")
+    async def copy(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if self.owner == interaction.user.id:
+            response = json.dumps(self.embed)
+            a = cursor.execute("SELECT * FROM embeds").fetchall()
+            newid = list(set(range(0, len(a) + 1)).difference(i[0] for i in a))[0]
+            cursor.execute(
+                "INSERT INTO embeds VALUES (?,?,?)",
+                (
+                    newid,
+                    response,
+                    datetime.datetime.now() + datetime.timedelta(minutes=10),
+                ),
+            )
+            connection.commit()
+            await interaction.response.send_message(f"Die Einbettung: `T!deploy {newid}` (gilt 10 Minuten)")
         else:
             await interaction.response.send_message(
                 "Du bist halt kein Owner, weißt du...", ephemeral=True

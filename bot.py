@@ -47,6 +47,9 @@ cursor.execute("CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked
 cursor.execute(
     "CREATE TABLE if not exists exaroton (serverid string PRIMARY KEY, channel int)"
 )
+cursor.execute(
+    "CREATE TABLE if not exists embeds (id int PRIMARY KEY, json string, expires DATE)"
+)
 
 
 redbuggamer = 772386889817784340
@@ -166,16 +169,23 @@ async def cooldowngithub():
         githubcooldown -= 1
 
 
-@tasks.loop(hours=2)
+@tasks.loop(hours=1)
 async def garbagecollection():
     # delete all expired polls
-    garbagenum = len(
+    garbagenum = 0
+    garbagenum += len(
         cursor.execute(
             "SELECT * FROM polls WHERE expires < ?", (datetime.datetime.now(),)
         ).fetchall()
     )
+    garbagenum += len(
+        cursor.execute(
+            "SELECT * FROM embeds WHERE expires < ?", (datetime.datetime.now(),)
+        ).fetchall()
+    )
     print("[" + str(datetime.datetime.now()) + f"] collecting {garbagenum} garbage")
     cursor.execute("delete from polls where expires < ?", (datetime.datetime.now(),))
+    cursor.execute("delete from embeds where expires < ?", (datetime.datetime.now(),))
     connection.commit()
 
 
@@ -494,10 +504,8 @@ async def on_message(message: nextcord.Message):
                 e.set_image(url=d["image"])
                 e.set_thumbnail(url=d["thumbnail"])
 
-
                 description = nextcord.Embed(
-                    title = "Erklärung",
-                    color = nextcord.Color.blue()
+                    title="Erklärung", color=nextcord.Color.blue()
                 )
                 description.add_field(
                     name="titel",
@@ -513,7 +521,7 @@ async def on_message(message: nextcord.Message):
                     name="color",
                     value="Setzt die Farbe der Einbettung",
                     inline=False,
-                    )
+                )
                 description.add_field(
                     name="color",
                     value="Setzt die Farbe der Einbettung",
@@ -537,7 +545,7 @@ async def on_message(message: nextcord.Message):
                 description_msg = await message.reply(embed=description)
                 await message.reply(
                     embed=e,
-                    view=EmbedBuilder(e.to_dict(), message.author.id,description_msg),
+                    view=EmbedBuilder(e.to_dict(), message.author.id, description_msg),
                 )
             else:
                 await message.reply(
@@ -545,6 +553,22 @@ async def on_message(message: nextcord.Message):
                         title="Fehler",
                         description="Du musst eine korrekte Farbe angeben",
                     )
+                )
+        elif message.content.startswith("T!deploy "):
+            try:
+                id = message.content.split(" ")[1]
+                element = cursor.execute(
+                    "SELECT * FROM embeds where id = ?", (int(id),)
+                ).fetchall()[0]
+                cursor.execute("DELETE FROM embeds WHERE id = ?", (element[0],))
+                connection.commit()
+                await message.channel.send(
+                    embed=nextcord.Embed.from_dict(json.loads(element[1]))
+                )
+            except IndexError:
+                await message.reply(
+                    "Du musst eine korrekte Id angeben, oder du bist 10 Minuten zu spät",
+                    delete_after=10,
                 )
         elif message.content.startswith("T!block"):
             user_in_db(message.mentions[0].id)
