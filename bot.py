@@ -15,6 +15,8 @@ from dotenv import load_dotenv
 from exaroton import Exaroton
 from nextcord.ext import tasks
 from views import *
+from utilitie import *
+from vars import *
 
 import secretlib
 
@@ -22,28 +24,20 @@ import secretlib
 load_dotenv()
 
 # define important variables
-intents = nextcord.Intents.default()
-intents.members = True
-intents.all()
+
 exa = Exaroton(os.environ["exaroton"])
 TOKEN = os.environ["token"]
-client = nextcord.Client(intents=intents)
 running = False
 status = False
 developer_mode = os.environ["developer_mode"] == "True"
 # new database
-connection = sqlite3.connect("database.db")
-cursor = connection.cursor()
-
-setCursor(cursor)
-setConnection(connection)
-setClient(client)
 
 
 cursor.execute(
     "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT, expires DATE)"
 )
-cursor.execute("CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked bool)")
+cursor.execute(
+    "CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked bool)")
 cursor.execute(
     "CREATE TABLE if not exists exaroton (serverid string PRIMARY KEY, channel int)"
 )
@@ -51,8 +45,6 @@ cursor.execute(
     "CREATE TABLE if not exists embeds (id int PRIMARY KEY, json string, expires DATE)"
 )
 
-
-redbuggamer = 772386889817784340
 zen = "https://zenquotes.io/api/random"
 sadwords = ["demotivatet", "traurig", "demotiviert", "sad"]
 morsealphabet = {
@@ -106,16 +98,6 @@ def user_in_db(id: int):
     ):
         cursor.execute("INSERT INTO userdata VALUES(?,?)", (id, False))
         connection.commit()
-
-
-async def noperms(obj: nextcord.Message, neededpermission=""):
-    await obj.reply(
-        embed=nextcord.Embed(
-            title="Du hast keine Berechtigung dazu",
-            description=neededpermission,
-            color=0xE74C3C,
-        )
-    )
 
 
 registeredcommands = {
@@ -183,9 +165,12 @@ async def garbagecollection():
             "SELECT * FROM embeds WHERE expires < ?", (datetime.datetime.now(),)
         ).fetchall()
     )
-    print("[" + str(datetime.datetime.now()) + f"] collecting {garbagenum} garbage")
-    cursor.execute("delete from polls where expires < ?", (datetime.datetime.now(),))
-    cursor.execute("delete from embeds where expires < ?", (datetime.datetime.now(),))
+    print("[" + str(datetime.datetime.now()) +
+          f"] collecting {garbagenum} garbage")
+    cursor.execute("delete from polls where expires < ?",
+                   (datetime.datetime.now(),))
+    cursor.execute("delete from embeds where expires < ?",
+                   (datetime.datetime.now(),))
     connection.commit()
 
 
@@ -203,6 +188,8 @@ activitys = [
     "Training neural network",
 ]
 # on ready/Change bot activitie
+
+
 @client.event
 async def on_ready():
     if not developer_mode:
@@ -309,7 +296,8 @@ async def on_message(message: nextcord.Message):
                 timestamp=datetime.datetime.utcnow(),
             )
             Help.set_author(name=client.user, icon_url=client.user.avatar.url)
-            Help.add_field(name="Prefix", value="Mein prefix ist `T!`", inline=False)
+            Help.add_field(
+                name="Prefix", value="Mein prefix ist `T!`", inline=False)
             Help.add_field(
                 name="Basic Commands",
                 value="`T!help`,`T!ping`,`T!web`,`T!uptime`",
@@ -368,6 +356,10 @@ async def on_message(message: nextcord.Message):
         elif message.content.startswith("T!poll"):
 
             await message.channel.trigger_typing()
+            if await check_developer_mod_msg(message):
+                delete = False
+                await message.delete()
+                return
             # macht einen poll
             if message.author.avatar == None:
                 # check avatar exists
@@ -423,12 +415,14 @@ async def on_message(message: nextcord.Message):
         elif message.content == "T!dice":
             # würfelt
             dice = await message.channel.send(
-                embed=nextcord.Embed(description="Rolling 🎲 " + str(randrange(1, 6)))
+                embed=nextcord.Embed(
+                    description="Rolling 🎲 " + str(randrange(1, 6)))
             )
             for i in range(4):
                 await asyncio.sleep(0.75)
                 await dice.edit(
-                    embed=nextcord.Embed(description="Rolling 🎲 " + str(randint(1, 6)))
+                    embed=nextcord.Embed(
+                        description="Rolling 🎲 " + str(randint(1, 6)))
                 )
             await dice.edit(
                 embed=nextcord.Embed(
@@ -545,7 +539,8 @@ async def on_message(message: nextcord.Message):
                 description_msg = await message.reply(embed=description)
                 await message.reply(
                     embed=e,
-                    view=EmbedBuilder(e.to_dict(), message.author.id, description_msg),
+                    view=EmbedBuilder(
+                        e.to_dict(), message.author.id, description_msg),
                 )
             else:
                 await message.reply(
@@ -560,7 +555,8 @@ async def on_message(message: nextcord.Message):
                 element = cursor.execute(
                     "SELECT * FROM embeds where id = ?", (int(id),)
                 ).fetchall()[0]
-                cursor.execute("DELETE FROM embeds WHERE id = ?", (element[0],))
+                cursor.execute(
+                    "DELETE FROM embeds WHERE id = ?", (element[0],))
                 connection.commit()
                 await message.channel.send(
                     embed=nextcord.Embed.from_dict(json.loads(element[1]))
@@ -586,7 +582,8 @@ async def on_message(message: nextcord.Message):
             ):
                 # print(cursor.execute("SELECT * FROM userdata WHERE id = ?",(message.mentions[0].id,)).fetchall())
                 if cursor.execute(
-                    "SELECT * FROM userdata WHERE id = ?", (message.mentions[0].id,)
+                    "SELECT * FROM userdata WHERE id = ?", (
+                        message.mentions[0].id,)
                 ).fetchall()[0][1]:
                     cursor.execute("UPDATE userdata SET blocked = false")
                     await message.channel.send(
@@ -635,7 +632,8 @@ async def on_message(message: nextcord.Message):
                 customid = message.content.split()[1]
                 if message.content.replace("T!bind ", "") == "unbind":
                     cursor.execute(
-                        "DELETE from exaroton where channel = ?", (message.channel.id,)
+                        "DELETE from exaroton where channel = ?", (
+                            message.channel.id,)
                     )
                     await message.channel.send(
                         embed=nextcord.Embed(
@@ -742,10 +740,13 @@ async def on_message(message: nextcord.Message):
                     inline=False, name="`Version`", value=request["mc_version"]
                 )
                 if request["online"]:
-                    playerembed.add_field(inline=False, name="`Online`", value="🟩")
+                    playerembed.add_field(
+                        inline=False, name="`Online`", value="🟩")
                 else:
-                    playerembed.add_field(inline=False, name="`Offline`", value="🔲")
-                playerembed.add_field(inline=False, name="`Discord`", value=f"{link}")
+                    playerembed.add_field(
+                        inline=False, name="`Offline`", value="🔲")
+                playerembed.add_field(
+                    inline=False, name="`Discord`", value=f"{link}")
                 playerembed.add_field(
                     inline=False,
                     name=f"`Level {math.floor(level)}`",
@@ -763,7 +764,8 @@ async def on_message(message: nextcord.Message):
                         statuschange.start()
                 else:
                     await client.change_presence(
-                        activity=nextcord.Game(message.content.split(" ", 1)[1]),
+                        activity=nextcord.Game(
+                            message.content.split(" ", 1)[1]),
                         status=nextcord.Status.online,
                     )
                     if statuschange.is_running():
@@ -798,7 +800,7 @@ async def on_message(message: nextcord.Message):
                     theblockeduser = message.mentions[0]
                     muteduration = parameter[2]
                     reason = ""
-                    for i in parameter[3 : len(parameter)]:
+                    for i in parameter[3: len(parameter)]:
                         reason += i
                     parsed = humanfriendly.parse_timespan(muteduration)
                     await message.mentions[0].edit(
@@ -957,7 +959,8 @@ async def on_message(message: nextcord.Message):
                 title="Code execution",
                 description=f"```{response}```",
             )
-            embed.set_footer(text="Powered by https://github.com/engineer-man/piston")
+            embed.set_footer(
+                text="Powered by https://github.com/engineer-man/piston")
             await message.channel.send(embed=embed)
             # other essential stuff here:
         elif message.content.startswith("T!"):

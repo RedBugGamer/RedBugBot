@@ -4,27 +4,8 @@ import requests
 from sqlite3 import Connection, Cursor
 import asyncio
 import json
-
-redbuggamer = 772386889817784340
-cursor: Cursor = None
-connection: Connection = None
-client: nextcord.Client = None
-
-
-def setCursor(c):
-    global cursor
-    cursor = c
-
-
-def setConnection(c):
-    global connection
-    connection = c
-
-
-def setClient(c):
-    global client
-    client = c
-
+from utilitie import *
+from vars import *
 
 class TicTacToeButton(nextcord.ui.Button["TicTacToe"]):
     def __init__(self, x: int, y: int):
