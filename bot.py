@@ -356,7 +356,7 @@ async def on_message(message: nextcord.Message):
         elif message.content.startswith("T!poll"):
 
             await message.channel.trigger_typing()
-            if await check_developer_mod_msg(message):
+            if await check_developer_mode_msg(message):
                 delete = False
                 await message.delete()
                 return
@@ -550,6 +550,7 @@ async def on_message(message: nextcord.Message):
                     )
                 )
         elif message.content.startswith("T!deploy "):
+            if await check_developer_mode_msg(message): return
             try:
                 id = message.content.split(" ")[1]
                 element = cursor.execute(
@@ -775,7 +776,6 @@ async def on_message(message: nextcord.Message):
         elif (
             message.content.startswith("T!guckle")
             or message.content.startswith("T!google")
-            or message.content.startswith("T!g")
         ):
             myquery = (
                 message.content.replace("T!guckle ", "")
@@ -962,6 +962,24 @@ async def on_message(message: nextcord.Message):
             embed.set_footer(
                 text="Powered by https://github.com/engineer-man/piston")
             await message.channel.send(embed=embed)
+        elif message.content.startswith("T!get"):
+            match message.content.split()[1]:
+                case "id":
+                    user = message.content.split(" ", 1)[1]
+                    for guild in client.guilds:
+                        user = guild.get_member_named(user)
+                        if user != None:
+                            try:
+                                id = user.id
+                                break
+                            except Exception:
+                                pass
+                    await message.channel.send(embed=nextcord.Embed(description=f"Die id von {user} ist `{id}`"))
+                case "name":
+                    id_str = message.content.split(" ")[2]
+                    id: nextcord.User = client.get_user(int(message.content.split(" ")[2]))
+                    name = id
+                    await message.channel.send(embed=nextcord.Embed(description=f"Der name von {id_str} ist {id}"))
             # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(
@@ -1012,16 +1030,8 @@ async def on_guild_join(guild: nextcord.Guild):
 @client.event
 async def on_message_delete(message: nextcord.Message):
     if message.author == client.user:
-        if (
-            len(
-                cursor.execute(
-                    "SELECT * FROM polls WHERE id = ?", (message.id,)
-                ).fetchall()
-            )
-            >= 1
-        ):
-            cursor.execute("DELETE FROM polls WHERE id = ?", (message.id,))
-            connection.commit()
+        cursor.execute("DELETE FROM polls WHERE id = ?", (message.id,))
+        connection.commit()
 
 
 # run the bot

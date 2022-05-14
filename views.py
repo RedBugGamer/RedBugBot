@@ -194,7 +194,8 @@ class mypoll(nextcord.ui.View):
     async def pollup(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
     ):
-
+        if await check_developer_mode_interaction(interaction):
+            return
         id1 = interaction.message.id
         # print(id1)
         # print(cursor.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
@@ -245,6 +246,8 @@ class mypoll(nextcord.ui.View):
     async def polldown(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
     ):
+        if await check_developer_mode_interaction(interaction):
+            return
         id1 = interaction.message.id
         # print(id1)
         # print(cursor.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
