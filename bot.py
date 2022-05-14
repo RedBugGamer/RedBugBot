@@ -518,7 +518,7 @@ async def on_message(message: nextcord.Message):
                 )
                 description.add_field(
                     name="color",
-                    value="Setzt die Farbe der Einbettung",
+                    value="Setzt die Farbe der Einbettung\nAlle Farben:\nred\norange\nyellow\ngreen\nblue\nwhite\nblack",
                     inline=False,
                 )
                 description.add_field(
