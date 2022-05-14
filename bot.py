@@ -100,33 +100,6 @@ def user_in_db(id: int):
         connection.commit()
 
 
-registeredcommands = {
-    "help": "Zeigt dir diese Einbettung `Usage: T!help <command>`",
-    "ping": "Gibt meinen ping `Usage: T!ping`",
-    "block": "Blockiert einen User sodass der den bot nicht nutzen kann `Usage: T!block <@ member>`",
-    "send": "sendet etwas in kanal x `Usage: T!send <# channel> <message>`",
-    "say": "sagt etwas als ich `Usage: T!say <message>`",
-    "activität": "Setzt meine Bot Aktivität `Usage: T!activity <str>`",
-    "dice": "Würfelt für dich `Usage: T!dice`",
-    "tictactoe": "Startet ein TikTakToe game `Usage: T!tictactoe`",
-    "google": "googelt was für dich `Usage: T!google/T!g/T!guckle`",
-    "morse": "gibt die morsetext `Usage: T!morse <text>`",
-    "embed": "Sendet eine Einbettung `Usage: T!embed wert1=parameter1;wer2=parameter2` oder `T!embed`",
-    "stats": "Gibt die Hypixel stats `Usage: T!stats <player>`",
-    "poll": "Macht eine Umfrage `Usage: T!poll <Frage>`",
-    "bind": 'Bindet eine [Exaroton](https://exaroton.com) Server id zum channel `Usage: T!bind <serverid/"unbind">`',
-    "mute": "Mutet einen User für x minuten `Usage: T!mute @member <Zeit>`",
-    "reboot": "Startet mich neu `Usage: T!reboot`",
-    "licht": "toggelt licht mit id x `Usage: T!licht <id> <time>`",
-    "web": "Gibt dir den link zu meiner Website `Usage: T!web`",
-    "uptime": "Gibt die zeit zurück, die ich Online war `Usage: T!uptime`",
-    "chatbot": "Imitiert ein Gespräch mit mir `Usage: T!chatbot [message1|message2|...]`",
-    "schiffetot": "startet ein Schiffeversenken Spiel `Usage: T!schiffetot`",
-    "exec": "Führt den beiliegenden Python code direkt im Bot aus `Usage: T!exec <code>`",
-    "code": "Führt den beiliegenden Python code in einer Sandbox aus `Usage: T!code ```<code>```",
-}
-
-
 @tasks.loop(minutes=4)
 async def statuschange():
     await client.change_presence(
@@ -234,9 +207,10 @@ async def on_message(message: nextcord.Message):
                 status=nextcord.Status.dnd, activity=nextcord.Game("Rebooting")
             )
             if githubcooldown != 0:
+                t = get_dc_timestamp(datetime.datetime.now() + datetime.timedelta(seconds=githubcooldown),"R")
                 await message.channel.send(
                     embed=nextcord.Embed(
-                        description=f"awaiting restart in {githubcooldown} seconds"
+                        description=f"awaiting restart in {t}"
                     )
                 )
             await message.delete()
@@ -550,7 +524,8 @@ async def on_message(message: nextcord.Message):
                     )
                 )
         elif message.content.startswith("T!deploy "):
-            if await check_developer_mode_msg(message): return
+            if await check_developer_mode_msg(message):
+                return
             try:
                 id = message.content.split(" ")[1]
                 element = cursor.execute(
@@ -889,10 +864,10 @@ async def on_message(message: nextcord.Message):
             else:
                 await noperms(message, "Du brauchst Botowner")
         elif message.content == "T!uptime":
-            m = await message.channel.send(
+            await message.channel.send(
                 embed=nextcord.Embed(
                     title="Uptime",
-                    description=str(datetime.datetime.now() - startuptime),
+                    description=str(get_dc_timestamp(startuptime,"R")),
                 )
             )
         elif any(word in message.content.lower() for word in sadwords):
@@ -977,8 +952,8 @@ async def on_message(message: nextcord.Message):
                     await message.channel.send(embed=nextcord.Embed(description=f"Die id von {user} ist `{id}`"))
                 case "name":
                     id_str = message.content.split(" ")[2]
-                    id: nextcord.User = client.get_user(int(message.content.split(" ")[2]))
-                    name = id
+                    id: nextcord.User = client.get_user(
+                        int(message.content.split(" ")[2]))
                     await message.channel.send(embed=nextcord.Embed(description=f"Der name von {id_str} ist {id}"))
             # other essential stuff here:
         elif message.content.startswith("T!"):

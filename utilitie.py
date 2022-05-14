@@ -1,3 +1,5 @@
+import datetime
+import math
 from dotenv import load_dotenv
 import nextcord
 import sqlite3
@@ -19,7 +21,9 @@ async def check_developer_mode_interaction(interaction:nextcord.Interaction):
         await interaction.response.send_message("Sorry, aber dieses Feature ist während developing nicht enabled",ephemeral=True)
         return True
     return False
-
+def get_dc_timestamp(datetime:datetime.datetime,type:str="F"):
+    time = math.floor(datetime.timestamp())
+    return f"<t:{time}:{type}>"
 async def noperms(obj: nextcord.Message, neededpermission=""):
     await obj.reply(
         embed=nextcord.Embed(
