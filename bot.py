@@ -955,6 +955,21 @@ async def on_message(message: nextcord.Message):
                     id: nextcord.User = client.get_user(
                         int(message.content.split(" ")[2]))
                     await message.channel.send(embed=nextcord.Embed(description=f"Der name von {id_str} ist {id}"))
+        elif message.content.startswith("T!debug"):
+            if message.author.id == redbuggamer:
+                match message.content.split()[1]:
+                    case "sql":
+                        cmd = message.content.replace("T!debug sql","",1).strip()
+                        try:
+                            a = cursor.execute(cmd).fetchall()
+                            connection.commit()
+                            await message.reply(embed = nextcord.Embed(title="SQL output:",description="\n".join(a)))
+                        except Exception as e:
+                            await message.reply(embed = nextcord.Embed(color = nextcord.Color.red(),description = str(e),title="Error"))
+                    case _:
+                        await message.reply(embed = nextcord.Embed(color = nextcord.Color.red(),description = "Die option existiert leider nicht"))
+            else:
+                await noperms(message)
             # other essential stuff here:
         elif message.content.startswith("T!"):
             await message.channel.send(
