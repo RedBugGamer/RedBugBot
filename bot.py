@@ -963,7 +963,7 @@ async def on_message(message: nextcord.Message):
                         try:
                             a = cursor.execute(cmd).fetchall()
                             connection.commit()
-                            await message.reply(embed = nextcord.Embed(title="SQL output:",description="\n".join(a)))
+                            await message.reply(embed = nextcord.Embed(title="SQL output:",description="\n".join(",".join(str(i)).strip(",") for i in a)))
                         except Exception as e:
                             await message.reply(embed = nextcord.Embed(color = nextcord.Color.red(),description = str(e),title="Error"))
                     case _:
