@@ -295,6 +295,24 @@ class mypoll(nextcord.ui.View):
                 "Sorry, aber der Poll ist expired", ephemeral=True
             )
 
+    @nextcord.ui.button(label = "#",style = nextcord.ButtonStyle.gray,custom_id="poll:thread")
+    async def thread(self,button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if interaction.message.thread == None:
+            button.disabled = True
+            await interaction.message.edit(view=self)
+            await interaction.message.create_thread(name = "Discussion")
+    # @nextcord.ui.button(label = "edit",style = nextcord.ButtonStyle.blurple,custom_id="poll:edit")
+    # async def edit(self,button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    #     try:
+    #         id, up, down, owner, voted, expires = cursor.execute(
+    #                 "SELECT * FROM polls WHERE id = ?", (interaction.message.id,)
+    #             ).fetchall()[0]
+    #         if str(interaction.user.id) == str(owner):
+    #             await interaction.response.send_message("Gib bitte jetzt eine ")
+    #     except IndexError:
+    #         await interaction.response.send_message(
+    #             "Sorry, aber der Poll ist expired", ephemeral=True
+    #         )
 
 class EmbedBuilder(nextcord.ui.View):
     def __init__(self, embed: dict, owner: int, description_msg: nextcord.Message):
