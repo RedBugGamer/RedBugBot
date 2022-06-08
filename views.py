@@ -230,7 +230,7 @@ class mypoll(nextcord.ui.View):
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
-                await interaction.edit(view=self)
+                await interaction.message.edit(view=self)
         except IndexError:
             await interaction.response.send_message(
                 "Sorry, aber der Poll ist expired", ephemeral=True
@@ -289,7 +289,7 @@ class mypoll(nextcord.ui.View):
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
-                await interaction.edit(view=self)
+                await interaction.message.edit(view=self)
         except IndexError:
             await interaction.response.send_message(
                 "Sorry, aber der Poll ist expired", ephemeral=True
