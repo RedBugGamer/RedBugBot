@@ -227,10 +227,10 @@ class mypoll(nextcord.ui.View):
                 self.children[0].label = str(up)
                 self.children[2].label = str(down)
                 self.children[1].label = str(up-down)
-                await interaction.edit(view=self)
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
+                await interaction.edit(view=self)
         except IndexError:
             await interaction.response.send_message(
                 "Sorry, aber der Poll ist expired", ephemeral=True
@@ -286,10 +286,10 @@ class mypoll(nextcord.ui.View):
                 self.children[0].label = str(up)
                 self.children[2].label = str(down)
                 self.children[1].label = str(up-down)
-                await interaction.edit(view=self)
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
+                await interaction.edit(view=self)
         except IndexError:
             await interaction.response.send_message(
                 "Sorry, aber der Poll ist expired", ephemeral=True
