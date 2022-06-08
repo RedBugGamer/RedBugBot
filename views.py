@@ -221,6 +221,13 @@ class mypoll(nextcord.ui.View):
                 )
                 await interaction.edit(view=self)
             else:
+                id, up, down, owner, voted, expires = cursor.execute(
+                        "SELECT * FROM polls WHERE id = ?", (id1,)
+                    ).fetchall()[0]
+                self.children[0].label = str(up)
+                self.children[2].label = str(down)
+                self.children[1].label = str(up-down)
+                await interaction.edit(view=self)
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
@@ -273,6 +280,13 @@ class mypoll(nextcord.ui.View):
                 )
                 await interaction.edit(view=self)
             else:
+                id, up, down, owner, voted, expires = cursor.execute(
+                        "SELECT * FROM polls WHERE id = ?", (id1,)
+                    ).fetchall()[0]
+                self.children[0].label = str(up)
+                self.children[2].label = str(down)
+                self.children[1].label = str(up-down)
+                await interaction.edit(view=self)
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
