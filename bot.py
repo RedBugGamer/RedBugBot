@@ -142,6 +142,7 @@ async def on_ready():
         garbagecollection.start()
     client.add_view(mypoll())
     print(f"{client.user} has connected to Discord!")
+    await log_in_channel("Connected")
 
 
 @client.event
