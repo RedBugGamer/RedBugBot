@@ -45,50 +45,12 @@ cursor.execute(
     "CREATE TABLE if not exists embeds (id int PRIMARY KEY, json string, expires DATE)"
 )
 
-zen = "https://zenquotes.io/api/random"
-sadwords = ["demotivatet", "traurig", "demotiviert", "sad"]
-morsealphabet = {
-    "a": ".-",
-    "b": "-...",
-    "c": "-.-.",
-    "d": "-..",
-    "e": ".",
-    "f": "..-.",
-    "g": "--.",
-    "h": "....",
-    "i": "..",
-    "j": ".---",
-    "k": "-.-",
-    "l": ".-..",
-    "m": "--",
-    "n": "-.",
-    "o": "---",
-    "p": ".--.",
-    "q": "--.-",
-    "r": ".-.",
-    "s": "...",
-    "t": "-",
-    "u": "..-",
-    "v": "...-",
-    "w": ".--",
-    "x": "-..-",
-    "y": "-.--",
-    "z": "--..",
-    ".": ".-.-.-",
-    "?": "..--..",
-    ",": "--..--",
-    " ": "",
-}
-Hicooldown = 0
-startuptime = datetime.datetime.now()
-githubcooldown = 180
+
 temp = []
 for user in cursor.execute("SELECT * FROM userdata WHERE blocked = true"):
     temp.append(user[1])
 blockedusers = temp
 del temp
-
-chatboton = False
 
 
 def user_in_db(id: int):
@@ -207,7 +169,8 @@ async def on_message(message: nextcord.Message):
                 status=nextcord.Status.dnd, activity=nextcord.Game("Rebooting")
             )
             if githubcooldown != 0:
-                t = get_dc_timestamp(datetime.datetime.now() + datetime.timedelta(seconds=githubcooldown),"R")
+                t = get_dc_timestamp(datetime.datetime.now(
+                ) + datetime.timedelta(seconds=githubcooldown), "R")
                 await message.channel.send(
                     embed=nextcord.Embed(
                         description=f"awaiting restart in {t}"
@@ -867,7 +830,7 @@ async def on_message(message: nextcord.Message):
             await message.channel.send(
                 embed=nextcord.Embed(
                     title="Uptime",
-                    description=str(get_dc_timestamp(startuptime,"R")),
+                    description=str(get_dc_timestamp(startuptime, "R")),
                 )
             )
         elif any(word in message.content.lower() for word in sadwords):
@@ -959,18 +922,19 @@ async def on_message(message: nextcord.Message):
             if message.author.id == redbuggamer:
                 match message.content.split()[1]:
                     case "sql":
-                        cmd = message.content.replace("T!debug sql","",1).strip()
+                        cmd = message.content.replace(
+                            "T!debug sql", "", 1).strip()
                         try:
                             a = cursor.execute(cmd).fetchall()
                             connection.commit()
                             out = []
                             for i in a:
                                 out.append("```"+str(i)+"```")
-                            await message.reply(embed = nextcord.Embed(title="SQL output:",description="".join(out),color=nextcord.Color.green()))
+                            await message.reply(embed=nextcord.Embed(title="SQL output:", description="".join(out), color=nextcord.Color.green()))
                         except Exception as e:
-                            await message.reply(embed = nextcord.Embed(color = nextcord.Color.red(),description = str(e),title="Error"))
+                            await message.reply(embed=nextcord.Embed(color=nextcord.Color.red(), description=str(e), title="Error"))
                     case _:
-                        await message.reply(embed = nextcord.Embed(color = nextcord.Color.red(),description = "Die option existiert leider nicht"))
+                        await message.reply(embed=nextcord.Embed(color=nextcord.Color.red(), description="Die option existiert leider nicht"))
             else:
                 await noperms(message)
             # other essential stuff here:

@@ -1,3 +1,4 @@
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 import nextcord
@@ -35,3 +36,43 @@ registeredcommands = {
     "exec": "Führt den beiliegenden Python code direkt im Bot aus `Usage: T!exec <code>`",
     "code": "Führt den beiliegenden Python code in einer Sandbox aus `Usage: T!code ```<code>```",
 }
+
+morsealphabet = {
+    "a": ".-",
+    "b": "-...",
+    "c": "-.-.",
+    "d": "-..",
+    "e": ".",
+    "f": "..-.",
+    "g": "--.",
+    "h": "....",
+    "i": "..",
+    "j": ".---",
+    "k": "-.-",
+    "l": ".-..",
+    "m": "--",
+    "n": "-.",
+    "o": "---",
+    "p": ".--.",
+    "q": "--.-",
+    "r": ".-.",
+    "s": "...",
+    "t": "-",
+    "u": "..-",
+    "v": "...-",
+    "w": ".--",
+    "x": "-..-",
+    "y": "-.--",
+    "z": "--..",
+    ".": ".-.-.-",
+    "?": "..--..",
+    ",": "--..--",
+    " ": "",
+}
+
+zen = "https://zenquotes.io/api/random"
+sadwords = ["demotivatet", "traurig", "demotiviert", "sad"]
+Hicooldown = 0
+startuptime = datetime.datetime.now()
+githubcooldown = 180
+chatboton = False
