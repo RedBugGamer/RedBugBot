@@ -212,8 +212,8 @@ class mypoll(nextcord.ui.View):
                 output["voted"] = "-".join(voters)
                 button.label = str(up + 1)
                 cursor.execute(
-                    "UPDATE polls SET up = ?, voted = ? WHERE id = ?",
-                    (up + 1, output["voted"], id1),
+                    "UPDATE polls SET up = ?, voted = ?,expires = ? WHERE id = ?",
+                    (up + 1, output["voted"], id1,datetime.datetime.now()),
                 )
                 connection.commit()
                 self.children[1].label = str(
@@ -225,8 +225,8 @@ class mypoll(nextcord.ui.View):
                         "SELECT * FROM polls WHERE id = ?", (id1,)
                     ).fetchall()[0]
                 self.children[0].label = str(up)
-                self.children[2].label = str(down)
                 self.children[1].label = str(up-down)
+                self.children[2].label = str(down)
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
@@ -271,8 +271,8 @@ class mypoll(nextcord.ui.View):
                 output["voted"] = "-".join(voters)
                 button.label = str(down + 1)
                 cursor.execute(
-                    "UPDATE polls SET down = ?, voted = ? WHERE id = ?",
-                    (down + 1, output["voted"], id1),
+                    "UPDATE polls SET down = ?, voted = ?,expires = ? WHERE id = ?",
+                    (down + 1, output["voted"], id1,datetime.datetime.now()),
                 )
                 connection.commit()
                 self.children[1].label = str(
@@ -284,8 +284,8 @@ class mypoll(nextcord.ui.View):
                         "SELECT * FROM polls WHERE id = ?", (id1,)
                     ).fetchall()[0]
                 self.children[0].label = str(up)
-                self.children[2].label = str(down)
                 self.children[1].label = str(up-down)
+                self.children[2].label = str(down)
                 await interaction.response.send_message(
                     "Du hast leider schon gevotet oder bist owner", ephemeral=True
                 )
