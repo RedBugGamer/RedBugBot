@@ -150,7 +150,6 @@ async def on_disconnect():
     print(f"[{time}] disconnectet")
     while client.is_closed():
         await asyncio.sleep(1)
-    c = client.get_channel(secretlib.log_channel)
     time1 = datetime.datetime.now()
     await log_in_channel(f"Bot disconnected von {time} zu {time1}",nextcord.Color.orange())
 
