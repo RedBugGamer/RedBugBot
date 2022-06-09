@@ -148,7 +148,11 @@ async def on_ready():
 async def on_disconnect():
     time = datetime.datetime.now()
     print(f"[{time}] disconnectet")
-
+    while client.is_closed():
+        await asyncio.sleep(1)
+    c = client.get_channel(secretlib.log_channel)
+    time1 = datetime.datetime.now()
+    await c.send(embed=nextcord.Embed(color=nextcord.Color.orange(),title="Bot disconnect for "+str(time1-time),description=f"Bot disconnected von {time} zu {time1}"))
 
 # commands/ingame chat
 @client.event
