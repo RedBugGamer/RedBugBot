@@ -152,7 +152,7 @@ async def on_disconnect():
         await asyncio.sleep(1)
     c = client.get_channel(secretlib.log_channel)
     time1 = datetime.datetime.now()
-    await c.send(embed=nextcord.Embed(color=nextcord.Color.orange(),title="Bot disconnect for "+str(time1-time),description=f"Bot disconnected von {time} zu {time1}"))
+    await log_in_channel(f"Bot disconnected von {time} zu {time1}",nextcord.Color.orange())
 
 # commands/ingame chat
 @client.event

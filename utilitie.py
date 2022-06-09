@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 import nextcord
 import sqlite3
 import os
+from vars import client
+import secretlib
 
 load_dotenv()
 developer_mode = os.environ["developer_mode"] == "True"
@@ -32,3 +34,7 @@ async def noperms(obj: nextcord.Message, neededpermission=""):
             color=0xE74C3C,
         )
     )
+
+async def log_in_channel(description:str,color:nextcord.Color=nextcord.Color.green()):
+    c = client.get_channel(secretlib.log_channel)
+    await c.send(embed=nextcord.Embed(color=color,title=f"[{datetime.datetime.now()}] Log",description=description))
