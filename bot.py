@@ -46,13 +46,6 @@ cursor.execute(
 )
 
 
-temp = []
-for user in cursor.execute("SELECT * FROM userdata WHERE blocked = true"):
-    temp.append(user[1])
-blockedusers = temp
-del temp
-
-
 def user_in_db(id: int):
     if (
         len(cursor.execute("SELECT * FROM userdata WHERE id = ?", (id,)).fetchall())

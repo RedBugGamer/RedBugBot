@@ -7,6 +7,7 @@ import json
 from utilitie import *
 from vars import *
 
+
 class TicTacToeButton(nextcord.ui.Button["TicTacToe"]):
     def __init__(self, x: int, y: int):
 
@@ -17,7 +18,13 @@ class TicTacToeButton(nextcord.ui.Button["TicTacToe"]):
     # This function is called whenever this particular button is pressed
     # This is part of the "meat" of the game logic
     async def callback(self, interaction: nextcord.Interaction):
-        assert self.view is not None
+        if interaction.user.id in blockedusers:
+            await interaction.response.send_message(
+                embed=nextcord.Embed(
+                    description="Acces denied - You have been blocked", color=0xE74C3C
+                )
+            )
+            return
         view: TicTacToe = self.view
         state = view.board[self.y][self.x]
         if state in (view.X, view.O):
@@ -90,7 +97,8 @@ class TicTacToe(nextcord.ui.View):
 
         # Check vertical
         for line in range(3):
-            value = self.board[0][line] + self.board[1][line] + self.board[2][line]
+            value = self.board[0][line] + \
+                self.board[1][line] + self.board[2][line]
             if value == 3:
                 return self.O
             elif value == -3:
@@ -196,6 +204,13 @@ class mypoll(nextcord.ui.View):
     ):
         if await check_developer_mode_interaction(interaction):
             return
+        if interaction.user.id in blockedusers:
+            await interaction.response.send_message(
+                embed=nextcord.Embed(
+                    description="Acces denied - You have been blocked", color=0xE74C3C
+                )
+            )
+            return
         id1 = interaction.message.id
         # print(id1)
         # print(cursor.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
@@ -213,7 +228,7 @@ class mypoll(nextcord.ui.View):
                 button.label = str(up + 1)
                 cursor.execute(
                     "UPDATE polls SET up = ?, voted = ?,expires = ? WHERE id = ?",
-                    (up + 1, output["voted"], id1,datetime.datetime.now()),
+                    (up + 1, output["voted"], id1, datetime.datetime.now()),
                 )
                 connection.commit()
                 self.children[1].label = str(
@@ -222,8 +237,8 @@ class mypoll(nextcord.ui.View):
                 await interaction.edit(view=self)
             else:
                 id, up, down, owner, voted, expires = cursor.execute(
-                        "SELECT * FROM polls WHERE id = ?", (id1,)
-                    ).fetchall()[0]
+                    "SELECT * FROM polls WHERE id = ?", (id1,)
+                ).fetchall()[0]
                 self.children[0].label = str(up)
                 self.children[1].label = str(up-down)
                 self.children[2].label = str(down)
@@ -255,6 +270,13 @@ class mypoll(nextcord.ui.View):
     ):
         if await check_developer_mode_interaction(interaction):
             return
+        if interaction.user.id in blockedusers:
+            await interaction.response.send_message(
+                embed=nextcord.Embed(
+                    description="Acces denied - You have been blocked", color=0xE74C3C
+                )
+            )
+            return
         id1 = interaction.message.id
         # print(id1)
         # print(cursor.execute("SELECT * FROM polls WHERE id = ?", (id1,)).fetchall())
@@ -272,7 +294,7 @@ class mypoll(nextcord.ui.View):
                 button.label = str(down + 1)
                 cursor.execute(
                     "UPDATE polls SET down = ?, voted = ?,expires = ? WHERE id = ?",
-                    (down + 1, output["voted"], id1,datetime.datetime.now()),
+                    (down + 1, output["voted"], id1, datetime.datetime.now()),
                 )
                 connection.commit()
                 self.children[1].label = str(
@@ -281,8 +303,8 @@ class mypoll(nextcord.ui.View):
                 await interaction.edit(view=self)
             else:
                 id, up, down, owner, voted, expires = cursor.execute(
-                        "SELECT * FROM polls WHERE id = ?", (id1,)
-                    ).fetchall()[0]
+                    "SELECT * FROM polls WHERE id = ?", (id1,)
+                ).fetchall()[0]
                 self.children[0].label = str(up)
                 self.children[1].label = str(up-down)
                 self.children[2].label = str(down)
@@ -295,12 +317,12 @@ class mypoll(nextcord.ui.View):
                 "Sorry, aber der Poll ist expired", ephemeral=True
             )
 
-    @nextcord.ui.button(label = "#",style = nextcord.ButtonStyle.gray,custom_id="poll:thread")
-    async def thread(self,button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    @nextcord.ui.button(label="#", style=nextcord.ButtonStyle.gray, custom_id="poll:thread")
+    async def thread(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if interaction.message.thread == None:
             button.disabled = True
             await interaction.message.edit(view=self)
-            await interaction.message.create_thread(name = "Discussion")
+            await interaction.message.create_thread(name="Discussion")
     # @nextcord.ui.button(label = "edit",style = nextcord.ButtonStyle.blurple,custom_id="poll:edit")
     # async def edit(self,button: nextcord.ui.Button, interaction: nextcord.Interaction):
     #     try:
@@ -313,6 +335,7 @@ class mypoll(nextcord.ui.View):
     #         await interaction.response.send_message(
     #             "Sorry, aber der Poll ist expired", ephemeral=True
     #         )
+
 
 class EmbedBuilder(nextcord.ui.View):
     def __init__(self, embed: dict, owner: int, description_msg: nextcord.Message):
@@ -435,7 +458,8 @@ class EmbedBuilder(nextcord.ui.View):
         if self.owner == interaction.user.id:
             response = json.dumps(self.embed)
             a = cursor.execute("SELECT * FROM embeds").fetchall()
-            newid = list(set(range(0, len(a) + 1)).difference(i[0] for i in a))[0]
+            newid = list(
+                set(range(0, len(a) + 1)).difference(i[0] for i in a))[0]
             cursor.execute(
                 "INSERT INTO embeds VALUES (?,?,?)",
                 (

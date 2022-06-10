@@ -6,12 +6,8 @@ import sqlite3
 import os
 from vars import client
 import secretlib
-import utilitie
-
 load_dotenv()
 developer_mode = os.environ["developer_mode"] == "True"
-connection = sqlite3.connect("database.db")
-cursor = connection.cursor()
 redbuggamer = 772386889817784340
 
 async def check_developer_mode_msg(message:nextcord.Message):
