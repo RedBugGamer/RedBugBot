@@ -297,27 +297,31 @@ async def on_message(message: nextcord.Message):
             # macht einen poll
             if message.author.avatar == None:
                 # check avatar exists
-                poll = await message.channel.send(
-                    embed=nextcord.Embed(
+                embed = nextcord.Embed(
                         color=0xE74C3C,
                         title="Poll",
                         description=message.content.replace("T!poll", "", 1),
                         timestamp=datetime.datetime.now(),
-                    ).set_author(name=message.author),
-                    view=mypoll(),
-                )
+                    ).set_author(name=message.author)
             else:
-                poll = await message.channel.send(
-                    embed=nextcord.Embed(
+                embed=nextcord.Embed(
                         color=0xE74C3C,
                         title="Poll",
                         description=message.content.replace("T!poll", "", 1),
                         timestamp=datetime.datetime.now(),
                     ).set_author(
                         name=message.author, icon_url=message.author.avatar.url
-                    ),
-                    view=mypoll(),
-                )
+                    )
+            if message.reference == None:
+                poll = await message.channel.send(
+                        embed=embed,
+                        view=mypoll())
+            else:
+                msg = await message.channel.fetch_message(message.reference.message_id)
+                poll = await msg.reply(
+                        allowed_mentions=nextcord.AllowedMentions(replied_user=False),
+                        embed=embed,
+                        view=mypoll())
             t = datetime.datetime.now()
             cursor.execute(
                 "INSERT into polls VALUES (?,?,?,?,?,?)",

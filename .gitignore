@@ -7,3 +7,5 @@ secretlib.py
 /polls.db
 /database.db
 /test2.py
+/website
+/control_center.py
