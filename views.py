@@ -322,7 +322,8 @@ class mypoll(nextcord.ui.View):
         if interaction.message.thread == None:
             button.disabled = True
             await interaction.message.edit(view=self)
-            await interaction.message.create_thread(name="Discussion")
+            t = await interaction.message.create_thread(name="Discussion")
+            await t.add_user(interaction.user)
     # @nextcord.ui.button(label = "edit",style = nextcord.ButtonStyle.blurple,custom_id="poll:edit")
     # async def edit(self,button: nextcord.ui.Button, interaction: nextcord.Interaction):
     #     try:
