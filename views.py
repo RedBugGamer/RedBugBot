@@ -1,4 +1,5 @@
 import datetime
+from typing import Coroutine
 import nextcord
 import requests
 from sqlite3 import Connection, Cursor
@@ -488,3 +489,25 @@ class EmbedBuilder(nextcord.ui.View):
             await interaction.response.send_message(
                 "Du bist halt kein Owner, weißt du...", ephemeral=True
             )
+
+# class ConfirmButton(nextcord.ui.View):
+#     def __init__(self,user:nextcord.User,ok:Coroutine,cancel:Coroutine):
+#         self.user = user
+#         self.ok = ok
+#         self.cancel = cancel
+#         super().__init__(timeout=None)
+    
+#     @nextcord.ui.button(label = "Ok", style = nextcord.ButtonStyle.green)
+#     async def ok_(self,button:nextcord.ui.Button, interaction: nextcord.Interaction):
+#         await self.ok
+#         for i in self.children:
+#             i.disabled = True
+#         await interaction.edit(view=self)
+#         self.stop()
+#     @nextcord.ui.button(label = "Cancel", style = nextcord.ButtonStyle.red)
+#     async def cancel_(self,button: nextcord.ui.Button,interaction: nextcord.Interaction):
+#         await self.cancel
+#         for i in self.children:
+#             i.disabled = True
+#         await interaction.edit(view=self)
+#         self.stop()
