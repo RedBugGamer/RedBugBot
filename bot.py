@@ -396,8 +396,6 @@ async def on_message(message: nextcord.Message):
             else:
                 await noperms(message, "Du brauchst Botowner")
         elif message.content.startswith("T!embed"):
-            if await disable_cmd(message):
-                return
             await message.channel.trigger_typing()
             d = {
                 "titel": "",
