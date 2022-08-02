@@ -10,6 +10,22 @@ load_dotenv()
 developer_mode = os.environ["developer_mode"] == "True"
 connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
+
+cursor.execute(
+    "CREATE TABLE if not exists polls (id int PRIMARY KEY, up int, down int, owner int, voted TEXT, expires DATE)"
+)
+cursor.execute(
+    "CREATE TABLE if not exists userdata (id int PRIMARY KEY, blocked bool)")
+cursor.execute(
+    "CREATE TABLE if not exists exaroton (serverid string PRIMARY KEY, channel int)"
+)
+cursor.execute(
+    "CREATE TABLE if not exists embeds (id int PRIMARY KEY, json string, expires DATE)"
+)
+cursor.execute(
+    "CREATE TABLE if not exists errors (id int PRIMARY KEY, message String, errormsg String, user String, expires DATE)"
+)
+
 intents = nextcord.Intents.default()
 intents.members = True
 intents.all()
