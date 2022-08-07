@@ -99,7 +99,7 @@ async def garbagecollection():
 # Bot activities
 activitys = [
     "Welteroberungspläne",
-    "Deine Voodopuppe",
+    "Mit deiner Voodopuppe",
     "Langeweile",
     "Editierung der eigenen bot.py",
     "Ließt deine Gedanken",
